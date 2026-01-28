@@ -1,0 +1,28 @@
+{
+  "Flowkit": {
+    "Purple": {
+      "$type": "color",
+      "$value": "#7b61ff"
+    },
+    "Charcoal": {
+      "$type": "color",
+      "$value": "#222222"
+    },
+    "Red": {
+      "$type": "color",
+      "$value": "#fc5555"
+    },
+    "Green": {
+      "$type": "color",
+      "$value": "#29cc6a"
+    },
+    "Blue": {
+      "$type": "color",
+      "$value": "#0099ff"
+    },
+    "White": {
+      "$type": "color",
+      "$value": "#ffffff"
+    }
+  }
+}

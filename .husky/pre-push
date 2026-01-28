@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running type check and lint before push..."
+npm run check
+
+if [ $? -ne 0 ]; then
+  echo "❌ Type check or lint failed! Please fix the issues before pushing."
+  exit 1
+fi
+
+echo "✅ ESLint passed! Pushing code..."

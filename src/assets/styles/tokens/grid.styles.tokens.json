@@ -1,0 +1,60 @@
+{
+  "Form's-Row": {
+    "$type": "grid",
+    "$value": [
+      {
+        "pattern": "columns",
+        "visible": true,
+        "alignment": "stretch",
+        "color": "#c48eff26",
+        "gutterSize": "{sem.dimension.gap.lg}",
+        "count": 4,
+        "offset": "0px"
+      }
+    ]
+  },
+  "Grid": {
+    "Container-Lg": {
+      "$type": "grid",
+      "$value": [
+        {
+          "pattern": "columns",
+          "visible": true,
+          "alignment": "stretch",
+          "color": "#c48eff26",
+          "gutterSize": "{sem.dimension.gap.xl}",
+          "count": 12,
+          "offset": "{sem.dimension.padding.xl}"
+        }
+      ]
+    },
+    "Container-Md": {
+      "$type": "grid",
+      "$value": [
+        {
+          "pattern": "columns",
+          "visible": true,
+          "alignment": "stretch",
+          "color": "#c48eff26",
+          "gutterSize": "{sem.dimension.gap.xl}",
+          "count": 8,
+          "offset": "{sem.dimension.padding.lg}"
+        }
+      ]
+    },
+    "Container-Sm": {
+      "$type": "grid",
+      "$value": [
+        {
+          "pattern": "columns",
+          "visible": true,
+          "alignment": "stretch",
+          "color": "#c48eff26",
+          "gutterSize": "{sem.dimension.gap.md}",
+          "count": 6,
+          "offset": "{sem.dimension.padding.md}"
+        }
+      ]
+    }
+  }
+}

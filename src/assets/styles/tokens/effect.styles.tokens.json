@@ -1,0 +1,80 @@
+{
+  "_In-Focus": {
+    "$type": "shadow",
+    "$value": [
+      {
+        "offsetX": "0px",
+        "offsetY": "0px",
+        "blur": "0px",
+        "spread": "{com.focus-mark.stroke-width}",
+        "color": "{com.focus-mark.color-stroke}"
+      },
+      {
+        "offsetX": "0px",
+        "offsetY": "0px",
+        "blur": "0px",
+        "spread": "{com.focus-mark.gap-spacing}",
+        "color": "{com.focus-mark.color-gap-spacing}"
+      }
+    ]
+  },
+  "Elevation": {
+    "Level-1": {
+      "$type": "shadow",
+      "$value": [
+        {
+          "offsetX": "0px",
+          "offsetY": "{pri.elevation.shadow-key.y-position.sm}",
+          "blur": "{pri.elevation.shadow-key.blur.sm}",
+          "spread": "{pri.elevation.shadow-key.spread.sm}",
+          "color": "{pri.elevation.shadow-key.color.sm}"
+        },
+        {
+          "offsetX": "0px",
+          "offsetY": "{pri.elevation.shadow-ambient.y-position.sm}",
+          "blur": "{pri.elevation.shadow-ambient.blur.sm}",
+          "spread": "{pri.elevation.shadow-ambient.spread.sm}",
+          "color": "{pri.elevation.shadow-ambient.color.sm}"
+        }
+      ]
+    },
+    "Level-2": {
+      "$type": "shadow",
+      "$value": [
+        {
+          "offsetX": "0px",
+          "offsetY": "{pri.elevation.shadow-key.y-position.md}",
+          "blur": "{pri.elevation.shadow-key.blur.md}",
+          "spread": "{pri.elevation.shadow-key.spread.md}",
+          "color": "{pri.elevation.shadow-key.color.md}"
+        },
+        {
+          "offsetX": "0px",
+          "offsetY": "{pri.elevation.shadow-ambient.y-position.md}",
+          "blur": "{pri.elevation.shadow-ambient.blur.md}",
+          "spread": "{pri.elevation.shadow-ambient.spread.md}",
+          "color": "{pri.elevation.shadow-ambient.color.md}"
+        }
+      ]
+    },
+    "Level-3": {
+      "$type": "shadow",
+      "$value": [
+        {
+          "offsetX": "0px",
+          "offsetY": "{pri.elevation.shadow-key.y-position.lg}",
+          "blur": "{pri.elevation.shadow-key.blur.lg}",
+          "spread": "{pri.elevation.shadow-key.spread.lg}",
+          "color": "{pri.elevation.shadow-key.color.lg}"
+        },
+        {
+          "offsetX": "0px",
+          "offsetY": "{pri.elevation.shadow-ambient.y-position.lg}",
+          "blur": "{pri.elevation.shadow-ambient.blur.lg}",
+          "spread": "{pri.elevation.shadow-ambient.spread.lg}",
+          "color": "{pri.elevation.shadow-ambient.color.lg}"
+        }
+      ]
+    }
+  }
+}
