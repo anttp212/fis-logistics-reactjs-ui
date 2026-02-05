@@ -132,6 +132,41 @@ export const routes: RouteObject[] = [
           const CostGroupComponent = await import('../pages/cost-group')
           return { Component: CostGroupComponent.default }
         }
+      },
+      {
+        path: ROUTES.warehouse,
+        lazy: async () => {
+          const WarehouseComponent = await import('../pages/warehouse')
+          return { Component: WarehouseComponent.default }
+        }
+      },
+      {
+        path: ROUTES.depot,
+        lazy: async () => {
+          const DepotComponent = await import('../pages/depot')
+          return { Component: DepotComponent.default }
+        }
+      },
+      {
+        path: ROUTES.transportation,
+        lazy: async () => {
+          const TransportationComponent = await import('../pages/transportation')
+          return { Component: TransportationComponent.default }
+        }
+      },
+      {
+        path: ROUTES.roleGroup,
+        lazy: async () => {
+          const RoleGroupComponent = await import('../pages/config/role-group')
+          return { Component: RoleGroupComponent.default }
+        }
+      },
+      {
+        path: ROUTES.user,
+        lazy: async () => {
+          const UserComponent = await import('../pages/config/user')
+          return { Component: UserComponent.default }
+        }
       }
     ]
   },
@@ -144,6 +179,28 @@ export const routes: RouteObject[] = [
       return { Component: LoginComponent.default }
     },
     loader: authLoader
+  },
+  {
+    path: ROUTES.register,
+    lazy: async () => {
+      const RegisterComponent = await import('../pages/register')
+      return { Component: RegisterComponent.default }
+    },
+    loader: authLoader
+  },
+  {
+    path: ROUTES.forgotPassword,
+    lazy: async () => {
+      const ForgotPasswordComponent = await import('../pages/forgot-password')
+      return { Component: ForgotPasswordComponent.default }
+    }
+  },
+  {
+    path: ROUTES.resetPassword,
+    lazy: async () => {
+      const ResetPasswordComponent = await import('../pages/reset-password')
+      return { Component: ResetPasswordComponent.default }
+    }
   },
 
   // 🔄 Wildcard redirect

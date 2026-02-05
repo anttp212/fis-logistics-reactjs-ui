@@ -1,71 +1,45 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FISButton } from 'fis-component'
-import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
-import { useAppDispatch } from '@hooks'
-import { setTokenData, setUser } from '@slices/auth.slice'
 
-interface LoginFormDataI {
+interface ForgotPasswordFormDataI {
   email: string
-  password: string
-  rememberMe: boolean
 }
 
-const Login: React.FC = () => {
+const ForgotPassword: React.FC = () => {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
-  const dispatch = useAppDispatch()
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError
-  } = useForm<LoginFormDataI>({
+  } = useForm<ForgotPasswordFormDataI>({
     defaultValues: {
-      email: '',
-      password: '',
-      rememberMe: false
+      email: ''
     }
   })
 
-  const onSubmit = async (data: LoginFormDataI) => {
+  const onSubmit = async (data: ForgotPasswordFormDataI) => {
     setIsLoading(true)
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      // Mock login validation
-      if (data.email === 'admin@example.com' && data.password === '123456') {
-        // ✅ Set mock token and user data in Redux
-        dispatch(
-          setTokenData({
-            accessToken: 'mock-access-token-123456',
-            tokenType: 'Bearer',
-            expiresIn: 3600,
-            refreshToken: 'mock-refresh-token-789'
-          })
-        )
-
-        dispatch(
-          setUser({
-            id: 'user-123',
-            name: 'Admin User',
-            email: data.email,
-            avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff',
-            role: 'admin'
-          })
-        )
-
-        const redirectTo = searchParams.get('redirect') || ROUTES.home
-        navigate(redirectTo, { replace: true })
-
-        // Note: Redux-persist automatically saves to localStorage!
+      // Mock validation
+      if (data.email === 'admin@example.com') {
+        setIsSuccess(true)
+        // Auto redirect to login after 3 seconds
+        setTimeout(() => {
+          navigate(ROUTES.login)
+        }, 3000)
       } else {
         setError('root', {
-          message: 'Email hoặc mật khẩu không đúng'
+          message: 'Email không tồn tại trong hệ thống'
         })
       }
     } catch (_error) {
@@ -75,6 +49,29 @@ const Login: React.FC = () => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isSuccess) {
+    return (
+      <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
+        <div className='max-w-md w-full'>
+          <div className='bg-white shadow-xl rounded-2xl px-8 py-10 text-center'>
+            <div className='mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-6'>
+              <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+              </svg>
+            </div>
+            <h2 className='text-2xl font-bold text-gray-900 mb-2'>Email đã được gửi!</h2>
+            <p className='text-sm text-gray-600 mb-6'>
+              Chúng tôi đã gửi link đặt lại mật khẩu đến email của bạn. Vui lòng kiểm tra hộp thư.
+            </p>
+            <Link to={ROUTES.login} className='text-indigo-600 hover:text-indigo-500 font-medium text-sm'>
+              Quay lại đăng nhập
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -88,12 +85,12 @@ const Login: React.FC = () => {
                 strokeLinecap='round'
                 strokeLinejoin='round'
                 strokeWidth={2}
-                d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+                d='M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z'
               />
             </svg>
           </div>
-          <h2 className='text-3xl font-bold text-gray-900 mb-2'>Đăng nhập</h2>
-          <p className='text-sm text-gray-600'>Đăng nhập vào tài khoản của bạn</p>
+          <h2 className='text-3xl font-bold text-gray-900 mb-2'>Quên mật khẩu</h2>
+          <p className='text-sm text-gray-600'>Nhập email để nhận link đặt lại mật khẩu</p>
         </div>
 
         {/* Form */}
@@ -119,51 +116,6 @@ const Login: React.FC = () => {
                 placeholder='Nhập email của bạn'
               />
               {errors.email && <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>}
-            </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor='password' className='block text-sm font-medium text-gray-700 mb-2'>
-                Mật khẩu
-              </label>
-              <input
-                {...register('password', {
-                  required: 'Mật khẩu là bắt buộc',
-                  minLength: {
-                    value: 6,
-                    message: 'Mật khẩu phải có ít nhất 6 ký tự'
-                  }
-                })}
-                type='password'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                  errors.password ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder='Nhập mật khẩu'
-              />
-              {errors.password && <p className='mt-1 text-sm text-red-600'>{errors.password.message}</p>}
-            </div>
-
-            {/* Remember Me & Forgot Password */}
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center'>
-                <input
-                  {...register('rememberMe')}
-                  id='rememberMe'
-                  type='checkbox'
-                  className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
-                />
-                <label htmlFor='rememberMe' className='ml-2 block text-sm text-gray-700'>
-                  Ghi nhớ đăng nhập
-                </label>
-              </div>
-              <div className='text-sm'>
-                <Link
-                  to={ROUTES.forgotPassword}
-                  className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
-                >
-                  Quên mật khẩu?
-                </Link>
-              </div>
             </div>
 
             {/* Error Message */}
@@ -211,29 +163,23 @@ const Login: React.FC = () => {
                         d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
                       ></path>
                     </svg>
-                    Đang đăng nhập...
+                    Đang gửi...
                   </div>
                 ) : (
-                  'Đăng nhập'
+                  'Gửi link đặt lại mật khẩu'
                 )}
               </FISButton>
             </div>
           </form>
 
-          {/* Demo Credentials */}
-          <div className='mt-6 p-4 bg-gray-50 rounded-lg'>
-            <p className='text-xs text-gray-600 text-center mb-2'>
-              <strong>Demo credentials:</strong>
-            </p>
-            <p className='text-xs text-gray-500 text-center'>
-              Email: <span className='font-mono'>admin@example.com</span>
-              <br />
-              Password: <span className='font-mono'>123456</span>
-            </p>
-          </div>
-
           {/* Footer */}
-          <div className='mt-6 text-center'>
+          <div className='mt-6 text-center space-y-2'>
+            <Link
+              to={ROUTES.login}
+              className='block text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
+            >
+              ← Quay lại đăng nhập
+            </Link>
             <p className='text-sm text-gray-600'>
               Chưa có tài khoản?{' '}
               <Link
@@ -250,4 +196,4 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login
+export default ForgotPassword

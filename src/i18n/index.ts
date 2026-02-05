@@ -6,7 +6,7 @@ import viTranslation from './vi'
 // Import types để enable type-safety
 import './types'
 
-const language = 'en'
+const language = 'vi'
 
 i18n.use(initReactI18next).init({
   debug: process.env.NODE_ENV === 'development',

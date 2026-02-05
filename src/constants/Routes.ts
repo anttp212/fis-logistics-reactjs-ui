@@ -7,9 +7,18 @@ export const ROUTES = {
   home: '/home',
   profile: '/profile',
   costGroup: '/cost-group',
+  warehouse: '/warehouse',
+  depot: '/depot',
+  transportation: '/transportation',
+  config: '/config',
+  roleGroup: '/config/role-group',
+  user: '/config/user',
 
   // Auth routes (no layout)
   login: '/login',
+  register: '/register',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
 
   // Root and fallback
   root: '/',
