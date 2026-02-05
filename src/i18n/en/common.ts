@@ -9,7 +9,13 @@ const common = {
     dashboard: 'Dashboard',
     profile: 'Profile',
     overview: 'Overview',
-    constGroup: 'Contract - Invoice Group'
+    constGroup: 'Contract - Invoice Group',
+    warehouse: 'Warehouse Management',
+    depot: 'Depot Management',
+    transportation: 'Transportation Management',
+    config: 'Configuration',
+    roleGroup: 'Role Group',
+    user: 'User'
   }
 }
 
