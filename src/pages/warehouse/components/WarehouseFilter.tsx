@@ -13,13 +13,7 @@ const WarehouseFilter = ({ control }: WarehouseFilterPropsI) => {
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText
-              {...field}
-              textLabel='Tên kho'
-              placeholder='Nhập tên kho'
-            />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên kho' placeholder='Nhập tên kho' />}
         />
       </Col>
     </Row>

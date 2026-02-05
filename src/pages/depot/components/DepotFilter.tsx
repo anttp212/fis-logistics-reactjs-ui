@@ -13,13 +13,7 @@ const DepotFilter = ({ control }: DepotFilterPropsI) => {
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText
-              {...field}
-              textLabel='Tên bãi depot'
-              placeholder='Nhập tên bãi depot'
-            />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên bãi depot' placeholder='Nhập tên bãi depot' />}
         />
       </Col>
     </Row>

@@ -182,7 +182,10 @@ const ForgotPassword: React.FC = () => {
             </Link>
             <p className='text-sm text-gray-600'>
               Chưa có tài khoản?{' '}
-              <Link to={ROUTES.register} className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'>
+              <Link
+                to={ROUTES.register}
+                className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
+              >
                 Đăng ký ngay
               </Link>
             </p>

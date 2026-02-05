@@ -162,9 +162,7 @@ const Register: React.FC = () => {
                 }`}
                 placeholder='Nhập lại mật khẩu'
               />
-              {errors.confirmPassword && (
-                <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>
-              )}
+              {errors.confirmPassword && <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>}
             </div>
 
             {/* Error Message */}

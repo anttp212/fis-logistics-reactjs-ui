@@ -14,11 +14,7 @@ const UserFilter = ({ control }: UserFilterPropsI) => {
           name='name'
           control={control}
           render={({ field }) => (
-            <FISInputText
-              {...field}
-              textLabel='Tên người dùng'
-              placeholder='Nhập tên người dùng'
-            />
+            <FISInputText {...field} textLabel='Tên người dùng' placeholder='Nhập tên người dùng' />
           )}
         />
       </Col>
@@ -26,13 +22,7 @@ const UserFilter = ({ control }: UserFilterPropsI) => {
         <Controller
           name='email'
           control={control}
-          render={({ field }) => (
-            <FISInputText
-              {...field}
-              textLabel='Email'
-              placeholder='Nhập email'
-            />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Email' placeholder='Nhập email' />}
         />
       </Col>
     </Row>

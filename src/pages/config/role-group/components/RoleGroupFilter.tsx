@@ -14,11 +14,7 @@ const RoleGroupFilter = ({ control }: RoleGroupFilterPropsI) => {
           name='name'
           control={control}
           render={({ field }) => (
-            <FISInputText
-              {...field}
-              textLabel='Tên nhóm quyền'
-              placeholder='Nhập tên nhóm quyền'
-            />
+            <FISInputText {...field} textLabel='Tên nhóm quyền' placeholder='Nhập tên nhóm quyền' />
           )}
         />
       </Col>

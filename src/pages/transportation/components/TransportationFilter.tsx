@@ -14,11 +14,7 @@ const TransportationFilter = ({ control }: TransportationFilterPropsI) => {
           name='name'
           control={control}
           render={({ field }) => (
-            <FISInputText
-              {...field}
-              textLabel='Tên vận chuyển'
-              placeholder='Nhập tên vận chuyển'
-            />
+            <FISInputText {...field} textLabel='Tên vận chuyển' placeholder='Nhập tên vận chuyển' />
           )}
         />
       </Col>

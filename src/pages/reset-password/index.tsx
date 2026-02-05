@@ -70,7 +70,9 @@ const ResetPassword: React.FC = () => {
               </svg>
             </div>
             <h2 className='text-2xl font-bold text-gray-900 mb-2'>Đặt lại mật khẩu thành công!</h2>
-            <p className='text-sm text-gray-600 mb-6'>Mật khẩu của bạn đã được cập nhật. Bạn có thể đăng nhập ngay bây giờ.</p>
+            <p className='text-sm text-gray-600 mb-6'>
+              Mật khẩu của bạn đã được cập nhật. Bạn có thể đăng nhập ngay bây giờ.
+            </p>
             <Link
               to={ROUTES.login}
               className='inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium'
@@ -90,12 +92,7 @@ const ResetPassword: React.FC = () => {
           <div className='bg-white shadow-xl rounded-2xl px-8 py-10 text-center'>
             <div className='mx-auto h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mb-6'>
               <svg className='h-8 w-8 text-red-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M6 18L18 6M6 6l12 12'
-                />
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
               </svg>
             </div>
             <h2 className='text-2xl font-bold text-gray-900 mb-2'>Link không hợp lệ</h2>
@@ -153,9 +150,7 @@ const ResetPassword: React.FC = () => {
                 }`}
                 placeholder='Nhập mật khẩu mới'
               />
-              {errors.newPassword && (
-                <p className='mt-1 text-sm text-red-600'>{errors.newPassword.message}</p>
-              )}
+              {errors.newPassword && <p className='mt-1 text-sm text-red-600'>{errors.newPassword.message}</p>}
             </div>
 
             {/* Confirm Password */}
@@ -174,9 +169,7 @@ const ResetPassword: React.FC = () => {
                 }`}
                 placeholder='Nhập lại mật khẩu mới'
               />
-              {errors.confirmPassword && (
-                <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>
-              )}
+              {errors.confirmPassword && <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>}
             </div>
 
             {/* Error Message */}
