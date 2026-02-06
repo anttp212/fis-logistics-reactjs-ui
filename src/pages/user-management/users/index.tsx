@@ -2,14 +2,7 @@ import { useState, useMemo } from 'react'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
-import {
-  FISButton,
-  FISTable,
-  FISTableCell,
-  FISTableHeaderCell,
-  FISIconButton,
-  FISButtonGroup
-} from 'fis-component'
+import { FISButton, FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import { AddIcon } from '@images'
 import UserModal from './components/UserModal'
 import UsersFilter from './components/UsersFilter'
@@ -71,7 +64,7 @@ const FAKE_USERS_DATA: UserI[] = [
 ]
 
 // TableRowSelection type
-interface TableRowSelection {
+interface TableRowSelectionI {
   selectedRowKeys?: React.Key[]
   onChange?: (selectedRowKeys: React.Key[]) => void
   renderCell?: (checked: boolean, record: any) => React.ReactNode
@@ -79,13 +72,13 @@ interface TableRowSelection {
 }
 
 // Simple Checkbox component
-interface CheckboxProps {
+interface CheckboxPropsI {
   checked?: boolean
   indeterminate?: boolean
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxProps) => {
+const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxPropsI) => {
   return (
     <input
       type='checkbox'
@@ -121,8 +114,7 @@ const UserManagementUsers = () => {
     if (filterValues.name) {
       const searchTerm = filterValues.name.toLowerCase()
       filtered = filtered.filter(
-        (user) =>
-          user.username.toLowerCase().includes(searchTerm) || user.email.toLowerCase().includes(searchTerm)
+        (user) => user.username.toLowerCase().includes(searchTerm) || user.email.toLowerCase().includes(searchTerm)
       )
     }
 
@@ -197,7 +189,7 @@ const UserManagementUsers = () => {
     }
   }
 
-  const rowSelection: TableRowSelection = {
+  const rowSelection: TableRowSelectionI = {
     selectedRowKeys,
     onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
     renderCell: (checked: boolean, record: any) => (
@@ -239,14 +231,17 @@ const UserManagementUsers = () => {
     try {
       if (editingUser) {
         // TODO: Call API to update user
+        // eslint-disable-next-line no-console
         console.log('Update user:', editingUser.key, formData)
       } else {
         // TODO: Call API to create user
+        // eslint-disable-next-line no-console
         console.log('Create user:', formData)
       }
       handleModalClose()
       // TODO: Refresh user list
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error saving user:', error)
       // TODO: Show error notification
     }
@@ -270,9 +265,11 @@ const UserManagementUsers = () => {
       onOk: async () => {
         try {
           // TODO: Call API to delete user
+          // eslint-disable-next-line no-console
           console.log('Delete user:', record.key)
           // TODO: Refresh user list
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error deleting user:', error)
           // TODO: Show error notification
           // Re-throw để modal không đóng khi có lỗi
@@ -318,9 +315,7 @@ const UserManagementUsers = () => {
       title: () => {
         return <FISTableHeaderCell label='Tên người dùng' hasRightDivider />
       },
-      render: (_: any, row: UserI) => (
-        <FISTableCell content={row.username} textAlign='left' />
-      )
+      render: (_: any, row: UserI) => <FISTableCell content={row.username} textAlign='left' />
     },
     {
       dataIndex: 'email',

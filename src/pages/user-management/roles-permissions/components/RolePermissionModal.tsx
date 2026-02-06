@@ -122,14 +122,8 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
               }}
               render={({ field }) => (
                 <div>
-                  <FISInputText
-                    {...field}
-                    textLabel='Tên vai trò'
-                    placeholder='Nhập tên vai trò'
-                  />
-                  {errors.name && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.name.message}</p>
-                  )}
+                  <FISInputText {...field} textLabel='Tên vai trò' placeholder='Nhập tên vai trò' />
+                  {errors.name && <p className='mt-1 text-sm text-red-600'>{errors.name.message}</p>}
                 </div>
               )}
             />
@@ -149,14 +143,8 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
               }}
               render={({ field }) => (
                 <div>
-                  <FISInputText
-                    {...field}
-                    textLabel='Mô tả'
-                    placeholder='Nhập mô tả vai trò'
-                  />
-                  {errors.description && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>
-                  )}
+                  <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả vai trò' />
+                  {errors.description && <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>}
                 </div>
               )}
             />
@@ -186,9 +174,7 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
                       </div>
                     ))}
                   </div>
-                  {errors.permissions && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.permissions.message}</p>
-                  )}
+                  {errors.permissions && <p className='mt-1 text-sm text-red-600'>{errors.permissions.message}</p>}
                 </div>
               )}
             />

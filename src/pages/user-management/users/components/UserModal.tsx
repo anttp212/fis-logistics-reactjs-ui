@@ -118,14 +118,8 @@ const UserModal: FC<UserModalPropsI> = ({
               }}
               render={({ field }) => (
                 <div>
-                  <FISInputText
-                    {...field}
-                    textLabel='Tên người dùng'
-                    placeholder='Nhập tên người dùng'
-                  />
-                  {errors.username && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.username.message}</p>
-                  )}
+                  <FISInputText {...field} textLabel='Tên người dùng' placeholder='Nhập tên người dùng' />
+                  {errors.username && <p className='mt-1 text-sm text-red-600'>{errors.username.message}</p>}
                 </div>
               )}
             />
@@ -145,15 +139,8 @@ const UserModal: FC<UserModalPropsI> = ({
               }}
               render={({ field }) => (
                 <div>
-                  <FISInputText
-                    {...field}
-                    type='email'
-                    textLabel='Email'
-                    placeholder='Nhập email'
-                  />
-                  {errors.email && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>
-                  )}
+                  <FISInputText {...field} type='email' textLabel='Email' placeholder='Nhập email' />
+                  {errors.email && <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>}
                 </div>
               )}
             />
@@ -181,9 +168,7 @@ const UserModal: FC<UserModalPropsI> = ({
                     textLabel={isEditMode ? 'Mật khẩu mới (để trống nếu không đổi)' : 'Mật khẩu'}
                     placeholder={isEditMode ? 'Nhập mật khẩu mới (tùy chọn)' : 'Nhập mật khẩu'}
                   />
-                  {errors.password && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.password.message}</p>
-                  )}
+                  {errors.password && <p className='mt-1 text-sm text-red-600'>{errors.password.message}</p>}
                 </div>
               )}
             />
@@ -199,9 +184,7 @@ const UserModal: FC<UserModalPropsI> = ({
               }}
               render={({ field }) => (
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>
-                    Nhóm người dùng
-                  </label>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>Nhóm người dùng</label>
                   <Select
                     value={field.value}
                     onChange={field.onChange}
@@ -211,9 +194,7 @@ const UserModal: FC<UserModalPropsI> = ({
                     className='w-full'
                     size='large'
                   />
-                  {errors.userGroup && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.userGroup.message}</p>
-                  )}
+                  {errors.userGroup && <p className='mt-1 text-sm text-red-600'>{errors.userGroup.message}</p>}
                 </div>
               )}
             />
@@ -239,9 +220,7 @@ const UserModal: FC<UserModalPropsI> = ({
                     className='w-full'
                     size='large'
                   />
-                  {errors.role && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.role.message}</p>
-                  )}
+                  {errors.role && <p className='mt-1 text-sm text-red-600'>{errors.role.message}</p>}
                 </div>
               )}
             />

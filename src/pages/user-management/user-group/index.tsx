@@ -2,14 +2,7 @@ import { useState, useMemo } from 'react'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
-import {
-  FISButton,
-  FISTable,
-  FISTableCell,
-  FISTableHeaderCell,
-  FISIconButton,
-  FISButtonGroup
-} from 'fis-component'
+import { FISButton, FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import { AddIcon } from '@images'
 import {
   useGetUserGroupsQuery,
@@ -23,7 +16,7 @@ import UserGroupFilter from './components/UserGroupFilter'
 import { useUserGroup } from './useUserGroup'
 
 // TableRowSelection type
-interface TableRowSelection {
+interface TableRowSelectionI {
   selectedRowKeys?: React.Key[]
   onChange?: (selectedRowKeys: React.Key[]) => void
   renderCell?: (checked: boolean, record: any) => React.ReactNode
@@ -31,13 +24,13 @@ interface TableRowSelection {
 }
 
 // Simple Checkbox component
-interface CheckboxProps {
+interface CheckboxPropsI {
   checked?: boolean
   indeterminate?: boolean
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxProps) => {
+const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxPropsI) => {
   return (
     <input
       type='checkbox'
@@ -116,9 +109,7 @@ const UserManagementUserGroup = () => {
     if (userGroup.search) {
       const searchTerm = userGroup.search.toLowerCase()
       filtered = filtered.filter(
-        (group) =>
-          group.name.toLowerCase().includes(searchTerm) ||
-          group.description.toLowerCase().includes(searchTerm)
+        (group) => group.name.toLowerCase().includes(searchTerm) || group.description.toLowerCase().includes(searchTerm)
       )
     }
 
@@ -165,7 +156,7 @@ const UserManagementUserGroup = () => {
     }
   }
 
-  const rowSelection: TableRowSelection = {
+  const rowSelection: TableRowSelectionI = {
     selectedRowKeys,
     onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
     renderCell: (checked: boolean, record: any) => (
@@ -259,12 +250,7 @@ const UserManagementUserGroup = () => {
         return <FISTableHeaderCell label='Tên nhóm' hasRightDivider />
       },
       render: (_: any, row: { name: string | undefined; description: string | undefined; key: string }) => (
-        <FISTableCell
-          content={row.name}
-          description={row.description}
-          variant='primary-positive'
-          textAlign='left'
-        />
+        <FISTableCell content={row.name} description={row.description} variant='primary-positive' textAlign='left' />
       )
     },
     {
@@ -363,14 +349,7 @@ const UserManagementUserGroup = () => {
                   fill='none'
                   viewBox='0 0 24 24'
                 >
-                  <circle
-                    className='opacity-25'
-                    cx='12'
-                    cy='12'
-                    r='10'
-                    stroke='currentColor'
-                    strokeWidth='4'
-                  ></circle>
+                  <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
                   <path
                     className='opacity-75'
                     fill='currentColor'

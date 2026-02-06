@@ -13,18 +13,14 @@ const RolesPermissionsFilter = ({ control }: RolesPermissionsFilterPropsI) => {
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Tên vai trò' placeholder='Nhập tên vai trò' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên vai trò' placeholder='Nhập tên vai trò' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='description'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả' />}
         />
       </Col>
     </Row>

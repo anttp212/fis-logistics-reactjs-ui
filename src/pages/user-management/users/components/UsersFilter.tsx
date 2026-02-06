@@ -29,7 +29,9 @@ const UsersFilter = ({ control, userGroupsList }: UsersFilterPropsI) => {
         <Controller
           name='name'
           control={control}
-          render={({ field }) => <FISInputText {...field} textLabel='Tên người dùng' placeholder='Nhập tên người dùng' />}
+          render={({ field }) => (
+            <FISInputText {...field} textLabel='Tên người dùng' placeholder='Nhập tên người dùng' />
+          )}
         />
       </Col>
       <Col span={24}>

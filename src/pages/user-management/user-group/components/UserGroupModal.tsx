@@ -83,14 +83,8 @@ const UserGroupModal: FC<UserGroupModalPropsI> = ({ open, onClose, onSubmit, ini
               }}
               render={({ field }) => (
                 <div>
-                  <FISInputText
-                    {...field}
-                    textLabel='Tên nhóm'
-                    placeholder='Nhập tên nhóm người dùng'
-                  />
-                  {errors.name && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.name.message}</p>
-                  )}
+                  <FISInputText {...field} textLabel='Tên nhóm' placeholder='Nhập tên nhóm người dùng' />
+                  {errors.name && <p className='mt-1 text-sm text-red-600'>{errors.name.message}</p>}
                 </div>
               )}
             />
@@ -110,14 +104,8 @@ const UserGroupModal: FC<UserGroupModalPropsI> = ({ open, onClose, onSubmit, ini
               }}
               render={({ field }) => (
                 <div>
-                  <FISInputText
-                    {...field}
-                    textLabel='Mô tả'
-                    placeholder='Nhập mô tả (ví dụ: Chủ hàng lẻ, Đại lý)'
-                  />
-                  {errors.description && (
-                    <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>
-                  )}
+                  <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả (ví dụ: Chủ hàng lẻ, Đại lý)' />
+                  {errors.description && <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>}
                 </div>
               )}
             />

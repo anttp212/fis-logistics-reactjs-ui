@@ -22,9 +22,7 @@ const UserGroupFilter = ({ control }: UserGroupFilterPropsI) => {
         <Controller
           name='description'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả' />}
         />
       </Col>
     </Row>

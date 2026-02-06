@@ -63,10 +63,7 @@ export const userGroupApi = createApi({
     }),
 
     // ✏️ UPDATE_USER_GROUP - Cập nhật nhóm người dùng
-    updateUserGroup: builder.mutation<
-      ApiResponseI<UserGroupI>,
-      { id: string; data: UpdateUserGroupRequestI }
-    >({
+    updateUserGroup: builder.mutation<ApiResponseI<UserGroupI>, { id: string; data: UpdateUserGroupRequestI }>({
       query: ({ id, data }) => ({
         url: API_ENDPOINTS.userGroup.update.replace(':id', id),
         method: 'PUT',

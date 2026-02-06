@@ -2,14 +2,7 @@ import { useState, useMemo } from 'react'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
-import {
-  FISButton,
-  FISTable,
-  FISTableCell,
-  FISTableHeaderCell,
-  FISIconButton,
-  FISButtonGroup
-} from 'fis-component'
+import { FISButton, FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import { AddIcon } from '@images'
 import RolePermissionModal from './components/RolePermissionModal'
 import RolesPermissionsFilter from './components/RolesPermissionsFilter'
@@ -64,7 +57,7 @@ const FAKE_ROLES_PERMISSIONS_DATA: RolePermissionI[] = [
 ]
 
 // TableRowSelection type
-interface TableRowSelection {
+interface TableRowSelectionI {
   selectedRowKeys?: React.Key[]
   onChange?: (selectedRowKeys: React.Key[]) => void
   renderCell?: (checked: boolean, record: any) => React.ReactNode
@@ -72,13 +65,13 @@ interface TableRowSelection {
 }
 
 // Simple Checkbox component
-interface CheckboxProps {
+interface CheckboxPropsI {
   checked?: boolean
   indeterminate?: boolean
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxProps) => {
+const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxPropsI) => {
   return (
     <input
       type='checkbox'
@@ -159,7 +152,7 @@ const UserManagementRolesPermissions = () => {
     }
   }
 
-  const rowSelection: TableRowSelection = {
+  const rowSelection: TableRowSelectionI = {
     selectedRowKeys,
     onChange: (keys: React.Key[]) => setSelectedRowKeys(keys),
     renderCell: (checked: boolean, record: any) => (
@@ -191,22 +184,21 @@ const UserManagementRolesPermissions = () => {
     setEditingRolePermission(null)
   }
 
-  const handleModalSubmit = async (formData: {
-    name: string
-    description: string
-    permissions: string[]
-  }) => {
+  const handleModalSubmit = async (formData: { name: string; description: string; permissions: string[] }) => {
     try {
       if (editingRolePermission) {
         // TODO: Call API to update role permission
+        // eslint-disable-next-line no-console
         console.log('Update role permission:', editingRolePermission.key, formData)
       } else {
         // TODO: Call API to create role permission
+        // eslint-disable-next-line no-console
         console.log('Create role permission:', formData)
       }
       handleModalClose()
       // TODO: Refresh role permission list
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error saving role permission:', error)
       // TODO: Show error notification
     }
@@ -230,9 +222,11 @@ const UserManagementRolesPermissions = () => {
       onOk: async () => {
         try {
           // TODO: Call API to delete role permission
+          // eslint-disable-next-line no-console
           console.log('Delete role permission:', record.key)
           // TODO: Refresh role permission list
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error deleting role permission:', error)
           // TODO: Show error notification
           // Re-throw để modal không đóng khi có lỗi
@@ -268,9 +262,7 @@ const UserManagementRolesPermissions = () => {
       title: () => {
         return <FISTableHeaderCell label='Tên vai trò' hasRightDivider />
       },
-      render: (_: any, row: RolePermissionI) => (
-        <FISTableCell content={row.name} textAlign='left' />
-      )
+      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.name} textAlign='left' />
     },
     {
       dataIndex: 'description',
@@ -285,10 +277,7 @@ const UserManagementRolesPermissions = () => {
       width: 250,
       title: () => <FISTableHeaderCell label='Phân quyền' hasRightDivider />,
       render: (_: any, row: RolePermissionI) => (
-        <FISTableCell
-          content={row.permissions.join(', ')}
-          textAlign='left'
-        />
+        <FISTableCell content={row.permissions.join(', ')} textAlign='left' />
       )
     },
     {
