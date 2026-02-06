@@ -127,13 +127,6 @@ export const routes: RouteObject[] = [
         }
       },
       {
-        path: ROUTES.costGroup,
-        lazy: async () => {
-          const CostGroupComponent = await import('../pages/cost-group')
-          return { Component: CostGroupComponent.default }
-        }
-      },
-      {
         path: ROUTES.warehouse,
         lazy: async () => {
           const WarehouseComponent = await import('../pages/warehouse')
@@ -148,26 +141,141 @@ export const routes: RouteObject[] = [
         }
       },
       {
+        path: ROUTES.userManagement,
+        loader: async () => {
+          throw redirect(ROUTES.userManagementUsers)
+        }
+      },
+      {
+        path: ROUTES.userManagementUsers,
+        lazy: async () => {
+          const UserManagementUsersComponent = await import('../pages/user-management/users')
+          return { Component: UserManagementUsersComponent.default }
+        }
+      },
+      {
+        path: ROUTES.userManagementUserGroup,
+        lazy: async () => {
+          const UserManagementUserGroupComponent = await import('../pages/user-management/user-group')
+          return { Component: UserManagementUserGroupComponent.default }
+        }
+      },
+      {
+        path: ROUTES.userManagementAuthSecurity,
+        lazy: async () => {
+          const UserManagementAuthSecurityComponent = await import('../pages/user-management/auth-security')
+          return { Component: UserManagementAuthSecurityComponent.default }
+        }
+      },
+      {
+        path: ROUTES.userManagementRolesPermissions,
+        lazy: async () => {
+          const UserManagementRolesPermissionsComponent = await import('../pages/user-management/roles-permissions')
+          return { Component: UserManagementRolesPermissionsComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagement,
+        loader: async () => {
+          throw redirect(ROUTES.categoryManagementLandAndPort)
+        }
+      },
+      {
+        path: ROUTES.categoryManagementLandAndPort,
+        lazy: async () => {
+          const CategoryManagementLandAndPortComponent = await import('../pages/category-management/land-and-port')
+          return { Component: CategoryManagementLandAndPortComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementGoodsAndStandards,
+        lazy: async () => {
+          const CategoryManagementGoodsAndStandardsComponent = await import('../pages/category-management/goods-and-standards')
+          return { Component: CategoryManagementGoodsAndStandardsComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementFeesAndVas,
+        lazy: async () => {
+          const CategoryManagementFeesAndVasComponent = await import('../pages/category-management/fees-and-vas')
+          return { Component: CategoryManagementFeesAndVasComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementCustomerProfile,
+        lazy: async () => {
+          const CategoryManagementCustomerProfileComponent = await import('../pages/category-management/customer-profile')
+          return { Component: CategoryManagementCustomerProfileComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementEmployeeProfile,
+        lazy: async () => {
+          const CategoryManagementEmployeeProfileComponent = await import('../pages/category-management/employee-profile')
+          return { Component: CategoryManagementEmployeeProfileComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementVehiclesAndEquipment,
+        lazy: async () => {
+          const CategoryManagementVehiclesAndEquipmentComponent = await import('../pages/category-management/vehicles-and-equipment')
+          return { Component: CategoryManagementVehiclesAndEquipmentComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementLoadingPlan,
+        lazy: async () => {
+          const CategoryManagementLoadingPlanComponent = await import('../pages/category-management/loading-plan')
+          return { Component: CategoryManagementLoadingPlanComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementWarehouseAndYardLayout,
+        lazy: async () => {
+          const CategoryManagementWarehouseAndYardLayoutComponent = await import('../pages/category-management/warehouse-and-yard-layout')
+          return { Component: CategoryManagementWarehouseAndYardLayoutComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementShifts,
+        lazy: async () => {
+          const CategoryManagementShiftsComponent = await import('../pages/category-management/shifts')
+          return { Component: CategoryManagementShiftsComponent.default }
+        }
+      },
+      {
+        path: ROUTES.notificationManagement,
+        loader: async () => {
+          throw redirect(ROUTES.notificationManagementTemplateConfig)
+        }
+      },
+      {
+        path: ROUTES.notificationManagementTemplateConfig,
+        lazy: async () => {
+          const NotificationManagementTemplateConfigComponent = await import('../pages/notification-management/template-config')
+          return { Component: NotificationManagementTemplateConfigComponent.default }
+        }
+      },
+      {
+        path: ROUTES.systemConfig,
+        loader: async () => {
+          throw redirect(ROUTES.systemConfigOperatingParams)
+        }
+      },
+      {
+        path: ROUTES.systemConfigOperatingParams,
+        lazy: async () => {
+          const SystemConfigOperatingParamsComponent = await import('../pages/system-config/operating-params')
+          return { Component: SystemConfigOperatingParamsComponent.default }
+        }
+      },
+      {
         path: ROUTES.transportation,
         lazy: async () => {
           const TransportationComponent = await import('../pages/transportation')
           return { Component: TransportationComponent.default }
         }
       },
-      {
-        path: ROUTES.roleGroup,
-        lazy: async () => {
-          const RoleGroupComponent = await import('../pages/config/role-group')
-          return { Component: RoleGroupComponent.default }
-        }
-      },
-      {
-        path: ROUTES.user,
-        lazy: async () => {
-          const UserComponent = await import('../pages/config/user')
-          return { Component: UserComponent.default }
-        }
-      }
     ]
   },
 
@@ -175,7 +283,7 @@ export const routes: RouteObject[] = [
   {
     path: ROUTES.login,
     lazy: async () => {
-      const LoginComponent = await import('../pages/login')
+      const LoginComponent = await import('../pages/auth/login')
       return { Component: LoginComponent.default }
     },
     loader: authLoader
@@ -183,7 +291,7 @@ export const routes: RouteObject[] = [
   {
     path: ROUTES.register,
     lazy: async () => {
-      const RegisterComponent = await import('../pages/register')
+      const RegisterComponent = await import('../pages/auth/register')
       return { Component: RegisterComponent.default }
     },
     loader: authLoader
@@ -191,14 +299,14 @@ export const routes: RouteObject[] = [
   {
     path: ROUTES.forgotPassword,
     lazy: async () => {
-      const ForgotPasswordComponent = await import('../pages/forgot-password')
+      const ForgotPasswordComponent = await import('../pages/auth/forgot-password')
       return { Component: ForgotPasswordComponent.default }
     }
   },
   {
     path: ROUTES.resetPassword,
     lazy: async () => {
-      const ResetPasswordComponent = await import('../pages/reset-password')
+      const ResetPasswordComponent = await import('../pages/auth/reset-password')
       return { Component: ResetPasswordComponent.default }
     }
   },

@@ -2,11 +2,11 @@ import { Col, Row } from 'antd'
 import { Controller, Control } from 'react-hook-form'
 import { FISInputText } from 'fis-component'
 
-interface UserFilterPropsI {
+interface RolesPermissionsFilterPropsI {
   control: Control<any>
 }
 
-const UserFilter = ({ control }: UserFilterPropsI) => {
+const RolesPermissionsFilter = ({ control }: RolesPermissionsFilterPropsI) => {
   return (
     <Row gutter={[12, 12]}>
       <Col span={24}>
@@ -14,19 +14,21 @@ const UserFilter = ({ control }: UserFilterPropsI) => {
           name='name'
           control={control}
           render={({ field }) => (
-            <FISInputText {...field} textLabel='Tên người dùng' placeholder='Nhập tên người dùng' />
+            <FISInputText {...field} textLabel='Tên vai trò' placeholder='Nhập tên vai trò' />
           )}
         />
       </Col>
       <Col span={24}>
         <Controller
-          name='email'
+          name='description'
           control={control}
-          render={({ field }) => <FISInputText {...field} textLabel='Email' placeholder='Nhập email' />}
+          render={({ field }) => (
+            <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả' />
+          )}
         />
       </Col>
     </Row>
   )
 }
 
-export default UserFilter
+export default RolesPermissionsFilter

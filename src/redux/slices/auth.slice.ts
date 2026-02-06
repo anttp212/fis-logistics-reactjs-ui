@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import SliceName from './slice.name'
 import type { UserInfoI, LoginResponseI } from '@app-types/auth'
 import type { ApiResponseI } from '@app-types/api-response'
-import { loginApi } from '../../pages/login/login.api'
+import { loginApi } from '../../pages/auth/login/login.api'
 
 // ============================================
 // AUTH STATE INTERFACE

@@ -4,13 +4,13 @@ import { useTableToolbar } from '@hooks/useTableToolbar'
 const DEFAULT_FILTER_VALUES = {
   search: '',
   name: '',
-  email: ''
+  description: ''
 }
 
 // Breadcrumb items
-const BREADCRUMB_ITEMS = [{ label: 'Trang chủ' }, { label: 'Cấu hình' }, { label: 'Người dùng' }]
+const BREADCRUMB_ITEMS = [{ label: 'Trang chủ' }, { label: 'Vai trò và phân quyền' }]
 
-export const useUser = () => {
+export const useRolesPermissions = () => {
   const tableToolbar = useTableToolbar({
     defaultFilterValues: DEFAULT_FILTER_VALUES
   })
