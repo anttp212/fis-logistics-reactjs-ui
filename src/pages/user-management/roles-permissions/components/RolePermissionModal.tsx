@@ -1,4 +1,4 @@
-import { Modal, Select, Checkbox } from 'antd'
+import { Modal, Checkbox } from 'antd'
 import { useForm, Controller } from 'react-hook-form'
 import { FISButton, FISInputText } from 'fis-component'
 import { FC, useEffect } from 'react'
