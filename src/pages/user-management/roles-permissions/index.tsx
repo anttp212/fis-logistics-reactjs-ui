@@ -198,7 +198,6 @@ const UserManagementRolesPermissions = () => {
       handleModalClose()
       // TODO: Refresh role permission list
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error saving role permission:', error)
       // TODO: Show error notification
     }
@@ -226,7 +225,6 @@ const UserManagementRolesPermissions = () => {
           console.log('Delete role permission:', record.key)
           // TODO: Refresh role permission list
         } catch (error) {
-          // eslint-disable-next-line no-console
           console.error('Error deleting role permission:', error)
           // TODO: Show error notification
           // Re-throw để modal không đóng khi có lỗi
@@ -276,9 +274,7 @@ const UserManagementRolesPermissions = () => {
       key: 'permissions',
       width: 250,
       title: () => <FISTableHeaderCell label='Phân quyền' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => (
-        <FISTableCell content={row.permissions.join(', ')} textAlign='left' />
-      )
+      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.permissions.join(', ')} textAlign='left' />
     },
     {
       dataIndex: 'status',

@@ -241,7 +241,6 @@ const UserManagementUsers = () => {
       handleModalClose()
       // TODO: Refresh user list
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error saving user:', error)
       // TODO: Show error notification
     }
@@ -269,7 +268,6 @@ const UserManagementUsers = () => {
           console.log('Delete user:', record.key)
           // TODO: Refresh user list
         } catch (error) {
-          // eslint-disable-next-line no-console
           console.error('Error deleting user:', error)
           // TODO: Show error notification
           // Re-throw để modal không đóng khi có lỗi
