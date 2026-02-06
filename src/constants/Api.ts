@@ -21,10 +21,12 @@ export const API_ENDPOINTS = {
     getProfile: '/user/profile',
     updateProfile: '/user/profile'
   },
-  costGroup: {
-    list: '/cost-groups',
-    create: '/cost-groups/create',
-    update: '/cost-groups/update'
+  userGroup: {
+    list: '/user-groups',
+    detail: '/user-groups/:id',
+    create: '/user-groups',
+    update: '/user-groups/:id',
+    delete: '/user-groups/:id'
   }
 } as const
 
@@ -44,7 +46,5 @@ export const API_TAGS = {
   auth: 'Auth',
   user: 'User',
   currentUser: 'CurrentUser',
-  costGroup: {
-    list: 'CostGroupList'
-  }
+  userGroup: 'UserGroup'
 } as const
