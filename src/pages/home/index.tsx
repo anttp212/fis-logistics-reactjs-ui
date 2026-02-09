@@ -2,7 +2,6 @@ import { FISButton } from 'fis-component'
 import { Chart } from 'react-google-charts'
 
 const Home = () => {
-
   // Mock data for charts
   // Chart 1: Doanh thu theo tháng (Line Chart)
   const revenueData = [
@@ -23,7 +22,6 @@ const Home = () => {
     ['Đã từ chối', 8],
     ['Đang xử lý', 15]
   ]
-  
 
   // Chart 3: Doanh thu theo sản phẩm (Bar Chart)
   const productRevenueData = [
@@ -191,13 +189,7 @@ const Home = () => {
         {/* Chart 2: Số lượng đơn hàng theo trạng thái */}
         <div className='bg-white rounded-lg shadow-lg p-6'>
           <h2 className='text-lg font-semibold text-[#1E2225] mb-4'>Đơn hàng theo trạng thái</h2>
-          <Chart
-            chartType='PieChart'
-            width='100%'
-            height='300px'
-            data={orderStatusData}
-            options={pieChartOptions}
-          />
+          <Chart chartType='PieChart' width='100%' height='300px' data={orderStatusData} options={pieChartOptions} />
         </div>
 
         {/* Chart 3: Doanh thu theo sản phẩm */}

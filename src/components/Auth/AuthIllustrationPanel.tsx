@@ -86,7 +86,10 @@ const AuthIllustrationPanel: React.FC = () => {
               <div className='bg-white h-full rounded p-2'>
                 <div className='grid grid-cols-3 gap-1'>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                    <div key={num} className='h-6 bg-blue-200 rounded text-xs flex items-center justify-center text-blue-800 font-bold'>
+                    <div
+                      key={num}
+                      className='h-6 bg-blue-200 rounded text-xs flex items-center justify-center text-blue-800 font-bold'
+                    >
                       {num}
                     </div>
                   ))}

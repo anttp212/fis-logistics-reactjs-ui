@@ -176,18 +176,15 @@ export const routes: RouteObject[] = [
       {
         path: ROUTES.categoryManagementCustomerProfile,
         lazy: async () => {
-          const CategoryManagementCustomerProfileComponent = await import(
-            '../pages/category-management/customer-profile'
-          )
+          const CategoryManagementCustomerProfileComponent =
+            await import('../pages/category-management/customer-profile')
           return { Component: CategoryManagementCustomerProfileComponent.default }
         }
       },
       {
         path: ROUTES.categoryManagementPartnerProfile,
         lazy: async () => {
-          const CategoryManagementPartnerProfileComponent = await import(
-            '../pages/category-management/partner-profile'
-          )
+          const CategoryManagementPartnerProfileComponent = await import('../pages/category-management/partner-profile')
           return { Component: CategoryManagementPartnerProfileComponent.default }
         }
       },
@@ -201,18 +198,16 @@ export const routes: RouteObject[] = [
       {
         path: ROUTES.categoryManagementVehiclesAndEquipment,
         lazy: async () => {
-          const CategoryManagementVehiclesAndEquipmentComponent = await import(
-            '../pages/category-management/vehicles-and-equipment'
-          )
+          const CategoryManagementVehiclesAndEquipmentComponent =
+            await import('../pages/category-management/vehicles-and-equipment')
           return { Component: CategoryManagementVehiclesAndEquipmentComponent.default }
         }
       },
       {
         path: ROUTES.categoryManagementGoodsAndStandards,
         lazy: async () => {
-          const CategoryManagementGoodsAndStandardsComponent = await import(
-            '../pages/category-management/goods-and-standards'
-          )
+          const CategoryManagementGoodsAndStandardsComponent =
+            await import('../pages/category-management/goods-and-standards')
           return { Component: CategoryManagementGoodsAndStandardsComponent.default }
         }
       },
@@ -226,18 +221,16 @@ export const routes: RouteObject[] = [
       {
         path: ROUTES.categoryManagementWarehouseInfrastructure,
         lazy: async () => {
-          const CategoryManagementWarehouseInfrastructureComponent = await import(
-            '../pages/category-management/warehouse-infrastructure'
-          )
+          const CategoryManagementWarehouseInfrastructureComponent =
+            await import('../pages/category-management/warehouse-infrastructure')
           return { Component: CategoryManagementWarehouseInfrastructureComponent.default }
         }
       },
       {
         path: ROUTES.categoryManagementYardInfrastructure,
         lazy: async () => {
-          const CategoryManagementYardInfrastructureComponent = await import(
-            '../pages/category-management/yard-infrastructure'
-          )
+          const CategoryManagementYardInfrastructureComponent =
+            await import('../pages/category-management/yard-infrastructure')
           return { Component: CategoryManagementYardInfrastructureComponent.default }
         }
       },
@@ -250,9 +243,8 @@ export const routes: RouteObject[] = [
       {
         path: ROUTES.notificationManagementTemplateConfig,
         lazy: async () => {
-          const NotificationManagementTemplateConfigComponent = await import(
-            '../pages/notification-management/template-config'
-          )
+          const NotificationManagementTemplateConfigComponent =
+            await import('../pages/notification-management/template-config')
           return { Component: NotificationManagementTemplateConfigComponent.default }
         }
       },
