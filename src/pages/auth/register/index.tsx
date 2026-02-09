@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
-import AuthIllustrationPanel from '../../../components/Auth/AuthIllustrationPanel'
 import LanguageSelector from '../../../components/Auth/LanguageSelector'
 
 interface RegisterFormDataI {
@@ -62,15 +61,13 @@ const Register: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen flex'>
-      {/* Left side - Illustration Panel */}
-      <AuthIllustrationPanel />
-
-      {/* Right side - Register Form */}
-      <div className='flex-1 flex items-center justify-center p-4 lg:p-8 bg-[#1e3a5f]'>
-        <div className='w-full max-w-lg'>
-          {/* Form Card */}
-          <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
+    <div
+      className='min-h-screen flex items-center justify-center p-4 lg:p-8 bg-cover bg-center bg-no-repeat'
+      style={{ backgroundImage: 'url(/bg.png)' }}
+    >
+      <div className='w-full max-w-lg'>
+        {/* Form Card */}
+        <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
             {/* Language Selector */}
             <div className='absolute top-4 left-4'>
               <LanguageSelector />
@@ -322,7 +319,6 @@ const Register: React.FC = () => {
                 </Link>
               </p>
             </div>
-          </div>
         </div>
       </div>
     </div>

@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
 import { useAppDispatch } from '@hooks'
 import { setTokenData, setUser } from '@slices/auth.slice'
-import AuthIllustrationPanel from '../../../components/Auth/AuthIllustrationPanel'
 import LanguageSelector from '../../../components/Auth/LanguageSelector'
 
 interface LoginFormDataI {
@@ -81,15 +80,13 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen flex'>
-      {/* Left side - Illustration Panel */}
-      <AuthIllustrationPanel />
-
-      {/* Right side - Login Form */}
-      <div className='flex-1 flex items-center justify-center p-4 lg:p-8 bg-[#1e3a5f]'>
-        <div className='w-full max-w-lg'>
-          {/* Form Card */}
-          <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
+    <div
+      className='min-h-screen flex items-center justify-center p-4 lg:p-8 bg-cover bg-center bg-no-repeat'
+      style={{ backgroundImage: 'url(/bg.png)' }}
+    >
+      <div className='w-full max-w-lg'>
+        {/* Form Card */}
+        <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
             {/* Language Selector */}
             <div className='absolute top-4 left-4'>
               <LanguageSelector />
@@ -278,41 +275,6 @@ const Login: React.FC = () => {
               </div>
             </form>
 
-            {/* Alternative Login Options */}
-            <div className='mt-6'>
-              <div className='relative'>
-                <div className='absolute inset-0 flex items-center'>
-                  <div className='w-full border-t border-gray-300'></div>
-                </div>
-                <div className='relative flex justify-center text-sm'>
-                  <span className='px-2 bg-white text-gray-500'>Đăng nhập với</span>
-                </div>
-              </div>
-
-              <div className='mt-4 grid grid-cols-2 gap-3'>
-                <button
-                  type='button'
-                  className='flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
-                >
-                  {/* Windows/ADFS Icon */}
-                  <svg className='w-5 h-5 text-blue-600' viewBox='0 0 24 24' fill='currentColor'>
-                    <path d='M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z' />
-                  </svg>
-                  <span className='text-sm font-medium text-gray-700'>ADFS</span>
-                </button>
-                <button
-                  type='button'
-                  className='flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
-                >
-                  {/* Microsoft Entra ID - Diamond icon */}
-                  <svg className='w-5 h-5 text-blue-600' viewBox='0 0 24 24' fill='currentColor'>
-                    <path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5' />
-                  </svg>
-                  <span className='text-sm font-medium text-gray-700'>Microsoft Entra ID</span>
-                </button>
-              </div>
-            </div>
-
             {/* Footer */}
             <div className='mt-6 text-center'>
               <p className='text-sm text-gray-600'>
@@ -322,7 +284,6 @@ const Login: React.FC = () => {
                 </Link>
               </p>
             </div>
-          </div>
         </div>
       </div>
     </div>
