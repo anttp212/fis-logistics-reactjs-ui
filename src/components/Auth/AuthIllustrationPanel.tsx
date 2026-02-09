@@ -9,11 +9,7 @@ const AuthIllustrationPanel: React.FC = () => {
     <div className='hidden lg:flex lg:w-1/2 bg-[#1e3a5f] relative overflow-hidden'>
       {/* Centered Logo Image */}
       <div className='w-full h-full flex items-center justify-center'>
-        <img
-          src='/logowithcont.png'
-          alt='Logisverse Logo'
-          className='w-[500px] h-[500px] object-contain'
-        />
+        <img src='/logowithcont.png' alt='Logisverse Logo' className='w-[500px] h-[500px] object-contain' />
       </div>
     </div>
   )

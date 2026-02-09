@@ -63,9 +63,9 @@ const ForgotPassword: React.FC = () => {
               <LanguageSelector />
             </div>
             <div className='mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mt-4'>
-                <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-                </svg>
+              <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+              </svg>
             </div>
             <h2 className='text-2xl font-bold text-gray-900 mb-2'>Email đã được gửi!</h2>
             <p className='text-sm text-gray-600 mb-6'>

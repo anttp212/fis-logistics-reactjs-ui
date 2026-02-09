@@ -73,9 +73,9 @@ const ResetPassword: React.FC = () => {
               <LanguageSelector />
             </div>
             <div className='mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mt-4'>
-                <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-                </svg>
+              <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+              </svg>
             </div>
             <h2 className='text-2xl font-bold text-gray-900 mb-2'>Đặt lại mật khẩu thành công!</h2>
             <p className='text-sm text-gray-600 mb-6'>
@@ -105,9 +105,9 @@ const ResetPassword: React.FC = () => {
               <LanguageSelector />
             </div>
             <div className='mx-auto h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mb-6 mt-4'>
-                <svg className='h-8 w-8 text-red-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                </svg>
+              <svg className='h-8 w-8 text-red-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+              </svg>
             </div>
             <h2 className='text-2xl font-bold text-gray-900 mb-2'>Link không hợp lệ</h2>
             <p className='text-sm text-gray-600 mb-6'>Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn.</p>
@@ -266,9 +266,7 @@ const ResetPassword: React.FC = () => {
                   )}
                 </button>
               </div>
-              {errors.confirmPassword && (
-                <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>
-              )}
+              {errors.confirmPassword && <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>}
             </div>
 
             {/* Error Message */}
