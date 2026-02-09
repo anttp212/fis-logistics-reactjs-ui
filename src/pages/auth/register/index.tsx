@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import { FISButton } from 'fis-component'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
+import AuthIllustrationPanel from '../../../components/Auth/AuthIllustrationPanel'
+import LanguageSelector from '../../../components/Auth/LanguageSelector'
 
 interface RegisterFormDataI {
   username: string
@@ -14,6 +16,8 @@ interface RegisterFormDataI {
 const Register: React.FC = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const {
     register,
@@ -59,26 +63,39 @@ const Register: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
-      <div className='max-w-md w-full space-y-8'>
-        {/* Header */}
-        <div className='text-center'>
-          <div className='mx-auto h-16 w-16 bg-indigo-600 rounded-full flex items-center justify-center mb-6'>
-            <svg className='h-8 w-8 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z'
-              />
+    <div className='min-h-screen flex'>
+      {/* Left side - Illustration Panel */}
+      <AuthIllustrationPanel />
+
+      {/* Right side - Register Form */}
+      <div className='flex-1 flex items-center justify-center p-4 lg:p-8 bg-[#1e3a5f]'>
+        <div className='w-full max-w-md'>
+          {/* Form Card */}
+          <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
+            {/* Language Selector */}
+            <div className='absolute top-4 left-4'>
+              <LanguageSelector />
+            </div>
+
+            {/* Logo and Title */}
+            <div className='text-center mb-8 mt-12'>
+              <div className='flex items-center justify-center gap-2 mb-6'>
+                {/* Logo with checkmark graphic */}
+                <div className='relative'>
+                  <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
+                    <svg className='w-6 h-6 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={3}>
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
             </svg>
+                  </div>
+                  <div className='absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full'></div>
+                </div>
+                <h1 className='text-2xl font-bold text-gray-900'>Logisverse</h1>
           </div>
           <h2 className='text-3xl font-bold text-gray-900 mb-2'>Đăng ký</h2>
           <p className='text-sm text-gray-600'>Tạo tài khoản mới để bắt đầu</p>
         </div>
 
         {/* Form */}
-        <div className='bg-white shadow-xl rounded-2xl px-8 py-10'>
           <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
             {/* Username */}
             <div>
@@ -94,7 +111,7 @@ const Register: React.FC = () => {
                   }
                 })}
                 type='text'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.username ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder='Nhập tên đăng nhập'
@@ -116,7 +133,7 @@ const Register: React.FC = () => {
                   }
                 })}
                 type='email'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.email ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder='Nhập email của bạn'
@@ -129,6 +146,7 @@ const Register: React.FC = () => {
               <label htmlFor='password' className='block text-sm font-medium text-gray-700 mb-2'>
                 Mật khẩu
               </label>
+              <div className='relative'>
               <input
                 {...register('password', {
                   required: 'Mật khẩu là bắt buộc',
@@ -137,12 +155,44 @@ const Register: React.FC = () => {
                     message: 'Mật khẩu phải có ít nhất 6 ký tự'
                   }
                 })}
-                type='password'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                  type={showPassword ? 'text' : 'password'}
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.password ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder='Nhập mật khẩu'
               />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword(!showPassword)}
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700'
+                >
+                  {showPassword ? (
+                    <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
+                      />
+                    </svg>
+                  ) : (
+                    <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                      />
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {errors.password && <p className='mt-1 text-sm text-red-600'>{errors.password.message}</p>}
             </div>
 
@@ -151,17 +201,50 @@ const Register: React.FC = () => {
               <label htmlFor='confirmPassword' className='block text-sm font-medium text-gray-700 mb-2'>
                 Xác nhận mật khẩu
               </label>
+              <div className='relative'>
               <input
                 {...register('confirmPassword', {
                   required: 'Xác nhận mật khẩu là bắt buộc',
                   validate: (value) => value === password || 'Mật khẩu xác nhận không khớp'
                 })}
-                type='password'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder='Nhập lại mật khẩu'
               />
+                <button
+                  type='button'
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700'
+                >
+                  {showConfirmPassword ? (
+                    <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
+                      />
+                    </svg>
+                  ) : (
+                    <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                      />
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {errors.confirmPassword && <p className='mt-1 text-sm text-red-600'>{errors.confirmPassword.message}</p>}
             </div>
 
@@ -187,7 +270,7 @@ const Register: React.FC = () => {
 
             {/* Submit Button */}
             <div>
-              <FISButton type='submit' size='lg' className='w-full' disabled={isLoading}>
+                <FISButton type='submit' size='lg' className='w-full bg-blue-600 hover:bg-blue-700' disabled={isLoading}>
                 {isLoading ? (
                   <div className='flex items-center justify-center'>
                     <svg
@@ -223,10 +306,11 @@ const Register: React.FC = () => {
           <div className='mt-6 text-center'>
             <p className='text-sm text-gray-600'>
               Đã có tài khoản?{' '}
-              <Link to={ROUTES.login} className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'>
+                <Link to={ROUTES.login} className='font-medium text-blue-600 hover:text-blue-500 transition-colors'>
                 Đăng nhập ngay
               </Link>
             </p>
+            </div>
           </div>
         </div>
       </div>

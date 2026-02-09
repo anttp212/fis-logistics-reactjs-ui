@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FISButton } from 'fis-component'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
 import { useAppDispatch } from '@hooks'
 import { setTokenData, setUser } from '@slices/auth.slice'
+import AuthIllustrationPanel from '../../../components/Auth/AuthIllustrationPanel'
+import LanguageSelector from '../../../components/Auth/LanguageSelector'
 
 interface LoginFormDataI {
-  email: string
+  username: string
   password: string
   rememberMe: boolean
 }
@@ -18,6 +19,8 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const dispatch = useAppDispatch()
 
+  const [showPassword, setShowPassword] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -25,7 +28,7 @@ const Login: React.FC = () => {
     setError
   } = useForm<LoginFormDataI>({
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
       rememberMe: false
     }
@@ -38,7 +41,7 @@ const Login: React.FC = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
       // Mock login validation
-      if (data.email === 'admin@example.com' && data.password === '123456') {
+      if (data.username === 'admin' && data.password === '123456') {
         // ✅ Set mock token and user data in Redux
         dispatch(
           setTokenData({
@@ -53,7 +56,7 @@ const Login: React.FC = () => {
           setUser({
             id: 'user-123',
             name: 'Admin User',
-            email: data.email,
+            email: 'admin@example.com',
             avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff',
             role: 'admin'
           })
@@ -65,7 +68,7 @@ const Login: React.FC = () => {
         // Note: Redux-persist automatically saves to localStorage!
       } else {
         setError('root', {
-          message: 'Email hoặc mật khẩu không đúng'
+          message: 'Tên đăng nhập hoặc mật khẩu không đúng'
         })
       }
     } catch (_error) {
@@ -78,47 +81,59 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
-      <div className='max-w-md w-full space-y-8'>
-        {/* Header */}
-        <div className='text-center'>
-          <div className='mx-auto h-16 w-16 bg-indigo-600 rounded-full flex items-center justify-center mb-6'>
-            <svg className='h-8 w-8 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
-              />
+    <div className='min-h-screen flex'>
+      {/* Left side - Illustration Panel */}
+      <AuthIllustrationPanel />
+
+      {/* Right side - Login Form */}
+      <div className='flex-1 flex items-center justify-center p-4 lg:p-8 bg-[#1e3a5f]'>
+        <div className='w-full max-w-lg'>
+            {/* Form Card */}
+          <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
+            {/* Language Selector */}
+            <div className='absolute top-4 left-4'>
+              <LanguageSelector />
+            </div>
+
+            {/* Logo and Title */}
+            <div className='text-center mb-8 mt-12'>
+              <div className='flex items-center justify-center gap-2 mb-6'>
+                {/* Logo with checkmark graphic */}
+                <div className='relative'>
+                  <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
+                    <svg className='w-6 h-6 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={3}>
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
             </svg>
+                  </div>
+                  <div className='absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full'></div>
+                </div>
+                <h1 className='text-2xl font-bold text-gray-900'>Logisverse</h1>
           </div>
           <h2 className='text-3xl font-bold text-gray-900 mb-2'>Đăng nhập</h2>
-          <p className='text-sm text-gray-600'>Đăng nhập vào tài khoản của bạn</p>
         </div>
 
         {/* Form */}
-        <div className='bg-white shadow-xl rounded-2xl px-8 py-10'>
-          <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
-            {/* Email */}
+            <form className='space-y-5' onSubmit={handleSubmit(onSubmit)}>
+              {/* Username */}
             <div>
-              <label htmlFor='email' className='block text-sm font-medium text-gray-700 mb-2'>
-                Email
+                <label htmlFor='username' className='block text-sm font-medium text-gray-700 mb-2'>
+                  Tên đăng nhập
               </label>
               <input
-                {...register('email', {
-                  required: 'Email là bắt buộc',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Email không hợp lệ'
+                  {...register('username', {
+                    required: 'Tên đăng nhập là bắt buộc',
+                    minLength: {
+                      value: 3,
+                      message: 'Tên đăng nhập phải có ít nhất 3 ký tự'
                   }
                 })}
-                type='email'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
+                  type='text'
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    errors.username ? 'border-red-300' : 'border-gray-300'
                 }`}
-                placeholder='Nhập email của bạn'
+                  placeholder='Nhập tên đăng nhập'
               />
-              {errors.email && <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>}
+                {errors.username && <p className='mt-1 text-sm text-red-600'>{errors.username.message}</p>}
             </div>
 
             {/* Password */}
@@ -126,6 +141,7 @@ const Login: React.FC = () => {
               <label htmlFor='password' className='block text-sm font-medium text-gray-700 mb-2'>
                 Mật khẩu
               </label>
+                <div className='relative'>
               <input
                 {...register('password', {
                   required: 'Mật khẩu là bắt buộc',
@@ -134,12 +150,44 @@ const Login: React.FC = () => {
                     message: 'Mật khẩu phải có ít nhất 6 ký tự'
                   }
                 })}
-                type='password'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+                    type={showPassword ? 'text' : 'password'}
+                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.password ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder='Nhập mật khẩu'
               />
+                  <button
+                    type='button'
+                    onClick={() => setShowPassword(!showPassword)}
+                    className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700'
+                  >
+                    {showPassword ? (
+                      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21'
+                        />
+                      </svg>
+                    ) : (
+                      <svg className='w-5 h-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                        />
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
+                        />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               {errors.password && <p className='mt-1 text-sm text-red-600'>{errors.password.message}</p>}
             </div>
 
@@ -150,7 +198,7 @@ const Login: React.FC = () => {
                   {...register('rememberMe')}
                   id='rememberMe'
                   type='checkbox'
-                  className='h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'
+                  className='h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded'
                 />
                 <label htmlFor='rememberMe' className='ml-2 block text-sm text-gray-700'>
                   Ghi nhớ đăng nhập
@@ -159,7 +207,7 @@ const Login: React.FC = () => {
               <div className='text-sm'>
                 <Link
                   to={ROUTES.forgotPassword}
-                  className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
+                  className='font-medium text-blue-600 hover:text-blue-500 transition-colors'
                 >
                   Quên mật khẩu?
                 </Link>
@@ -188,7 +236,11 @@ const Login: React.FC = () => {
 
             {/* Submit Button */}
             <div>
-              <FISButton type='submit' size='lg' className='w-full' disabled={isLoading}>
+                <button
+                  type='submit'
+                  className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  disabled={isLoading}
+                >
                 {isLoading ? (
                   <div className='flex items-center justify-center'>
                     <svg
@@ -216,33 +268,54 @@ const Login: React.FC = () => {
                 ) : (
                   'Đăng nhập'
                 )}
-              </FISButton>
+                </button>
             </div>
           </form>
 
-          {/* Demo Credentials */}
-          <div className='mt-6 p-4 bg-gray-50 rounded-lg'>
-            <p className='text-xs text-gray-600 text-center mb-2'>
-              <strong>Demo credentials:</strong>
-            </p>
-            <p className='text-xs text-gray-500 text-center'>
-              Email: <span className='font-mono'>admin@example.com</span>
-              <br />
-              Password: <span className='font-mono'>123456</span>
-            </p>
+            {/* Alternative Login Options */}
+            <div className='mt-6'>
+              <div className='relative'>
+                <div className='absolute inset-0 flex items-center'>
+                  <div className='w-full border-t border-gray-300'></div>
+                </div>
+                <div className='relative flex justify-center text-sm'>
+                  <span className='px-2 bg-white text-gray-500'>Đăng nhập với</span>
+                </div>
+              </div>
+
+              <div className='mt-4 grid grid-cols-2 gap-3'>
+                <button
+                  type='button'
+                  className='flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
+                >
+                  {/* Windows/ADFS Icon */}
+                  <svg className='w-5 h-5 text-blue-600' viewBox='0 0 24 24' fill='currentColor'>
+                    <path d='M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z' />
+                  </svg>
+                  <span className='text-sm font-medium text-gray-700'>ADFS</span>
+                </button>
+                <button
+                  type='button'
+                  className='flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
+                >
+                  {/* Microsoft Entra ID - Diamond icon */}
+                  <svg className='w-5 h-5 text-blue-600' viewBox='0 0 24 24' fill='currentColor'>
+                    <path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5' />
+                  </svg>
+                  <span className='text-sm font-medium text-gray-700'>Microsoft Entra ID</span>
+                </button>
+              </div>
           </div>
 
           {/* Footer */}
           <div className='mt-6 text-center'>
             <p className='text-sm text-gray-600'>
               Chưa có tài khoản?{' '}
-              <Link
-                to={ROUTES.register}
-                className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
-              >
+                <Link to={ROUTES.register} className='font-medium text-blue-600 hover:text-blue-500 transition-colors'>
                 Đăng ký ngay
               </Link>
             </p>
+            </div>
           </div>
         </div>
       </div>

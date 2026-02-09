@@ -44,17 +44,6 @@ export const getMenuItems = (t: TFunction): MenuItemConfigI[] => [
     label: t('common.menu.transportation')
   },
   {
-    to: ROUTES.profile,
-    icon: <PackageIcon className='w-5 h-5' />,
-    label: t('common.menu.profile'),
-    subItems: [
-      {
-        to: ROUTES.profile,
-        label: t('common.menu.overview')
-      }
-    ]
-  },
-  {
     to: ROUTES.userManagement,
     icon: <SettingsIcon className='w-5 h-5' />,
     label: t('common.menu.userManagement'),
@@ -64,16 +53,16 @@ export const getMenuItems = (t: TFunction): MenuItemConfigI[] => [
         label: t('common.menu.userManagementUsers')
       },
       {
-        to: ROUTES.userManagementUserGroup,
-        label: t('common.menu.userManagementUserGroup')
+        to: ROUTES.userManagementRolesPermissions,
+        label: t('common.menu.userManagementRolesPermissions')
       },
       {
         to: ROUTES.userManagementAuthSecurity,
         label: t('common.menu.userManagementAuthSecurity')
       },
       {
-        to: ROUTES.userManagementRolesPermissions,
-        label: t('common.menu.userManagementRolesPermissions')
+        to: ROUTES.userManagementProfile,
+        label: t('common.menu.userManagementProfile')
       }
     ]
   },
@@ -83,40 +72,36 @@ export const getMenuItems = (t: TFunction): MenuItemConfigI[] => [
     label: t('common.menu.categoryManagement'),
     subItems: [
       {
-        to: ROUTES.categoryManagementLandAndPort,
-        label: t('common.menu.categoryManagementLandAndPort')
-      },
-      {
-        to: ROUTES.categoryManagementGoodsAndStandards,
-        label: t('common.menu.categoryManagementGoodsAndStandards')
-      },
-      {
-        to: ROUTES.categoryManagementFeesAndVas,
-        label: t('common.menu.categoryManagementFeesAndVas')
-      },
-      {
         to: ROUTES.categoryManagementCustomerProfile,
         label: t('common.menu.categoryManagementCustomerProfile')
       },
       {
-        to: ROUTES.categoryManagementEmployeeProfile,
-        label: t('common.menu.categoryManagementEmployeeProfile')
+        to: ROUTES.categoryManagementPartnerProfile,
+        label: t('common.menu.categoryManagementPartnerProfile')
+      },
+      {
+        to: ROUTES.categoryManagementLandAndPort,
+        label: t('common.menu.categoryManagementLandAndPort')
       },
       {
         to: ROUTES.categoryManagementVehiclesAndEquipment,
         label: t('common.menu.categoryManagementVehiclesAndEquipment')
       },
       {
+        to: ROUTES.categoryManagementGoodsAndStandards,
+        label: t('common.menu.categoryManagementGoodsAndStandards')
+      },
+      {
         to: ROUTES.categoryManagementLoadingPlan,
         label: t('common.menu.categoryManagementLoadingPlan')
       },
       {
-        to: ROUTES.categoryManagementWarehouseAndYardLayout,
-        label: t('common.menu.categoryManagementWarehouseAndYardLayout')
+        to: ROUTES.categoryManagementWarehouseInfrastructure,
+        label: t('common.menu.categoryManagementWarehouseInfrastructure')
       },
       {
-        to: ROUTES.categoryManagementShifts,
-        label: t('common.menu.categoryManagementShifts')
+        to: ROUTES.categoryManagementYardInfrastructure,
+        label: t('common.menu.categoryManagementYardInfrastructure')
       }
     ]
   },
@@ -139,6 +124,10 @@ export const getMenuItems = (t: TFunction): MenuItemConfigI[] => [
       {
         to: ROUTES.systemConfigOperatingParams,
         label: t('common.menu.systemConfigOperatingParams')
+      },
+      {
+        to: ROUTES.systemConfigNotificationTemplate,
+        label: t('common.menu.systemConfigNotificationTemplate')
       }
     ]
   }

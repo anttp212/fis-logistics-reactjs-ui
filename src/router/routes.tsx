@@ -120,13 +120,6 @@ export const routes: RouteObject[] = [
         }
       },
       {
-        path: ROUTES.profile,
-        lazy: async () => {
-          const ProfileComponent = await import('../pages/profile')
-          return { Component: ProfileComponent.default }
-        }
-      },
-      {
         path: ROUTES.warehouse,
         lazy: async () => {
           const WarehouseComponent = await import('../pages/warehouse')
@@ -154,10 +147,10 @@ export const routes: RouteObject[] = [
         }
       },
       {
-        path: ROUTES.userManagementUserGroup,
+        path: ROUTES.userManagementRolesPermissions,
         lazy: async () => {
-          const UserManagementUserGroupComponent = await import('../pages/user-management/user-group')
-          return { Component: UserManagementUserGroupComponent.default }
+          const UserManagementRolesPermissionsComponent = await import('../pages/user-management/roles-permissions')
+          return { Component: UserManagementRolesPermissionsComponent.default }
         }
       },
       {
@@ -168,39 +161,16 @@ export const routes: RouteObject[] = [
         }
       },
       {
-        path: ROUTES.userManagementRolesPermissions,
+        path: ROUTES.userManagementProfile,
         lazy: async () => {
-          const UserManagementRolesPermissionsComponent = await import('../pages/user-management/roles-permissions')
-          return { Component: UserManagementRolesPermissionsComponent.default }
+          const ProfileComponent = await import('../pages/profile')
+          return { Component: ProfileComponent.default }
         }
       },
       {
         path: ROUTES.categoryManagement,
         loader: async () => {
-          throw redirect(ROUTES.categoryManagementLandAndPort)
-        }
-      },
-      {
-        path: ROUTES.categoryManagementLandAndPort,
-        lazy: async () => {
-          const CategoryManagementLandAndPortComponent = await import('../pages/category-management/land-and-port')
-          return { Component: CategoryManagementLandAndPortComponent.default }
-        }
-      },
-      {
-        path: ROUTES.categoryManagementGoodsAndStandards,
-        lazy: async () => {
-          const CategoryManagementGoodsAndStandardsComponent = await import(
-            '../pages/category-management/goods-and-standards'
-          )
-          return { Component: CategoryManagementGoodsAndStandardsComponent.default }
-        }
-      },
-      {
-        path: ROUTES.categoryManagementFeesAndVas,
-        lazy: async () => {
-          const CategoryManagementFeesAndVasComponent = await import('../pages/category-management/fees-and-vas')
-          return { Component: CategoryManagementFeesAndVasComponent.default }
+          throw redirect(ROUTES.categoryManagementCustomerProfile)
         }
       },
       {
@@ -213,12 +183,19 @@ export const routes: RouteObject[] = [
         }
       },
       {
-        path: ROUTES.categoryManagementEmployeeProfile,
+        path: ROUTES.categoryManagementPartnerProfile,
         lazy: async () => {
-          const CategoryManagementEmployeeProfileComponent = await import(
-            '../pages/category-management/employee-profile'
+          const CategoryManagementPartnerProfileComponent = await import(
+            '../pages/category-management/partner-profile'
           )
-          return { Component: CategoryManagementEmployeeProfileComponent.default }
+          return { Component: CategoryManagementPartnerProfileComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementLandAndPort,
+        lazy: async () => {
+          const CategoryManagementLandAndPortComponent = await import('../pages/category-management/land-and-port')
+          return { Component: CategoryManagementLandAndPortComponent.default }
         }
       },
       {
@@ -231,6 +208,15 @@ export const routes: RouteObject[] = [
         }
       },
       {
+        path: ROUTES.categoryManagementGoodsAndStandards,
+        lazy: async () => {
+          const CategoryManagementGoodsAndStandardsComponent = await import(
+            '../pages/category-management/goods-and-standards'
+          )
+          return { Component: CategoryManagementGoodsAndStandardsComponent.default }
+        }
+      },
+      {
         path: ROUTES.categoryManagementLoadingPlan,
         lazy: async () => {
           const CategoryManagementLoadingPlanComponent = await import('../pages/category-management/loading-plan')
@@ -238,19 +224,21 @@ export const routes: RouteObject[] = [
         }
       },
       {
-        path: ROUTES.categoryManagementWarehouseAndYardLayout,
+        path: ROUTES.categoryManagementWarehouseInfrastructure,
         lazy: async () => {
-          const CategoryManagementWarehouseAndYardLayoutComponent = await import(
-            '../pages/category-management/warehouse-and-yard-layout'
+          const CategoryManagementWarehouseInfrastructureComponent = await import(
+            '../pages/category-management/warehouse-infrastructure'
           )
-          return { Component: CategoryManagementWarehouseAndYardLayoutComponent.default }
+          return { Component: CategoryManagementWarehouseInfrastructureComponent.default }
         }
       },
       {
-        path: ROUTES.categoryManagementShifts,
+        path: ROUTES.categoryManagementYardInfrastructure,
         lazy: async () => {
-          const CategoryManagementShiftsComponent = await import('../pages/category-management/shifts')
-          return { Component: CategoryManagementShiftsComponent.default }
+          const CategoryManagementYardInfrastructureComponent = await import(
+            '../pages/category-management/yard-infrastructure'
+          )
+          return { Component: CategoryManagementYardInfrastructureComponent.default }
         }
       },
       {
@@ -279,6 +267,13 @@ export const routes: RouteObject[] = [
         lazy: async () => {
           const SystemConfigOperatingParamsComponent = await import('../pages/system-config/operating-params')
           return { Component: SystemConfigOperatingParamsComponent.default }
+        }
+      },
+      {
+        path: ROUTES.systemConfigNotificationTemplate,
+        lazy: async () => {
+          const SystemConfigNotificationTemplateComponent = await import('../pages/system-config/notification-template')
+          return { Component: SystemConfigNotificationTemplateComponent.default }
         }
       },
       {
