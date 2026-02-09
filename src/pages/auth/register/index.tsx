@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FISButton } from 'fis-component'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
 import AuthIllustrationPanel from '../../../components/Auth/AuthIllustrationPanel'
@@ -69,7 +68,7 @@ const Register: React.FC = () => {
 
       {/* Right side - Register Form */}
       <div className='flex-1 flex items-center justify-center p-4 lg:p-8 bg-[#1e3a5f]'>
-        <div className='w-full max-w-md'>
+        <div className='w-full max-w-lg'>
           {/* Form Card */}
           <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
             {/* Language Selector */}
@@ -102,7 +101,7 @@ const Register: React.FC = () => {
             </div>
 
             {/* Form */}
-            <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
+            <form className='space-y-5' onSubmit={handleSubmit(onSubmit)}>
               {/* Username */}
               <div>
                 <label htmlFor='username' className='block text-sm font-medium text-gray-700 mb-2'>
@@ -278,10 +277,9 @@ const Register: React.FC = () => {
 
               {/* Submit Button */}
               <div>
-                <FISButton
+                <button
                   type='submit'
-                  size='lg'
-                  className='w-full bg-blue-600 hover:bg-blue-700'
+                  className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -311,7 +309,7 @@ const Register: React.FC = () => {
                   ) : (
                     'Đăng ký'
                   )}
-                </FISButton>
+                </button>
               </div>
             </form>
 
