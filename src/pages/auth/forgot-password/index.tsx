@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import { FISButton } from 'fis-component'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
+import AuthIllustrationPanel from '../../../components/Auth/AuthIllustrationPanel'
+import LanguageSelector from '../../../components/Auth/LanguageSelector'
 
 interface ForgotPasswordFormDataI {
   email: string
@@ -53,21 +55,27 @@ const ForgotPassword: React.FC = () => {
 
   if (isSuccess) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
-        <div className='max-w-md w-full'>
-          <div className='bg-white shadow-xl rounded-2xl px-8 py-10 text-center'>
-            <div className='mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-6'>
-              <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-              </svg>
+      <div className='min-h-screen flex'>
+        <AuthIllustrationPanel />
+        <div className='flex-1 flex items-center justify-center p-4 lg:p-8 bg-[#1e3a5f]'>
+          <div className='w-full max-w-md'>
+            <div className='bg-white rounded-2xl shadow-xl p-8 text-center relative'>
+              <div className='absolute top-6 left-6'>
+                <LanguageSelector />
+              </div>
+              <div className='mx-auto h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mt-4'>
+                <svg className='h-8 w-8 text-green-600' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                </svg>
+              </div>
+              <h2 className='text-2xl font-bold text-gray-900 mb-2'>Email đã được gửi!</h2>
+              <p className='text-sm text-gray-600 mb-6'>
+                Chúng tôi đã gửi link đặt lại mật khẩu đến email của bạn. Vui lòng kiểm tra hộp thư.
+              </p>
+              <Link to={ROUTES.login} className='text-blue-600 hover:text-blue-500 font-medium text-sm'>
+                Quay lại đăng nhập
+              </Link>
             </div>
-            <h2 className='text-2xl font-bold text-gray-900 mb-2'>Email đã được gửi!</h2>
-            <p className='text-sm text-gray-600 mb-6'>
-              Chúng tôi đã gửi link đặt lại mật khẩu đến email của bạn. Vui lòng kiểm tra hộp thư.
-            </p>
-            <Link to={ROUTES.login} className='text-indigo-600 hover:text-indigo-500 font-medium text-sm'>
-              Quay lại đăng nhập
-            </Link>
           </div>
         </div>
       </div>
@@ -75,120 +83,142 @@ const ForgotPassword: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
-      <div className='max-w-md w-full space-y-8'>
-        {/* Header */}
-        <div className='text-center'>
-          <div className='mx-auto h-16 w-16 bg-indigo-600 rounded-full flex items-center justify-center mb-6'>
-            <svg className='h-8 w-8 text-white' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z'
-              />
-            </svg>
-          </div>
-          <h2 className='text-3xl font-bold text-gray-900 mb-2'>Quên mật khẩu</h2>
-          <p className='text-sm text-gray-600'>Nhập email để nhận link đặt lại mật khẩu</p>
-        </div>
+    <div className='min-h-screen flex'>
+      {/* Left side - Illustration Panel */}
+      <AuthIllustrationPanel />
 
-        {/* Form */}
-        <div className='bg-white shadow-xl rounded-2xl px-8 py-10'>
-          <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
-            {/* Email */}
-            <div>
-              <label htmlFor='email' className='block text-sm font-medium text-gray-700 mb-2'>
-                Email
-              </label>
-              <input
-                {...register('email', {
-                  required: 'Email là bắt buộc',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Email không hợp lệ'
-                  }
-                })}
-                type='email'
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder='Nhập email của bạn'
-              />
-              {errors.email && <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>}
+      {/* Right side - Forgot Password Form */}
+      <div className='flex-1 flex items-center justify-center bg-gray-50 p-4 lg:p-8'>
+        <div className='w-full max-w-md'>
+          {/* Form Card */}
+          <div className='bg-white rounded-2xl shadow-xl p-10 relative'>
+            {/* Language Selector */}
+            <div className='absolute top-4 left-4'>
+              <LanguageSelector />
             </div>
 
-            {/* Error Message */}
-            {errors.root && (
-              <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
-                <div className='flex'>
-                  <div className='flex-shrink-0'>
-                    <svg className='h-5 w-5 text-red-400' fill='currentColor' viewBox='0 0 20 20'>
-                      <path
-                        fillRule='evenodd'
-                        d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
-                        clipRule='evenodd'
-                      />
-                    </svg>
-                  </div>
-                  <div className='ml-3'>
-                    <p className='text-sm text-red-800'>{errors.root.message}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <div>
-              <FISButton type='submit' size='lg' className='w-full' disabled={isLoading}>
-                {isLoading ? (
-                  <div className='flex items-center justify-center'>
+            {/* Logo and Title */}
+            <div className='text-center mb-8 mt-12'>
+              <div className='flex items-center justify-center gap-2 mb-6'>
+                {/* Logo with checkmark graphic */}
+                <div className='relative'>
+                  <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
                     <svg
-                      className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
-                      xmlns='http://www.w3.org/2000/svg'
+                      className='w-6 h-6 text-white'
                       fill='none'
                       viewBox='0 0 24 24'
+                      stroke='currentColor'
+                      strokeWidth={3}
                     >
-                      <circle
-                        className='opacity-25'
-                        cx='12'
-                        cy='12'
-                        r='10'
-                        stroke='currentColor'
-                        strokeWidth='4'
-                      ></circle>
-                      <path
-                        className='opacity-75'
-                        fill='currentColor'
-                        d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                      ></path>
+                      <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
                     </svg>
-                    Đang gửi...
                   </div>
-                ) : (
-                  'Gửi link đặt lại mật khẩu'
-                )}
-              </FISButton>
+                  <div className='absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full'></div>
+                </div>
+                <h1 className='text-2xl font-bold text-gray-900'>Logisverse</h1>
+              </div>
+              <h2 className='text-3xl font-bold text-gray-900 mb-2'>Quên mật khẩu</h2>
+              <p className='text-sm text-gray-600'>Nhập email để nhận link đặt lại mật khẩu</p>
             </div>
-          </form>
 
-          {/* Footer */}
-          <div className='mt-6 text-center space-y-2'>
-            <Link
-              to={ROUTES.login}
-              className='block text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
-            >
-              ← Quay lại đăng nhập
-            </Link>
-            <p className='text-sm text-gray-600'>
-              Chưa có tài khoản?{' '}
+            {/* Form */}
+            <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
+              {/* Email */}
+              <div>
+                <label htmlFor='email' className='block text-sm font-medium text-gray-700 mb-2'>
+                  Email
+                </label>
+                <input
+                  {...register('email', {
+                    required: 'Email là bắt buộc',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Email không hợp lệ'
+                    }
+                  })}
+                  type='email'
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    errors.email ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder='Nhập email của bạn'
+                />
+                {errors.email && <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>}
+              </div>
+
+              {/* Error Message */}
+              {errors.root && (
+                <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+                  <div className='flex'>
+                    <div className='flex-shrink-0'>
+                      <svg className='h-5 w-5 text-red-400' fill='currentColor' viewBox='0 0 20 20'>
+                        <path
+                          fillRule='evenodd'
+                          d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                    </div>
+                    <div className='ml-3'>
+                      <p className='text-sm text-red-800'>{errors.root.message}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <div>
+                <FISButton
+                  type='submit'
+                  size='lg'
+                  className='w-full bg-blue-600 hover:bg-blue-700'
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className='flex items-center justify-center'>
+                      <svg
+                        className='animate-spin -ml-1 mr-3 h-5 w-5 text-white'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                      >
+                        <circle
+                          className='opacity-25'
+                          cx='12'
+                          cy='12'
+                          r='10'
+                          stroke='currentColor'
+                          strokeWidth='4'
+                        ></circle>
+                        <path
+                          className='opacity-75'
+                          fill='currentColor'
+                          d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
+                        ></path>
+                      </svg>
+                      Đang gửi...
+                    </div>
+                  ) : (
+                    'Gửi link đặt lại mật khẩu'
+                  )}
+                </FISButton>
+              </div>
+            </form>
+
+            {/* Footer */}
+            <div className='mt-6 text-center space-y-2'>
               <Link
-                to={ROUTES.register}
-                className='font-medium text-indigo-600 hover:text-indigo-500 transition-colors'
+                to={ROUTES.login}
+                className='block text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors'
               >
-                Đăng ký ngay
+                ← Quay lại đăng nhập
               </Link>
-            </p>
+              <p className='text-sm text-gray-600'>
+                Chưa có tài khoản?{' '}
+                <Link to={ROUTES.register} className='font-medium text-blue-600 hover:text-blue-500 transition-colors'>
+                  Đăng ký ngay
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

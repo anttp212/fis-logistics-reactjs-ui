@@ -1,17 +1,81 @@
 import { FISButton } from 'fis-component'
-import { useNavigate } from 'react-router-dom'
-import { ROUTES } from '@constants'
-import { clearAuth } from '@slices/auth.slice'
-import { useAppSelector, useAppDispatch } from '@hooks'
+import { Chart } from 'react-google-charts'
 
 const Home = () => {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { user } = useAppSelector((state) => state.auth)
+  // Mock data for charts
+  // Chart 1: Doanh thu theo tháng (Line Chart)
+  const revenueData = [
+    ['Tháng', 'Doanh thu (VND)'],
+    ['T1', 5000000000],
+    ['T2', 7500000000],
+    ['T3', 6000000000],
+    ['T4', 8500000000],
+    ['T5', 9200000000],
+    ['T6', 11000000000]
+  ]
 
-  const handleLogout = () => {
-    dispatch(clearAuth())
-    navigate(ROUTES.login, { replace: true })
+  // Chart 2: Số lượng đơn hàng theo trạng thái (Pie Chart)
+  const orderStatusData = [
+    ['Trạng thái', 'Số lượng'],
+    ['Đã duyệt', 45],
+    ['Chờ duyệt', 20],
+    ['Đã từ chối', 8],
+    ['Đang xử lý', 15]
+  ]
+
+  // Chart 3: Doanh thu theo sản phẩm (Bar Chart)
+  const productRevenueData = [
+    ['Sản phẩm', 'Doanh thu (VND)'],
+    ['Sản phẩm A', 15000000000],
+    ['Sản phẩm B', 12000000000],
+    ['Sản phẩm C', 8000000000],
+    ['Sản phẩm D', 6000000000],
+    ['Sản phẩm E', 4000000000]
+  ]
+
+  // Chart 4: Xu hướng đơn hàng (Area Chart)
+  const orderTrendData = [
+    ['Tuần', 'Đơn hàng mới', 'Đơn hàng hoàn thành'],
+    ['Tuần 1', 120, 100],
+    ['Tuần 2', 150, 130],
+    ['Tuần 3', 180, 160],
+    ['Tuần 4', 200, 190],
+    ['Tuần 5', 220, 210]
+  ]
+
+  const chartOptions = {
+    backgroundColor: 'transparent',
+    legend: {
+      position: 'top',
+      textStyle: {
+        color: '#2A3034',
+        fontSize: 12
+      }
+    },
+    hAxis: {
+      textStyle: {
+        color: '#6B7280',
+        fontSize: 11
+      }
+    },
+    vAxis: {
+      textStyle: {
+        color: '#6B7280',
+        fontSize: 11
+      },
+      format: 'short'
+    },
+    colors: ['#2F3CC1', '#10B981', '#F59E0B', '#EF4444']
+  }
+
+  const pieChartOptions = {
+    ...chartOptions,
+    pieHole: 0.4,
+    pieSliceText: 'value',
+    pieSliceTextStyle: {
+      color: '#2A3034',
+      fontSize: 12
+    }
   }
 
   // Mock contract data based on Figma design
@@ -99,7 +163,67 @@ const Home = () => {
         </div>
 
         {/* Page Title */}
-        <h1 className='text-2xl font-medium text-[#1E2225]'>Contract list</h1>
+        <h1 className='text-2xl font-medium text-[#1E2225]'>Tổng quan</h1>
+      </div>
+
+      {/* Statistics Charts Section */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        {/* Chart 1: Doanh thu theo tháng */}
+        <div className='bg-white rounded-lg shadow-lg p-6'>
+          <h2 className='text-lg font-semibold text-[#1E2225] mb-4'>Doanh thu theo tháng</h2>
+          <Chart
+            chartType='LineChart'
+            width='100%'
+            height='300px'
+            data={revenueData}
+            options={{
+              ...chartOptions,
+              title: '',
+              curveType: 'function',
+              pointSize: 5,
+              pointShape: 'circle'
+            }}
+          />
+        </div>
+
+        {/* Chart 2: Số lượng đơn hàng theo trạng thái */}
+        <div className='bg-white rounded-lg shadow-lg p-6'>
+          <h2 className='text-lg font-semibold text-[#1E2225] mb-4'>Đơn hàng theo trạng thái</h2>
+          <Chart chartType='PieChart' width='100%' height='300px' data={orderStatusData} options={pieChartOptions} />
+        </div>
+
+        {/* Chart 3: Doanh thu theo sản phẩm */}
+        <div className='bg-white rounded-lg shadow-lg p-6'>
+          <h2 className='text-lg font-semibold text-[#1E2225] mb-4'>Doanh thu theo sản phẩm</h2>
+          <Chart
+            chartType='BarChart'
+            width='100%'
+            height='300px'
+            data={productRevenueData}
+            options={{
+              ...chartOptions,
+              title: '',
+              bars: 'horizontal'
+            }}
+          />
+        </div>
+
+        {/* Chart 4: Xu hướng đơn hàng */}
+        <div className='bg-white rounded-lg shadow-lg p-6'>
+          <h2 className='text-lg font-semibold text-[#1E2225] mb-4'>Xu hướng đơn hàng</h2>
+          <Chart
+            chartType='AreaChart'
+            width='100%'
+            height='300px'
+            data={orderTrendData}
+            options={{
+              ...chartOptions,
+              title: '',
+              isStacked: false,
+              pointSize: 5
+            }}
+          />
+        </div>
       </div>
 
       {/* Main Content */}
@@ -260,24 +384,6 @@ const Home = () => {
             </select>
           </div>
         </div>
-      </div>
-
-      {/* User Actions (for testing) */}
-      <div className='mt-6 bg-white rounded-lg shadow p-4'>
-        <h3 className='font-medium text-gray-900 mb-3'>User Actions</h3>
-        <div className='flex gap-3'>
-          <FISButton variant='secondary' onClick={() => navigate(ROUTES.profile)}>
-            View Profile
-          </FISButton>
-          <FISButton variant='secondary-negative' onClick={handleLogout}>
-            Logout
-          </FISButton>
-        </div>
-        {user && (
-          <p className='text-sm text-gray-600 mt-2'>
-            Logged in as: <strong>{user.name}</strong> ({user.email})
-          </p>
-        )}
       </div>
     </div>
   )

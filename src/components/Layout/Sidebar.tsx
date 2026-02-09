@@ -102,11 +102,13 @@ const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isColla
         }
         title={isCollapsed ? label : undefined}
       >
-        <div className='flex items-center'>{icon}</div>
+        <div className='flex items-center flex-shrink-0'>{icon}</div>
         {!isCollapsed && (
-          <FISText variant='Paragraph/Sm' color='com/navigation/label/default'>
-            {label}
-          </FISText>
+          <div className='min-w-0 flex-1 overflow-hidden'>
+            <FISText variant='Paragraph/Sm' color='com/navigation/label/default' className='line-clamp-1'>
+              {label}
+            </FISText>
+          </div>
         )}
       </NavLink>
     )
@@ -122,16 +124,18 @@ const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isColla
         onClick={toggleExpanded}
         title={isCollapsed ? label : undefined}
       >
-        <div className='flex items-center'>{icon}</div>
+        <div className='flex items-center flex-shrink-0'>{icon}</div>
         {!isCollapsed && (
           <>
-            <FISText className='flex flex-1' variant='Paragraph/Sm' color='com/navigation/label/default'>
-              {label}
-            </FISText>
+            <div className='min-w-0 flex-1 overflow-hidden'>
+              <FISText variant='Paragraph/Sm' color='com/navigation/label/default' className='line-clamp-1'>
+                {label}
+              </FISText>
+            </div>
             <ChevronDownIcon
               size={20}
               stroke='white'
-              className={`transition-transform duration-300 ease-in-out ${isMenuExpanded ? 'rotate-180' : 'rotate-0'}`}
+              className={`flex-shrink-0 transition-transform duration-300 ease-in-out ${isMenuExpanded ? 'rotate-180' : 'rotate-0'}`}
             />
           </>
         )}
@@ -156,7 +160,7 @@ const Sidebar: React.FC = () => {
       <div
         className={`flex w-full mt-8 px-4 relative transition-all duration-500 ease-in-out ${isCollapsed ? 'justify-center' : 'justify-between'}`}
       >
-        <strong>Fis</strong>
+        <strong>LOGIVERSE</strong>
         <div
           className={`transition-all duration-500 ease-in-out ${isCollapsed ? 'absolute top-0 right-[-12px]' : 'relative'}`}
         >
