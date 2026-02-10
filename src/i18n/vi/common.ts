@@ -19,7 +19,7 @@ const common = {
     userManagementUsers: 'Tài khoản người dùng',
     userManagementUserGroup: 'Nhóm người dùng',
     userManagementAuthSecurity: 'Xác thực & bảo mật',
-    userManagementRolesPermissions: 'Vai trò và phân quyền',
+    userManagementRolesPermissions: 'Vai trò & phân quyền',
     userManagementProfile: 'Hồ sơ cá nhân',
     categoryManagement: 'Quản lý danh mục',
     categoryManagementCustomerProfile: 'Hồ sơ Khách hàng',

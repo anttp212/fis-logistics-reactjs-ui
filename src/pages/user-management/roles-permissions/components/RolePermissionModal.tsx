@@ -102,7 +102,7 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
       open={open}
       onCancel={handleCancel}
       footer={null}
-      title={isEditMode ? 'Chỉnh sửa vai trò và phân quyền' : 'Tạo mới vai trò và phân quyền'}
+      title={isEditMode ? 'Chỉnh sửa Vai trò & phân quyền' : 'Tạo mới Vai trò & phân quyền'}
       width={700}
       destroyOnClose
     >

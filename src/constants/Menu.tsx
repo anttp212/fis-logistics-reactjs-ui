@@ -67,10 +67,29 @@ export const getMenuItems = (t: TFunction): MenuItemConfigI[] => [
     ]
   },
   {
+    to: ROUTES.organizationStructure,
+    icon: <ConfigIcon className='w-5 h-5' />,
+    label: 'Cơ cấu Tổ chức',
+    subItems: [
+      {
+        to: ROUTES.organizationStructureBranches,
+        label: 'Chi nhánh'
+      },
+      {
+        to: ROUTES.organizationStructureDepartments,
+        label: 'Phòng ban'
+      }
+    ]
+  },
+  {
     to: ROUTES.categoryManagement,
     icon: <PackageIcon className='w-5 h-5' />,
     label: t('common.menu.categoryManagement'),
     subItems: [
+      {
+        to: ROUTES.employeeProfileList,
+        label: 'Hồ sơ nhân viên'
+      },
       {
         to: ROUTES.categoryManagementCustomerProfile,
         label: t('common.menu.categoryManagementCustomerProfile')

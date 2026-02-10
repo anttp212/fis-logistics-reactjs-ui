@@ -5,70 +5,70 @@ import { ExclamationCircleOutlined, DownloadOutlined, UploadOutlined } from '@an
 import { PageWrapper, TableToolbar } from '@components'
 import { FISButton, FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import { AddIcon } from '@images'
-import CustomerModal from './components/CustomerModal'
-import CustomersFilter from './components/CustomersFilter'
-import { useCustomers } from './useCustomers'
-import { buildCustomerDetailPath } from '@constants'
+import EmployeeModal from './components/EmployeeModal'
+import EmployeesFilter from './components/EmployeesFilter'
+import { useEmployees } from './useEmployees'
+import { buildEmployeeDetailPath } from '@constants'
 
-// Customer type
-interface CustomerI {
+// Employee type
+interface EmployeeI {
   key: string
   name: string
-  customerCode: string
-  taxCode: string
+  employeeCode: string
+  department: string
+  skillGroup?: string
   phone?: string
   email?: string
-  address?: string
-  representativeName?: string
-  logo?: string
+  position?: string
+  portraitPhoto?: string
   status?: string
 }
 
-// Fake data cho danh sách khách hàng
-const FAKE_CUSTOMERS_DATA: CustomerI[] = [
+// Fake data cho danh sách nhân viên
+const FAKE_EMPLOYEES_DATA: EmployeeI[] = [
   {
     key: '1',
-    name: 'Công ty TNHH ABC',
-    customerCode: 'KH001',
-    taxCode: '0123456789',
+    name: 'Nguyễn Văn A',
+    employeeCode: 'NV001',
+    department: 'Phòng Kinh doanh',
+    skillGroup: 'Kinh doanh',
     phone: '0901234567',
-    email: 'contact@abc.com',
-    address: '123 Đường ABC, Quận XYZ, Hà Nội',
-    representativeName: 'Nguyễn Văn A',
+    email: 'nva@example.com',
+    position: 'Nhân viên kinh doanh',
     status: 'active'
   },
   {
     key: '2',
-    name: 'Công ty Cổ phần XYZ',
-    customerCode: 'KH002',
-    taxCode: '0987654321',
+    name: 'Trần Thị B',
+    employeeCode: 'NV002',
+    department: 'Phòng Kế toán',
+    skillGroup: 'Kế toán',
     phone: '0902345678',
-    email: 'info@xyz.com',
-    address: '456 Đường DEF, Quận 1, TP.HCM',
-    representativeName: 'Trần Thị B',
+    email: 'ttb@example.com',
+    position: 'Kế toán viên',
     status: 'active'
   },
   {
     key: '3',
-    name: 'Công ty TNHH DEF',
-    customerCode: 'KH003',
-    taxCode: '0111222333',
+    name: 'Lê Văn C',
+    employeeCode: 'NV003',
+    department: 'Phòng IT',
+    skillGroup: 'Công nghệ thông tin',
     phone: '0903456789',
-    email: 'hello@def.com',
-    address: '789 Đường GHI, Quận Hải Châu, Đà Nẵng',
-    representativeName: 'Lê Văn C',
-    status: 'inactive'
+    email: 'lvc@example.com',
+    position: 'Lập trình viên',
+    status: 'active'
   },
   {
     key: '4',
-    name: 'Công ty Cổ phần GHI',
-    customerCode: 'KH004',
-    taxCode: '0444555666',
+    name: 'Phạm Thị D',
+    employeeCode: 'NV004',
+    department: 'Phòng Nhân sự',
+    skillGroup: 'Nhân sự',
     phone: '0904567890',
-    email: 'contact@ghi.com',
-    address: '321 Đường JKL, Quận Ninh Kiều, Cần Thơ',
-    representativeName: 'Phạm Thị D',
-    status: 'archived'
+    email: 'ptd@example.com',
+    position: 'Chuyên viên nhân sự',
+    status: 'inactive'
   }
 ]
 
@@ -101,58 +101,62 @@ const Checkbox = ({ checked = false, indeterminate = false, onChange }: Checkbox
   )
 }
 
-const Customers = () => {
+const Employees = () => {
   const navigate = useNavigate()
-  const customers = useCustomers()
+  const employees = useEmployees()
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingCustomer, setEditingCustomer] = useState<CustomerI | null>(null)
+  const [editingEmployee, setEditingEmployee] = useState<EmployeeI | null>(null)
 
   // Get filter values from form
-  const filterValues = customers.watch()
+  const filterValues = employees.watch()
 
   // Apply filters to data
   const dataSource = useMemo(() => {
-    let filtered = [...FAKE_CUSTOMERS_DATA]
+    let filtered = [...FAKE_EMPLOYEES_DATA]
 
     // Filter by name
     if (filterValues.name) {
       const searchTerm = filterValues.name.toLowerCase()
-      filtered = filtered.filter((cust) => cust.name.toLowerCase().includes(searchTerm))
+      filtered = filtered.filter((emp) => emp.name.toLowerCase().includes(searchTerm))
     }
 
-    // Filter by customerCode
-    if (filterValues.customerCode) {
-      const searchTerm = filterValues.customerCode.toLowerCase()
-      filtered = filtered.filter((cust) => cust.customerCode.toLowerCase().includes(searchTerm))
+    // Filter by employeeCode
+    if (filterValues.employeeCode) {
+      const searchTerm = filterValues.employeeCode.toLowerCase()
+      filtered = filtered.filter((emp) => emp.employeeCode.toLowerCase().includes(searchTerm))
     }
 
-    // Filter by taxCode
-    if (filterValues.taxCode) {
-      const searchTerm = filterValues.taxCode.toLowerCase()
-      filtered = filtered.filter((cust) => cust.taxCode.toLowerCase().includes(searchTerm))
+    // Filter by department
+    if (filterValues.department) {
+      filtered = filtered.filter((emp) => emp.department === filterValues.department)
+    }
+
+    // Filter by skillGroup
+    if (filterValues.skillGroup) {
+      filtered = filtered.filter((emp) => emp.skillGroup === filterValues.skillGroup)
     }
 
     // Filter by status
     if (filterValues.status) {
-      filtered = filtered.filter((cust) => cust.status === filterValues.status)
+      filtered = filtered.filter((emp) => emp.status === filterValues.status)
     }
 
     // Filter by search (general search)
-    if (customers.search) {
-      const searchTerm = customers.search.toLowerCase()
+    if (employees.search) {
+      const searchTerm = employees.search.toLowerCase()
       filtered = filtered.filter(
-        (cust) =>
-          cust.name.toLowerCase().includes(searchTerm) ||
-          cust.customerCode.toLowerCase().includes(searchTerm) ||
-          cust.taxCode.toLowerCase().includes(searchTerm) ||
-          cust.representativeName?.toLowerCase().includes(searchTerm)
+        (emp) =>
+          emp.name.toLowerCase().includes(searchTerm) ||
+          emp.employeeCode.toLowerCase().includes(searchTerm) ||
+          emp.department.toLowerCase().includes(searchTerm) ||
+          emp.position?.toLowerCase().includes(searchTerm)
       )
     }
 
     return filtered
-  }, [filterValues, customers.search])
+  }, [filterValues, employees.search])
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
@@ -198,46 +202,46 @@ const Customers = () => {
   }
 
   const handleAddNew = () => {
-    setEditingCustomer(null)
+    setEditingEmployee(null)
     setIsModalOpen(true)
   }
 
-  const handleEdit = (record: CustomerI) => {
-    setEditingCustomer(record)
+  const handleEdit = (record: EmployeeI) => {
+    setEditingEmployee(record)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setEditingCustomer(null)
+    setEditingEmployee(null)
   }
 
   const handleModalSubmit = async (formData: any) => {
     try {
-      if (editingCustomer) {
-        // TODO: Call API to update customer
-        console.log('Update customer:', editingCustomer.key, formData)
+      if (editingEmployee) {
+        // TODO: Call API to update employee
+        console.log('Update employee:', editingEmployee.key, formData)
       } else {
-        // TODO: Call API to create customer
-        console.log('Create customer:', formData)
+        // TODO: Call API to create employee
+        console.log('Create employee:', formData)
       }
       handleModalClose()
-      // TODO: Refresh customer list
+      // TODO: Refresh employee list
     } catch (error) {
-      console.error('Error saving customer:', error)
+      console.error('Error saving employee:', error)
       // TODO: Show error notification
     }
   }
 
-  const handleDelete = (record: CustomerI) => {
+  const handleDelete = (record: EmployeeI) => {
     Modal.confirm({
       title: 'Xác nhận xóa',
       icon: <ExclamationCircleOutlined />,
       content: (
         <div>
-          <p>Bạn có chắc chắn muốn xóa hồ sơ khách hàng này không?</p>
+          <p>Bạn có chắc chắn muốn xóa hồ sơ nhân viên này không?</p>
           <p className='mt-2 font-medium text-gray-900'>{record.name}</p>
-          <p className='mt-1 text-sm text-gray-500'>{record.customerCode}</p>
+          <p className='mt-1 text-sm text-gray-500'>{record.employeeCode}</p>
           <p className='mt-1 text-sm text-gray-500'>Hành động này không thể hoàn tác.</p>
         </div>
       ),
@@ -246,11 +250,11 @@ const Customers = () => {
       cancelText: 'Hủy',
       onOk: async () => {
         try {
-          // TODO: Call API to delete customer
-          console.log('Delete customer:', record.key)
-          // TODO: Refresh customer list
+          // TODO: Call API to delete employee
+          console.log('Delete employee:', record.key)
+          // TODO: Refresh employee list
         } catch (error) {
-          console.error('Error deleting customer:', error)
+          console.error('Error deleting employee:', error)
           throw error
         }
       },
@@ -258,28 +262,30 @@ const Customers = () => {
     })
   }
 
-  const handleArchive = (record: CustomerI) => {
+  const handleActivateDeactivate = (record: EmployeeI) => {
+    const isDeactivating = record.status === 'active'
+    const actionText = isDeactivating ? 'ngừng kích hoạt' : 'kích hoạt'
+
     Modal.confirm({
-      title: 'Xác nhận lưu trữ',
+      title: `Xác nhận ${actionText}`,
       icon: <ExclamationCircleOutlined />,
       content: (
         <div>
-          <p>Bạn có chắc chắn muốn lưu trữ hồ sơ khách hàng này không?</p>
+          <p>Bạn có chắc chắn muốn {actionText} hồ sơ nhân viên này không?</p>
           <p className='mt-2 font-medium text-gray-900'>{record.name}</p>
-          <p className='mt-1 text-sm text-gray-500'>{record.customerCode}</p>
-          <p className='mt-1 text-sm text-gray-500'>Hồ sơ sẽ được chuyển sang trạng thái lưu trữ.</p>
+          <p className='mt-1 text-sm text-gray-500'>{record.employeeCode}</p>
         </div>
       ),
-      okText: 'Lưu trữ',
-      okType: 'default',
+      okText: isDeactivating ? 'Ngừng kích hoạt' : 'Kích hoạt',
+      okType: isDeactivating ? 'danger' : 'default',
       cancelText: 'Hủy',
       onOk: async () => {
         try {
-          // TODO: Call API to archive customer
-          console.log('Archive customer:', record.key)
-          // TODO: Refresh customer list
+          // TODO: Call API to activate/deactivate employee
+          console.log(`${isDeactivating ? 'Deactivate' : 'Activate'} employee:`, record.key)
+          // TODO: Refresh employee list
         } catch (error) {
-          console.error('Error archiving customer:', error)
+          console.error(`Error ${actionText} employee:`, error)
           throw error
         }
       },
@@ -289,13 +295,13 @@ const Customers = () => {
 
   const handleExport = (format: 'pdf' | 'xlsx') => {
     // TODO: Implement export functionality
-    console.log(`Export customers to ${format}`)
+    console.log(`Export employees to ${format}`)
     message.info(`Chức năng xuất file ${format.toUpperCase()} đang được phát triển`)
   }
 
   const handleBulkImport = (file: File) => {
     // TODO: Implement bulk import functionality
-    console.log('Bulk import customers from file:', file.name)
+    console.log('Bulk import employees from file:', file.name)
     message.info('Chức năng nhập liệu hàng loạt đang được phát triển')
   }
 
@@ -303,37 +309,45 @@ const Customers = () => {
     if (status === 'active') {
       return (
         <span className='inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800'>
-          Đang hợp tác
-        </span>
-      )
-    }
-    if (status === 'inactive') {
-      return (
-        <span className='inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800'>
-          Ngừng hợp tác
+          Hoạt động
         </span>
       )
     }
     return (
       <span className='inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800'>
-        Đã lưu trữ
+        Đã nghỉ việc
       </span>
     )
   }
+
+  const departmentsList = [
+    { value: 'Phòng Kinh doanh', label: 'Phòng Kinh doanh' },
+    { value: 'Phòng Kế toán', label: 'Phòng Kế toán' },
+    { value: 'Phòng IT', label: 'Phòng IT' },
+    { value: 'Phòng Nhân sự', label: 'Phòng Nhân sự' }
+  ]
+
+  const skillGroupsList = [
+    { value: 'Kinh doanh', label: 'Kinh doanh' },
+    { value: 'Kế toán', label: 'Kế toán' },
+    { value: 'Công nghệ thông tin', label: 'Công nghệ thông tin' },
+    { value: 'Nhân sự', label: 'Nhân sự' },
+    { value: 'Vận hành', label: 'Vận hành' }
+  ]
 
   const columns: any = [
     {
       dataIndex: 'name',
       key: 'name',
-      width: 250,
+      width: 200,
       title: () => {
-        return <FISTableHeaderCell label='Tên khách hàng' hasRightDivider />
+        return <FISTableHeaderCell label='Tên nhân viên' hasRightDivider />
       },
-      render: (_: any, row: CustomerI) => (
+      render: (_: any, row: EmployeeI) => (
         <FISTableCell
           content={
             <button
-              onClick={() => navigate(buildCustomerDetailPath(row.key))}
+              onClick={() => navigate(buildEmployeeDetailPath(row.key))}
               className='text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left'
             >
               {row.name}
@@ -344,46 +358,46 @@ const Customers = () => {
       )
     },
     {
-      dataIndex: 'customerCode',
-      key: 'customerCode',
+      dataIndex: 'employeeCode',
+      key: 'employeeCode',
       width: 150,
-      title: () => <FISTableHeaderCell label='Mã khách hàng' hasRightDivider />,
-      render: (_: any, row: CustomerI) => <FISTableCell content={row.customerCode} textAlign='left' />
+      title: () => <FISTableHeaderCell label='Mã nhân viên' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.employeeCode} textAlign='left' />
     },
     {
-      dataIndex: 'taxCode',
-      key: 'taxCode',
-      width: 150,
-      title: () => <FISTableHeaderCell label='Mã số thuế' hasRightDivider />,
-      render: (_: any, row: CustomerI) => <FISTableCell content={row.taxCode} textAlign='left' />
-    },
-    {
-      dataIndex: 'representativeName',
-      key: 'representativeName',
+      dataIndex: 'department',
+      key: 'department',
       width: 200,
-      title: () => <FISTableHeaderCell label='Người đại diện' hasRightDivider />,
-      render: (_: any, row: CustomerI) => <FISTableCell content={row.representativeName || '-'} textAlign='left' />
+      title: () => <FISTableHeaderCell label='Phòng ban' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.department} textAlign='left' />
     },
     {
-      dataIndex: 'phone',
-      key: 'phone',
-      width: 150,
-      title: () => <FISTableHeaderCell label='Số điện thoại' hasRightDivider />,
-      render: (_: any, row: CustomerI) => <FISTableCell content={row.phone || '-'} textAlign='left' />
+      dataIndex: 'skillGroup',
+      key: 'skillGroup',
+      width: 180,
+      title: () => <FISTableHeaderCell label='Nhóm kỹ năng' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.skillGroup || '-'} textAlign='left' />
+    },
+    {
+      dataIndex: 'position',
+      key: 'position',
+      width: 180,
+      title: () => <FISTableHeaderCell label='Chức vụ' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.position || '-'} textAlign='left' />
     },
     {
       dataIndex: 'status',
       key: 'status',
       width: 150,
       title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: any, row: CustomerI) => getStatusBadge(row.status)
+      render: (_: any, row: EmployeeI) => getStatusBadge(row.status)
     },
     {
       title: () => <FISTableHeaderCell label='' />,
       dataIndex: 'actions',
       key: 'actions',
-      width: 150,
-      render: (_: any, record: CustomerI) => (
+      width: 120,
+      render: (_: any, record: EmployeeI) => (
         <FISTableCell
           style={{ textAlign: 'center' }}
           icon={
@@ -422,28 +436,6 @@ const Customers = () => {
                             strokeLinecap='round'
                             strokeLinejoin='round'
                             strokeWidth={2}
-                            d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'
-                          />
-                        </svg>
-                      }
-                      variant='tertiary-invisible'
-                      color='orange'
-                      onClick={() => handleArchive(record)}
-                      title='Lưu trữ'
-                    />
-                  )
-                },
-                {
-                  label: '',
-                  startIcon: (
-                    <FISIconButton
-                      size='xs'
-                      icon={
-                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
                             d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
                           />
                         </svg>
@@ -462,11 +454,11 @@ const Customers = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Hồ sơ khách hàng' breadcrumbItems={customers.breadcrumbItems}>
+    <PageWrapper className='p-5' title='Hồ sơ nhân viên' breadcrumbItems={employees.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
-          filterContent={<CustomersFilter control={customers.control} />}
+          filterContent={<EmployeesFilter control={employees.control} departmentsList={departmentsList} skillGroupsList={skillGroupsList} />}
           actionButtons={
             <div className='flex gap-2'>
               <Upload
@@ -488,12 +480,12 @@ const Customers = () => {
                 Xuất PDF
               </FISButton>
               <FISButton variant='primary' startIcon={<AddIcon />} onClick={handleAddNew}>
-                Khai báo mới
+                Tạo mới
               </FISButton>
             </div>
           }
-          {...customers}
-          searchPlaceholder='Tìm kiếm khách hàng...'
+          {...employees}
+          searchPlaceholder='Tìm kiếm nhân viên...'
         />
 
         {/* FISTable */}
@@ -505,16 +497,16 @@ const Customers = () => {
             scroll={{ x: 'max-content' }}
             expandable={{
               expandedRowKeys,
-              expandedRowRender: (record: CustomerI) => (
+              expandedRowRender: (record: EmployeeI) => (
                 <div className='p-4'>
                   <p className='text-sm text-gray-600'>
                     <strong>Email:</strong> {record.email || '-'}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Địa chỉ:</strong> {record.address || '-'}
+                    <strong>Số điện thoại:</strong> {record.phone || '-'}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Người đại diện:</strong> {record.representativeName || '-'}
+                    <strong>Chức vụ:</strong> {record.position || '-'}
                   </p>
                 </div>
               ),
@@ -526,15 +518,17 @@ const Customers = () => {
         </div>
       </div>
 
-      {/* Customer Modal */}
-      <CustomerModal
+      {/* Employee Modal */}
+      <EmployeeModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
-        initialData={editingCustomer}
+        departmentsList={departmentsList}
+        skillGroupsList={skillGroupsList}
+        initialData={editingEmployee}
       />
     </PageWrapper>
   )
 }
 
-export default Customers
+export default Employees
