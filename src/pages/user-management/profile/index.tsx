@@ -3,7 +3,6 @@ import { useAppSelector, useAppDispatch } from '@hooks'
 import { PageWrapper } from '@components'
 import { FISButton } from 'fis-component'
 import { setUser } from '@slices/auth.slice'
-import type { UserInfoI } from '@app-types/auth'
 
 // Fake API function to update avatar
 const updateAvatar = async (avatarUrl: string): Promise<string> => {
@@ -128,13 +127,7 @@ const Profile = () => {
               <FISButton variant='secondary' onClick={handleAvatarClick} disabled={isUploading}>
                 {isUploading ? 'Đang tải...' : 'Thay đổi avatar'}
               </FISButton>
-              <input
-                ref={fileInputRef}
-                type='file'
-                accept='image/*'
-                onChange={handleFileChange}
-                className='hidden'
-              />
+              <input ref={fileInputRef} type='file' accept='image/*' onChange={handleFileChange} className='hidden' />
             </div>
 
             {/* User Information */}

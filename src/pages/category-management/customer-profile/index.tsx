@@ -216,16 +216,17 @@ const Customers = () => {
     try {
       if (editingCustomer) {
         // TODO: Call API to update customer
+        // eslint-disable-next-line no-console
         console.log('Update customer:', editingCustomer.key, formData)
       } else {
         // TODO: Call API to create customer
+        // eslint-disable-next-line no-console
         console.log('Create customer:', formData)
       }
       handleModalClose()
       // TODO: Refresh customer list
-    } catch (error) {
-      console.error('Error saving customer:', error)
-      // TODO: Show error notification
+    } catch (_error) {
+      // Error handling - TODO: Show error notification
     }
   }
 
@@ -245,14 +246,10 @@ const Customers = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to delete customer
-          console.log('Delete customer:', record.key)
-          // TODO: Refresh customer list
-        } catch (error) {
-          console.error('Error deleting customer:', error)
-          throw error
-        }
+        // TODO: Call API to delete customer
+        // eslint-disable-next-line no-console
+        console.log('Delete customer:', record.key)
+        // TODO: Refresh customer list
       },
       onCancel: () => {}
     })
@@ -274,14 +271,10 @@ const Customers = () => {
       okType: 'default',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to archive customer
-          console.log('Archive customer:', record.key)
-          // TODO: Refresh customer list
-        } catch (error) {
-          console.error('Error archiving customer:', error)
-          throw error
-        }
+        // TODO: Call API to archive customer
+        // eslint-disable-next-line no-console
+        console.log('Archive customer:', record.key)
+        // TODO: Refresh customer list
       },
       onCancel: () => {}
     })
@@ -289,12 +282,14 @@ const Customers = () => {
 
   const handleExport = (format: 'pdf' | 'xlsx') => {
     // TODO: Implement export functionality
+    // eslint-disable-next-line no-console
     console.log(`Export customers to ${format}`)
     message.info(`Chức năng xuất file ${format.toUpperCase()} đang được phát triển`)
   }
 
   const handleBulkImport = (file: File) => {
     // TODO: Implement bulk import functionality
+    // eslint-disable-next-line no-console
     console.log('Bulk import customers from file:', file.name)
     message.info('Chức năng nhập liệu hàng loạt đang được phát triển')
   }

@@ -185,13 +185,15 @@ const Departments = () => {
   const handleModalSubmit = async (formData: { name: string; code: string; branch: string; description?: string }) => {
     try {
       if (editingDepartment) {
+        // eslint-disable-next-line no-console
         console.log('Update department:', editingDepartment.key, formData)
       } else {
+        // eslint-disable-next-line no-console
         console.log('Create department:', formData)
       }
       handleModalClose()
-    } catch (error) {
-      console.error('Error saving department:', error)
+    } catch (_error) {
+      // Error handling
     }
   }
 
@@ -211,12 +213,8 @@ const Departments = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          console.log('Delete department:', record.key)
-        } catch (error) {
-          console.error('Error deleting department:', error)
-          throw error
-        }
+        // eslint-disable-next-line no-console
+        console.log('Delete department:', record.key)
       },
       onCancel: () => {}
     })

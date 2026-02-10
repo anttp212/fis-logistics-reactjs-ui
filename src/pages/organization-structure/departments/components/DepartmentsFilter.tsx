@@ -20,18 +20,14 @@ const DepartmentsFilter = ({ control, branchesList }: DepartmentsFilterPropsI) =
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Tên phòng ban' placeholder='Nhập tên phòng ban' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên phòng ban' placeholder='Nhập tên phòng ban' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='code'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã phòng ban' placeholder='Nhập mã phòng ban' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã phòng ban' placeholder='Nhập mã phòng ban' />}
         />
       </Col>
       <Col span={24}>

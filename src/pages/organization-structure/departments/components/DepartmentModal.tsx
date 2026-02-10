@@ -1,6 +1,6 @@
 import { Modal, Select } from 'antd'
 import { useForm, Controller } from 'react-hook-form'
-import { FISButton, FISInputText, FISSelect } from 'fis-component'
+import { FISButton, FISInputText } from 'fis-component'
 import { FC, useEffect } from 'react'
 
 interface DepartmentFormDataI {

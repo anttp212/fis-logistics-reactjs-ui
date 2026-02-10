@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { ROUTES, buildUserDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -29,6 +29,7 @@ const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
 
   // Fake user data
   const fakeUsers: Record<string, UserDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       username: 'admin001',
@@ -42,6 +43,7 @@ const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
       lastLogin: '2024-12-20 10:30:00',
       description: 'Quản trị viên hệ thống với quyền truy cập đầy đủ'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       username: 'operator001',
@@ -55,6 +57,7 @@ const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
       lastLogin: '2024-12-20 09:15:00',
       description: 'Nhân viên điều hành tại hiện trường'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       username: 'accountant001',
@@ -68,6 +71,7 @@ const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
       lastLogin: '2024-12-19 16:45:00',
       description: 'Kế toán viên phụ trách tài chính'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       username: 'viewer001',
@@ -81,6 +85,7 @@ const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
       lastLogin: '2024-12-15 14:20:00',
       description: 'Người dùng chỉ xem, không có quyền chỉnh sửa'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '5': {
       key: '5',
       username: 'operator002',
@@ -173,9 +178,7 @@ const UserDetail = () => {
           <p>Bạn có chắc chắn muốn {actionText} tài khoản người dùng này không?</p>
           <p className='mt-2 font-medium text-gray-900'>{user.username}</p>
           <p className='mt-1 text-sm text-gray-500'>{user.email}</p>
-          {isLocking && (
-            <p className='mt-1 text-sm text-gray-500'>Tài khoản sẽ không thể đăng nhập sau khi bị khóa.</p>
-          )}
+          {isLocking && <p className='mt-1 text-sm text-gray-500'>Tài khoản sẽ không thể đăng nhập sau khi bị khóa.</p>}
         </div>
       ),
       okText: isLocking ? 'Khóa' : 'Mở khóa',

@@ -237,9 +237,7 @@ const PartnerModal: FC<PartnerModalPropsI> = ({ open, onClose, onSubmit, initial
                   render={({ field }) => (
                     <div>
                       <FISInputText {...field} textLabel='Mã đối tác' placeholder='Nhập mã đối tác' />
-                      {errors.partnerCode && (
-                        <p className='mt-1 text-sm text-red-600'>{errors.partnerCode.message}</p>
-                      )}
+                      {errors.partnerCode && <p className='mt-1 text-sm text-red-600'>{errors.partnerCode.message}</p>}
                     </div>
                   )}
                 />
@@ -283,9 +281,7 @@ const PartnerModal: FC<PartnerModalPropsI> = ({ open, onClose, onSubmit, initial
                       <option value='transport'>Đối tác vận tải</option>
                       <option value='subcontractor'>Thầu phụ</option>
                     </select>
-                    {errors.partnerType && (
-                      <p className='mt-1 text-sm text-red-600'>{errors.partnerType.message}</p>
-                    )}
+                    {errors.partnerType && <p className='mt-1 text-sm text-red-600'>{errors.partnerType.message}</p>}
                   </div>
                 )}
               />
@@ -398,7 +394,9 @@ const PartnerModal: FC<PartnerModalPropsI> = ({ open, onClose, onSubmit, initial
               <h3 className='text-lg font-semibold text-gray-900'>Danh sách phương tiện được ủy quyền</h3>
               <Button
                 type='dashed'
-                onClick={() => append({ licensePlate: '', vehicleType: '', capacity: '', driverName: '', driverPhone: '' })}
+                onClick={() =>
+                  append({ licensePlate: '', vehicleType: '', capacity: '', driverName: '', driverPhone: '' })
+                }
                 icon={<PlusOutlined />}
               >
                 Thêm phương tiện
@@ -409,13 +407,7 @@ const PartnerModal: FC<PartnerModalPropsI> = ({ open, onClose, onSubmit, initial
               <div key={field.id} className='border border-gray-200 rounded-lg p-4 space-y-4'>
                 <div className='flex justify-between items-center mb-2'>
                   <h4 className='font-medium text-gray-900'>Phương tiện {index + 1}</h4>
-                  <Button
-                    type='text'
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => remove(index)}
-                    size='small'
-                  >
+                  <Button type='text' danger icon={<DeleteOutlined />} onClick={() => remove(index)} size='small'>
                     Xóa
                   </Button>
                 </div>
@@ -430,9 +422,7 @@ const PartnerModal: FC<PartnerModalPropsI> = ({ open, onClose, onSubmit, initial
                         <div>
                           <FISInputText {...field} textLabel='Biển số xe' placeholder='Nhập biển số xe' />
                           {errors.vehicles?.[index]?.licensePlate && (
-                            <p className='mt-1 text-sm text-red-600'>
-                              {errors.vehicles[index]?.licensePlate?.message}
-                            </p>
+                            <p className='mt-1 text-sm text-red-600'>{errors.vehicles[index]?.licensePlate?.message}</p>
                           )}
                         </div>
                       )}

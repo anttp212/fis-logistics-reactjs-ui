@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { ROUTES, buildRoleDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -32,6 +32,7 @@ const fetchRolePermissionDetail = async (roleId: string): Promise<RolePermission
 
   // Fake role permission data with extended details
   const fakeRoles: Record<string, RolePermissionDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       name: 'Quản trị viên',
@@ -48,6 +49,7 @@ const fetchRolePermissionDetail = async (roleId: string): Promise<RolePermission
         { id: '4', name: 'Quản trị', description: 'Toàn quyền quản trị hệ thống', category: 'Quản trị' }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       name: 'Điều hành',
@@ -63,6 +65,7 @@ const fetchRolePermissionDetail = async (roleId: string): Promise<RolePermission
         { id: '3', name: 'Quản lý', description: 'Quản lý và điều phối hoạt động', category: 'Điều hành' }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       name: 'Kế toán',
@@ -78,6 +81,7 @@ const fetchRolePermissionDetail = async (roleId: string): Promise<RolePermission
         { id: '3', name: 'Tài chính', description: 'Quản lý tài chính và kế toán', category: 'Tài chính' }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       name: 'Người xem',
@@ -91,6 +95,7 @@ const fetchRolePermissionDetail = async (roleId: string): Promise<RolePermission
         { id: '1', name: 'Đọc dữ liệu', description: 'Xem dữ liệu trong hệ thống', category: 'Cơ bản' }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '5': {
       key: '5',
       name: 'Nhân viên kho',
@@ -164,13 +169,16 @@ const RoleDetail = () => {
   const getPermissionCategoryGroups = () => {
     if (!role?.permissionDetails) return []
 
-    const categories = role.permissionDetails.reduce((acc, perm) => {
-      if (!acc[perm.category]) {
-        acc[perm.category] = []
-      }
-      acc[perm.category].push(perm)
-      return acc
-    }, {} as Record<string, typeof role.permissionDetails>)
+    const categories = role.permissionDetails.reduce(
+      (acc, perm) => {
+        if (!acc[perm.category]) {
+          acc[perm.category] = []
+        }
+        acc[perm.category].push(perm)
+        return acc
+      },
+      {} as Record<string, typeof role.permissionDetails>
+    )
 
     return Object.entries(categories)
   }
@@ -302,7 +310,11 @@ const RoleDetail = () => {
               )}
             </>
           )}
-          <FISButton variant='tertiary' startIcon={<BackIcon />} onClick={() => navigate(ROUTES.userManagementRolesPermissions)}>
+          <FISButton
+            variant='tertiary'
+            startIcon={<BackIcon />}
+            onClick={() => navigate(ROUTES.userManagementRolesPermissions)}
+          >
             Quay lại
           </FISButton>
         </div>

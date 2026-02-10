@@ -22,18 +22,14 @@ const EmployeesFilter = ({ control, departmentsList, skillGroupsList }: Employee
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Tên nhân viên' placeholder='Nhập tên nhân viên' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên nhân viên' placeholder='Nhập tên nhân viên' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='employeeCode'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã nhân viên' placeholder='Nhập mã nhân viên' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã nhân viên' placeholder='Nhập mã nhân viên' />}
         />
       </Col>
       <Col span={24}>

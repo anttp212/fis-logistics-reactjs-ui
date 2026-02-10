@@ -60,8 +60,7 @@ const EmployeeModal: FC<EmployeeModalPropsI> = ({
     control,
     handleSubmit,
     formState: { errors },
-    reset,
-    watch
+    reset
   } = useForm<EmployeeFormDataI>({
     defaultValues: {
       name: '',

@@ -220,16 +220,17 @@ const Employees = () => {
     try {
       if (editingEmployee) {
         // TODO: Call API to update employee
+        // eslint-disable-next-line no-console
         console.log('Update employee:', editingEmployee.key, formData)
       } else {
         // TODO: Call API to create employee
+        // eslint-disable-next-line no-console
         console.log('Create employee:', formData)
       }
       handleModalClose()
       // TODO: Refresh employee list
-    } catch (error) {
-      console.error('Error saving employee:', error)
-      // TODO: Show error notification
+    } catch (_error) {
+      // Error handling - TODO: Show error notification
     }
   }
 
@@ -249,45 +250,10 @@ const Employees = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to delete employee
-          console.log('Delete employee:', record.key)
-          // TODO: Refresh employee list
-        } catch (error) {
-          console.error('Error deleting employee:', error)
-          throw error
-        }
-      },
-      onCancel: () => {}
-    })
-  }
-
-  const handleActivateDeactivate = (record: EmployeeI) => {
-    const isDeactivating = record.status === 'active'
-    const actionText = isDeactivating ? 'ngừng kích hoạt' : 'kích hoạt'
-
-    Modal.confirm({
-      title: `Xác nhận ${actionText}`,
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <div>
-          <p>Bạn có chắc chắn muốn {actionText} hồ sơ nhân viên này không?</p>
-          <p className='mt-2 font-medium text-gray-900'>{record.name}</p>
-          <p className='mt-1 text-sm text-gray-500'>{record.employeeCode}</p>
-        </div>
-      ),
-      okText: isDeactivating ? 'Ngừng kích hoạt' : 'Kích hoạt',
-      okType: isDeactivating ? 'danger' : 'default',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        try {
-          // TODO: Call API to activate/deactivate employee
-          console.log(`${isDeactivating ? 'Deactivate' : 'Activate'} employee:`, record.key)
-          // TODO: Refresh employee list
-        } catch (error) {
-          console.error(`Error ${actionText} employee:`, error)
-          throw error
-        }
+        // TODO: Call API to delete employee
+        // eslint-disable-next-line no-console
+        console.log('Delete employee:', record.key)
+        // TODO: Refresh employee list
       },
       onCancel: () => {}
     })
@@ -295,12 +261,14 @@ const Employees = () => {
 
   const handleExport = (format: 'pdf' | 'xlsx') => {
     // TODO: Implement export functionality
+    // eslint-disable-next-line no-console
     console.log(`Export employees to ${format}`)
     message.info(`Chức năng xuất file ${format.toUpperCase()} đang được phát triển`)
   }
 
   const handleBulkImport = (file: File) => {
     // TODO: Implement bulk import functionality
+    // eslint-disable-next-line no-console
     console.log('Bulk import employees from file:', file.name)
     message.info('Chức năng nhập liệu hàng loạt đang được phát triển')
   }
@@ -458,7 +426,13 @@ const Employees = () => {
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
-          filterContent={<EmployeesFilter control={employees.control} departmentsList={departmentsList} skillGroupsList={skillGroupsList} />}
+          filterContent={
+            <EmployeesFilter
+              control={employees.control}
+              departmentsList={departmentsList}
+              skillGroupsList={skillGroupsList}
+            />
+          }
           actionButtons={
             <div className='flex gap-2'>
               <Upload

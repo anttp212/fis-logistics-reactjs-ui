@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { PageWrapper } from '@components'
-import { ROUTES, buildDepartmentDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -19,6 +19,7 @@ interface DepartmentDetailI {
 const fetchDepartmentDetail = async (departmentId: string): Promise<DepartmentDetailI | null> => {
   await new Promise((resolve) => setTimeout(resolve, 500))
   const fakeDepartments: Record<string, DepartmentDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       name: 'Phòng Kinh doanh',
@@ -29,6 +30,7 @@ const fetchDepartmentDetail = async (departmentId: string): Promise<DepartmentDe
       createdAt: '2024-01-10',
       updatedAt: '2024-12-15'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       name: 'Phòng Kế toán',
@@ -39,6 +41,7 @@ const fetchDepartmentDetail = async (departmentId: string): Promise<DepartmentDe
       createdAt: '2024-02-15',
       updatedAt: '2024-12-10'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       name: 'Phòng Nhân sự',
@@ -49,6 +52,7 @@ const fetchDepartmentDetail = async (departmentId: string): Promise<DepartmentDe
       createdAt: '2024-03-20',
       updatedAt: '2024-12-05'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       name: 'Phòng IT',
@@ -125,7 +129,11 @@ const DepartmentDetail = () => {
       breadcrumbItems={breadcrumbItems}
       hasBackButton
       actionButtons={
-        <FISButton variant='tertiary' startIcon={<BackIcon />} onClick={() => navigate(ROUTES.organizationStructureDepartments)}>
+        <FISButton
+          variant='tertiary'
+          startIcon={<BackIcon />}
+          onClick={() => navigate(ROUTES.organizationStructureDepartments)}
+        >
           Quay lại
         </FISButton>
       }

@@ -30,18 +30,14 @@ const CustomersFilter = ({ control }: CustomersFilterPropsI) => {
         <Controller
           name='customerCode'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã khách hàng' placeholder='Nhập mã khách hàng' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã khách hàng' placeholder='Nhập mã khách hàng' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='taxCode'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã số thuế' placeholder='Nhập mã số thuế' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã số thuế' placeholder='Nhập mã số thuế' />}
         />
       </Col>
       <Col span={24}>

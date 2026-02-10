@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Modal } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { ROUTES, buildPartnerDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -64,6 +62,7 @@ const fetchPartnerDetail = async (partnerId: string): Promise<PartnerDetailI | n
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const fakePartners: Record<string, PartnerDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       name: 'Công ty Vận tải ABC',
@@ -150,6 +149,7 @@ const fetchPartnerDetail = async (partnerId: string): Promise<PartnerDetailI | n
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       name: 'Công ty Thầu phụ XYZ',
@@ -185,6 +185,7 @@ const fetchPartnerDetail = async (partnerId: string): Promise<PartnerDetailI | n
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       name: 'Công ty Vận tải DEF',
@@ -202,6 +203,7 @@ const fetchPartnerDetail = async (partnerId: string): Promise<PartnerDetailI | n
       cooperationHistory: [],
       qualityAssessments: []
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       name: 'Công ty Thầu phụ GHI',
@@ -340,7 +342,11 @@ const PartnerDetail = () => {
       breadcrumbItems={breadcrumbItems}
       hasBackButton
       actionButtons={
-        <FISButton variant='tertiary' startIcon={<BackIcon />} onClick={() => navigate(ROUTES.categoryManagementPartnerProfile)}>
+        <FISButton
+          variant='tertiary'
+          startIcon={<BackIcon />}
+          onClick={() => navigate(ROUTES.categoryManagementPartnerProfile)}
+        >
           Quay lại
         </FISButton>
       }
@@ -568,9 +574,7 @@ const PartnerDetail = () => {
                               </>
                             )}
                           </div>
-                          {history.notes && (
-                            <p className='text-sm text-gray-600 mt-2'>{history.notes}</p>
-                          )}
+                          {history.notes && <p className='text-sm text-gray-600 mt-2'>{history.notes}</p>}
                         </div>
                       </div>
                     </div>
@@ -596,9 +600,7 @@ const PartnerDetail = () => {
                           <p className='text-sm font-medium text-gray-900'>Điểm: {assessment.score}/100</p>
                         </div>
                       </div>
-                      {assessment.comments && (
-                        <p className='text-sm text-gray-600 mt-2'>{assessment.comments}</p>
-                      )}
+                      {assessment.comments && <p className='text-sm text-gray-600 mt-2'>{assessment.comments}</p>}
                     </div>
                   ))}
                 </div>

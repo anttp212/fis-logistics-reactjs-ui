@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { PageWrapper } from '@components'
-import { ROUTES, buildBranchDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -21,6 +21,7 @@ interface BranchDetailI {
 const fetchBranchDetail = async (branchId: string): Promise<BranchDetailI | null> => {
   await new Promise((resolve) => setTimeout(resolve, 500))
   const fakeBranches: Record<string, BranchDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       name: 'Chi nhánh Hà Nội',
@@ -33,6 +34,7 @@ const fetchBranchDetail = async (branchId: string): Promise<BranchDetailI | null
       createdAt: '2024-01-10',
       updatedAt: '2024-12-15'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       name: 'Chi nhánh Hồ Chí Minh',
@@ -45,6 +47,7 @@ const fetchBranchDetail = async (branchId: string): Promise<BranchDetailI | null
       createdAt: '2024-02-15',
       updatedAt: '2024-12-10'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       name: 'Chi nhánh Đà Nẵng',
@@ -57,6 +60,7 @@ const fetchBranchDetail = async (branchId: string): Promise<BranchDetailI | null
       createdAt: '2024-03-20',
       updatedAt: '2024-12-05'
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       name: 'Chi nhánh Cần Thơ',
@@ -135,7 +139,11 @@ const BranchDetail = () => {
       breadcrumbItems={breadcrumbItems}
       hasBackButton
       actionButtons={
-        <FISButton variant='tertiary' startIcon={<BackIcon />} onClick={() => navigate(ROUTES.organizationStructureBranches)}>
+        <FISButton
+          variant='tertiary'
+          startIcon={<BackIcon />}
+          onClick={() => navigate(ROUTES.organizationStructureBranches)}
+        >
           Quay lại
         </FISButton>
       }

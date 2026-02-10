@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { ROUTES, buildEmployeeDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -45,6 +45,7 @@ const fetchEmployeeDetail = async (employeeId: string): Promise<EmployeeDetailI 
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const fakeEmployees: Record<string, EmployeeDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       name: 'Nguyễn Văn A',
@@ -84,6 +85,7 @@ const fetchEmployeeDetail = async (employeeId: string): Promise<EmployeeDetailI 
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       name: 'Trần Thị B',
@@ -115,6 +117,7 @@ const fetchEmployeeDetail = async (employeeId: string): Promise<EmployeeDetailI 
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       name: 'Lê Văn C',
@@ -153,6 +156,7 @@ const fetchEmployeeDetail = async (employeeId: string): Promise<EmployeeDetailI 
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       name: 'Phạm Thị D',
@@ -261,6 +265,7 @@ const EmployeeDetail = () => {
       cancelText: 'Hủy',
       onOk: async () => {
         try {
+          // eslint-disable-next-line no-console
           console.log(`${isDeactivating ? 'Deactivate' : 'Activate'} employee:`, employee.key)
           setEmployee({
             ...employee,
@@ -424,9 +429,7 @@ const EmployeeDetail = () => {
                           <p className='text-xs text-gray-500 mt-1'>
                             {history.startDate} {history.endDate ? `- ${history.endDate}` : '- Hiện tại'}
                           </p>
-                          {history.description && (
-                            <p className='text-sm text-gray-600 mt-2'>{history.description}</p>
-                          )}
+                          {history.description && <p className='text-sm text-gray-600 mt-2'>{history.description}</p>}
                         </div>
                       </div>
                     </div>

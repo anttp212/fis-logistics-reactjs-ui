@@ -435,7 +435,12 @@ const Branches = () => {
       </div>
 
       {/* Branch Modal */}
-      <BranchModal open={isModalOpen} onClose={handleModalClose} onSubmit={handleModalSubmit} initialData={editingBranch} />
+      <BranchModal
+        open={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+        initialData={editingBranch}
+      />
     </PageWrapper>
   )
 }

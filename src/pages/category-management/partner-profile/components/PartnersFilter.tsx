@@ -35,27 +35,21 @@ const PartnersFilter = ({ control }: PartnersFilterPropsI) => {
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Tên đối tác' placeholder='Nhập tên đối tác' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên đối tác' placeholder='Nhập tên đối tác' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='partnerCode'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã đối tác' placeholder='Nhập mã đối tác' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã đối tác' placeholder='Nhập mã đối tác' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='taxCode'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã số thuế' placeholder='Nhập mã số thuế' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã số thuế' placeholder='Nhập mã số thuế' />}
         />
       </Col>
       <Col span={24}>

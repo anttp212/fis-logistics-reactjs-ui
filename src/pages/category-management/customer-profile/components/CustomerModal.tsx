@@ -309,7 +309,11 @@ const CustomerModal: FC<CustomerModalPropsI> = ({ open, onClose, onSubmit, initi
                 control={control}
                 render={({ field }) => (
                   <div>
-                    <FISInputText {...field} textLabel='Số điện thoại người đại diện' placeholder='Nhập số điện thoại' />
+                    <FISInputText
+                      {...field}
+                      textLabel='Số điện thoại người đại diện'
+                      placeholder='Nhập số điện thoại'
+                    />
                   </div>
                 )}
               />

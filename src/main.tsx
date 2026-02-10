@@ -17,7 +17,9 @@ const originalError = console.error
 console.error = (...args) => {
   if (
     typeof args[0] === 'string' &&
-    (args[0].includes('Invalid DOM property') || args[0].includes('stroke-linecap') || args[0].includes('stroke-linejoin'))
+    (args[0].includes('Invalid DOM property') ||
+      args[0].includes('stroke-linecap') ||
+      args[0].includes('stroke-linejoin'))
   ) {
     return
   }

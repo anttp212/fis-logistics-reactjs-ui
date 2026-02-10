@@ -20,18 +20,14 @@ const BranchesFilter = ({ control }: BranchesFilterPropsI) => {
         <Controller
           name='name'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Tên chi nhánh' placeholder='Nhập tên chi nhánh' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Tên chi nhánh' placeholder='Nhập tên chi nhánh' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='code'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Mã chi nhánh' placeholder='Nhập mã chi nhánh' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Mã chi nhánh' placeholder='Nhập mã chi nhánh' />}
         />
       </Col>
       <Col span={24}>

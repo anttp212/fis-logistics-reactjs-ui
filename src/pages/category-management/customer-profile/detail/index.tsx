@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Modal } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { ROUTES, buildCustomerDetailPath } from '@constants'
+import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
@@ -44,6 +42,7 @@ const fetchCustomerDetail = async (customerId: string): Promise<CustomerDetailI 
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   const fakeCustomers: Record<string, CustomerDetailI> = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
       name: 'Công ty TNHH ABC',
@@ -93,6 +92,7 @@ const fetchCustomerDetail = async (customerId: string): Promise<CustomerDetailI 
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
       name: 'Công ty Cổ phần XYZ',
@@ -127,6 +127,7 @@ const fetchCustomerDetail = async (customerId: string): Promise<CustomerDetailI 
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
       name: 'Công ty TNHH DEF',
@@ -150,6 +151,7 @@ const fetchCustomerDetail = async (customerId: string): Promise<CustomerDetailI 
         }
       ]
     },
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     '4': {
       key: '4',
       name: 'Công ty Cổ phần GHI',
@@ -193,9 +195,8 @@ const CustomerDetail = () => {
         } else {
           setError('Không tìm thấy thông tin khách hàng')
         }
-      } catch (err) {
+      } catch (_err) {
         setError('Có lỗi xảy ra khi tải thông tin khách hàng')
-        console.error('Error loading customer detail:', err)
       } finally {
         setIsLoading(false)
       }
@@ -240,7 +241,11 @@ const CustomerDetail = () => {
       breadcrumbItems={breadcrumbItems}
       hasBackButton
       actionButtons={
-        <FISButton variant='tertiary' startIcon={<BackIcon />} onClick={() => navigate(ROUTES.categoryManagementCustomerProfile)}>
+        <FISButton
+          variant='tertiary'
+          startIcon={<BackIcon />}
+          onClick={() => navigate(ROUTES.categoryManagementCustomerProfile)}
+        >
           Quay lại
         </FISButton>
       }

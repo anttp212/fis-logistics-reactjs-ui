@@ -235,16 +235,17 @@ const Partners = () => {
     try {
       if (editingPartner) {
         // TODO: Call API to update partner
+        // eslint-disable-next-line no-console
         console.log('Update partner:', editingPartner.key, formData)
       } else {
         // TODO: Call API to create partner
+        // eslint-disable-next-line no-console
         console.log('Create partner:', formData)
       }
       handleModalClose()
       // TODO: Refresh partner list
-    } catch (error) {
-      console.error('Error saving partner:', error)
-      // TODO: Show error notification
+    } catch (_error) {
+      // Error handling - TODO: Show error notification
     }
   }
 
@@ -266,14 +267,10 @@ const Partners = () => {
       okType: isDeactivating ? 'danger' : 'default',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to activate/deactivate partner
-          console.log(`${isDeactivating ? 'Deactivate' : 'Activate'} partner:`, record.key)
-          // TODO: Refresh partner list
-        } catch (error) {
-          console.error(`Error ${actionText} partner:`, error)
-          throw error
-        }
+        // TODO: Call API to activate/deactivate partner
+        // eslint-disable-next-line no-console
+        console.log(`${isDeactivating ? 'Deactivate' : 'Activate'} partner:`, record.key)
+        // TODO: Refresh partner list
       },
       onCancel: () => {}
     })
@@ -297,14 +294,10 @@ const Partners = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to lock partner
-          console.log('Lock partner:', record.key)
-          // TODO: Refresh partner list
-        } catch (error) {
-          console.error('Error locking partner:', error)
-          throw error
-        }
+        // TODO: Call API to lock partner
+        // eslint-disable-next-line no-console
+        console.log('Lock partner:', record.key)
+        // TODO: Refresh partner list
       },
       onCancel: () => {}
     })
@@ -312,12 +305,14 @@ const Partners = () => {
 
   const handleExport = (format: 'pdf' | 'xlsx') => {
     // TODO: Implement export functionality
+    // eslint-disable-next-line no-console
     console.log(`Export partners to ${format}`)
     message.info(`Chức năng xuất file ${format.toUpperCase()} đang được phát triển`)
   }
 
   const handleBulkImport = (file: File) => {
     // TODO: Implement bulk import functionality
+    // eslint-disable-next-line no-console
     console.log('Bulk import partners from file:', file.name)
     message.info('Chức năng nhập liệu hàng loạt đang được phát triển')
   }
@@ -416,7 +411,9 @@ const Partners = () => {
       key: 'partnerType',
       width: 150,
       title: () => <FISTableHeaderCell label='Loại đối tác' hasRightDivider />,
-      render: (_: any, row: PartnerI) => <FISTableCell content={getPartnerTypeLabel(row.partnerType)} textAlign='left' />
+      render: (_: any, row: PartnerI) => (
+        <FISTableCell content={getPartnerTypeLabel(row.partnerType)} textAlign='left' />
+      )
     },
     {
       dataIndex: 'qualityRating',
