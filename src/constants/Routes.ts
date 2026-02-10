@@ -13,12 +13,24 @@ export const ROUTES = {
   user: '/config/user',
   userManagement: '/user-management',
   userManagementUsers: '/user-management/users',
+  userManagementUserDetail: '/user-management/users/:id',
   userManagementRolesPermissions: '/user-management/roles-permissions',
+  userManagementRoleDetail: '/user-management/roles-permissions/:id',
   userManagementAuthSecurity: '/user-management/auth-security',
   userManagementProfile: '/user-management/profile',
+  organizationStructure: '/organization-structure',
+  organizationStructureBranches: '/organization-structure/branches',
+  organizationStructureBranchDetail: '/organization-structure/branches/:id',
+  organizationStructureDepartments: '/organization-structure/departments',
+  organizationStructureDepartmentDetail: '/organization-structure/departments/:id',
+  employeeProfile: '/employee-profile',
+  employeeProfileList: '/employee-profile/list',
+  employeeProfileDetail: '/employee-profile/:id',
   categoryManagement: '/category-management',
   categoryManagementCustomerProfile: '/category-management/customer-profile',
+  categoryManagementCustomerProfileDetail: '/category-management/customer-profile/:id',
   categoryManagementPartnerProfile: '/category-management/partner-profile',
+  categoryManagementPartnerProfileDetail: '/category-management/partner-profile/:id',
   categoryManagementLandAndPort: '/category-management/land-and-port',
   categoryManagementVehiclesAndEquipment: '/category-management/vehicles-and-equipment',
   categoryManagementGoodsAndStandards: '/category-management/goods-and-standards',
@@ -51,6 +63,34 @@ export const ROUTES = {
 // Helper functions for building URLs
 export const buildLoginWithRedirect = (redirectPath: string): string => {
   return `${ROUTES.login}?redirect=${encodeURIComponent(redirectPath)}`
+}
+
+export const buildUserDetailPath = (userId: string): string => {
+  return `/user-management/users/${userId}`
+}
+
+export const buildRoleDetailPath = (roleId: string): string => {
+  return `/user-management/roles-permissions/${roleId}`
+}
+
+export const buildBranchDetailPath = (branchId: string): string => {
+  return `/organization-structure/branches/${branchId}`
+}
+
+export const buildDepartmentDetailPath = (departmentId: string): string => {
+  return `/organization-structure/departments/${departmentId}`
+}
+
+export const buildEmployeeDetailPath = (employeeId: string): string => {
+  return `/employee-profile/${employeeId}`
+}
+
+export const buildCustomerDetailPath = (customerId: string): string => {
+  return `/category-management/customer-profile/${customerId}`
+}
+
+export const buildPartnerDetailPath = (partnerId: string): string => {
+  return `/category-management/partner-profile/${partnerId}`
 }
 
 // Type for route paths (for TypeScript safety)

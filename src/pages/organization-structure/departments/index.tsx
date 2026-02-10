@@ -5,60 +5,55 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
 import { FISButton, FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import { AddIcon } from '@images'
-import RolePermissionModal from './components/RolePermissionModal'
-import RolesPermissionsFilter from './components/RolesPermissionsFilter'
-import { useRolesPermissions } from './useRolesPermissions'
-import { buildRoleDetailPath } from '@constants'
+import DepartmentModal from './components/DepartmentModal'
+import DepartmentsFilter from './components/DepartmentsFilter'
+import { useDepartments } from './useDepartments'
+import { buildDepartmentDetailPath } from '@constants'
 
-// Role Permission type
-interface RolePermissionI {
+interface DepartmentI {
   key: string
   name: string
-  description: string
-  permissions: string[]
+  code: string
+  branch: string
+  description?: string
   status?: string
 }
 
-// Fake data cho danh sách Vai trò & phân quyền
-const FAKE_ROLES_PERMISSIONS_DATA: RolePermissionI[] = [
+const FAKE_DEPARTMENTS_DATA: DepartmentI[] = [
   {
     key: '1',
-    name: 'Quản trị viên',
-    description: 'Toàn quyền truy cập hệ thống',
-    permissions: ['read', 'write', 'delete', 'admin'],
+    name: 'Phòng Kinh doanh',
+    code: 'KD001',
+    branch: 'Chi nhánh Hà Nội',
+    description: 'Phòng kinh doanh tại Hà Nội',
     status: 'active'
   },
   {
     key: '2',
-    name: 'Điều hành',
-    description: 'Quyền quản lý và điều phối hoạt động',
-    permissions: ['read', 'write', 'manage'],
+    name: 'Phòng Kế toán',
+    code: 'KT001',
+    branch: 'Chi nhánh Hà Nội',
+    description: 'Phòng kế toán tại Hà Nội',
     status: 'active'
   },
   {
     key: '3',
-    name: 'Kế toán',
-    description: 'Quyền xem và quản lý tài chính',
-    permissions: ['read', 'write', 'finance'],
+    name: 'Phòng Nhân sự',
+    code: 'NS001',
+    branch: 'Chi nhánh Hồ Chí Minh',
+    description: 'Phòng nhân sự tại TP.HCM',
     status: 'active'
   },
   {
     key: '4',
-    name: 'Người xem',
-    description: 'Chỉ có quyền xem dữ liệu',
-    permissions: ['read'],
-    status: 'active'
-  },
-  {
-    key: '5',
-    name: 'Nhân viên kho',
-    description: 'Quyền quản lý kho hàng',
-    permissions: ['read', 'write', 'warehouse'],
+    name: 'Phòng IT',
+    code: 'IT001',
+    branch: 'Chi nhánh Đà Nẵng',
+    description: 'Phòng IT tại Đà Nẵng',
     status: 'inactive'
   }
 ]
 
-// TableRowSelection type
 interface TableRowSelectionI {
   selectedRowKeys?: React.Key[]
   onChange?: (selectedRowKeys: React.Key[]) => void
@@ -66,7 +61,6 @@ interface TableRowSelectionI {
   columnTitle?: React.ReactNode
 }
 
-// Simple Checkbox component
 interface CheckboxPropsI {
   checked?: boolean
   indeterminate?: boolean
@@ -87,47 +81,48 @@ const Checkbox = ({ checked = false, indeterminate = false, onChange }: Checkbox
   )
 }
 
-const UserManagementRolesPermissions = () => {
+const Departments = () => {
   const navigate = useNavigate()
-  // Use rolesPermissions hook for filter and search
-  const rolesPermissions = useRolesPermissions()
+  const departments = useDepartments()
 
-  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingRolePermission, setEditingRolePermission] = useState<RolePermissionI | null>(null)
+  const [editingDepartment, setEditingDepartment] = useState<DepartmentI | null>(null)
 
-  // Get filter values from form
-  const filterValues = rolesPermissions.watch()
+  const filterValues = departments.watch()
 
-  // Apply filters to data
   const dataSource = useMemo(() => {
-    let filtered = [...FAKE_ROLES_PERMISSIONS_DATA]
+    let filtered = [...FAKE_DEPARTMENTS_DATA]
 
-    // Filter by name
     if (filterValues.name) {
       const searchTerm = filterValues.name.toLowerCase()
-      filtered = filtered.filter((role) => role.name.toLowerCase().includes(searchTerm))
+      filtered = filtered.filter((dept) => dept.name.toLowerCase().includes(searchTerm))
     }
 
-    // Filter by description
-    if (filterValues.description) {
-      const searchTerm = filterValues.description.toLowerCase()
-      filtered = filtered.filter((role) => role.description.toLowerCase().includes(searchTerm))
+    if (filterValues.code) {
+      const searchTerm = filterValues.code.toLowerCase()
+      filtered = filtered.filter((dept) => dept.code.toLowerCase().includes(searchTerm))
     }
 
-    // Filter by search (general search)
-    if (rolesPermissions.search) {
-      const searchTerm = rolesPermissions.search.toLowerCase()
+    if (filterValues.branch) {
+      filtered = filtered.filter((dept) => dept.branch === filterValues.branch)
+    }
+
+    if (filterValues.status) {
+      filtered = filtered.filter((dept) => dept.status === filterValues.status)
+    }
+
+    if (departments.search) {
+      const searchTerm = departments.search.toLowerCase()
       filtered = filtered.filter(
-        (role) =>
-          role.name.toLowerCase().includes(searchTerm) ||
-          role.description.toLowerCase().includes(searchTerm) ||
-          role.permissions.some((p) => p.toLowerCase().includes(searchTerm))
+        (dept) =>
+          dept.name.toLowerCase().includes(searchTerm) ||
+          dept.code.toLowerCase().includes(searchTerm) ||
+          dept.branch.toLowerCase().includes(searchTerm)
       )
     }
 
     return filtered
-  }, [filterValues, rolesPermissions.search])
+  }, [filterValues, departments.search])
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
@@ -173,48 +168,44 @@ const UserManagementRolesPermissions = () => {
   }
 
   const handleAddNew = () => {
-    setEditingRolePermission(null)
+    setEditingDepartment(null)
     setIsModalOpen(true)
   }
 
-  const handleEdit = (record: RolePermissionI) => {
-    setEditingRolePermission(record)
+  const handleEdit = (record: DepartmentI) => {
+    setEditingDepartment(record)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setEditingRolePermission(null)
+    setEditingDepartment(null)
   }
 
-  const handleModalSubmit = async (formData: { name: string; description: string; permissions: string[] }) => {
+  const handleModalSubmit = async (formData: { name: string; code: string; branch: string; description?: string }) => {
     try {
-      if (editingRolePermission) {
-        // TODO: Call API to update role permission
+      if (editingDepartment) {
         // eslint-disable-next-line no-console
-        console.log('Update role permission:', editingRolePermission.key, formData)
+        console.log('Update department:', editingDepartment.key, formData)
       } else {
-        // TODO: Call API to create role permission
         // eslint-disable-next-line no-console
-        console.log('Create role permission:', formData)
+        console.log('Create department:', formData)
       }
       handleModalClose()
-      // TODO: Refresh role permission list
-    } catch (error) {
-      console.error('Error saving role permission:', error)
-      // TODO: Show error notification
+    } catch (_error) {
+      // Error handling
     }
   }
 
-  const handleDelete = (record: RolePermissionI) => {
+  const handleDelete = (record: DepartmentI) => {
     Modal.confirm({
       title: 'Xác nhận xóa',
       icon: <ExclamationCircleOutlined />,
       content: (
         <div>
-          <p>Bạn có chắc chắn muốn xóa Vai trò & phân quyền này không?</p>
+          <p>Bạn có chắc chắn muốn xóa phòng ban này không?</p>
           <p className='mt-2 font-medium text-gray-900'>{record.name}</p>
-          <p className='mt-1 text-sm text-gray-500'>{record.description}</p>
+          <p className='mt-1 text-sm text-gray-500'>{record.code}</p>
           <p className='mt-1 text-sm text-gray-500'>Hành động này không thể hoàn tác.</p>
         </div>
       ),
@@ -222,21 +213,10 @@ const UserManagementRolesPermissions = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to delete role permission
-          // eslint-disable-next-line no-console
-          console.log('Delete role permission:', record.key)
-          // TODO: Refresh role permission list
-        } catch (error) {
-          console.error('Error deleting role permission:', error)
-          // TODO: Show error notification
-          // Re-throw để modal không đóng khi có lỗi
-          throw error
-        }
+        // eslint-disable-next-line no-console
+        console.log('Delete department:', record.key)
       },
-      onCancel: () => {
-        // User cancelled
-      }
+      onCancel: () => {}
     })
   }
 
@@ -255,19 +235,37 @@ const UserManagementRolesPermissions = () => {
     )
   }
 
+  const branchesList = [
+    { value: 'Chi nhánh Hà Nội', label: 'Chi nhánh Hà Nội' },
+    { value: 'Chi nhánh Hồ Chí Minh', label: 'Chi nhánh Hồ Chí Minh' },
+    { value: 'Chi nhánh Đà Nẵng', label: 'Chi nhánh Đà Nẵng' },
+    { value: 'Chi nhánh Cần Thơ', label: 'Chi nhánh Cần Thơ' }
+  ]
+
+  // Fake users list
+  const usersList = [
+    { value: '1', label: 'admin001 - Admin User' },
+    { value: '2', label: 'operator001 - Operator User' },
+    { value: '3', label: 'accountant001 - Accountant User' },
+    { value: '4', label: 'viewer001 - Viewer User' },
+    { value: '5', label: 'operator002 - Operator User 2' },
+    { value: '6', label: 'manager001 - Manager User' },
+    { value: '7', label: 'staff001 - Staff User' }
+  ]
+
   const columns: any = [
     {
       dataIndex: 'name',
       key: 'name',
-      width: 200,
+      width: 250,
       title: () => {
-        return <FISTableHeaderCell label='Tên vai trò' hasRightDivider />
+        return <FISTableHeaderCell label='Tên phòng ban' hasRightDivider />
       },
-      render: (_: any, row: RolePermissionI) => (
+      render: (_: any, row: DepartmentI) => (
         <FISTableCell
           content={
             <button
-              onClick={() => navigate(buildRoleDetailPath(row.key))}
+              onClick={() => navigate(buildDepartmentDetailPath(row.key))}
               className='text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left'
             >
               {row.name}
@@ -278,32 +276,32 @@ const UserManagementRolesPermissions = () => {
       )
     },
     {
-      dataIndex: 'description',
-      key: 'description',
-      width: 300,
-      title: () => <FISTableHeaderCell label='Mô tả' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.description} textAlign='left' />
+      dataIndex: 'code',
+      key: 'code',
+      width: 150,
+      title: () => <FISTableHeaderCell label='Mã phòng ban' hasRightDivider />,
+      render: (_: any, row: DepartmentI) => <FISTableCell content={row.code} textAlign='left' />
     },
     {
-      dataIndex: 'permissions',
-      key: 'permissions',
-      width: 250,
-      title: () => <FISTableHeaderCell label='Phân quyền' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.permissions.join(', ')} textAlign='left' />
+      dataIndex: 'branch',
+      key: 'branch',
+      width: 200,
+      title: () => <FISTableHeaderCell label='Chi nhánh' hasRightDivider />,
+      render: (_: any, row: DepartmentI) => <FISTableCell content={row.branch} textAlign='left' />
     },
     {
       dataIndex: 'status',
       key: 'status',
       width: 150,
       title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => getStatusBadge(row.status)
+      render: (_: any, row: DepartmentI) => getStatusBadge(row.status)
     },
     {
       title: () => <FISTableHeaderCell label='' />,
       dataIndex: 'actions',
       key: 'actions',
       width: 100,
-      render: (_: any, record: RolePermissionI) => (
+      render: (_: any, record: DepartmentI) => (
         <FISTableCell
           style={{ textAlign: 'center' }}
           icon={
@@ -360,21 +358,19 @@ const UserManagementRolesPermissions = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Vai trò & phân quyền' breadcrumbItems={rolesPermissions.breadcrumbItems}>
+    <PageWrapper className='p-5' title='Phòng ban' breadcrumbItems={departments.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
-        {/* Table Toolbar with Filter */}
         <TableToolbar
-          filterContent={<RolesPermissionsFilter control={rolesPermissions.control} />}
+          filterContent={<DepartmentsFilter control={departments.control} branchesList={branchesList} />}
           actionButtons={
             <FISButton variant='primary' startIcon={<AddIcon />} onClick={handleAddNew}>
               Tạo mới
             </FISButton>
           }
-          {...rolesPermissions}
-          searchPlaceholder='Tìm kiếm Vai trò & phân quyền...'
+          {...departments}
+          searchPlaceholder='Tìm kiếm phòng ban...'
         />
 
-        {/* FISTable */}
         <div className='flex-1 bg-white rounded-lg overflow-hidden p-4'>
           <FISTable
             dataSource={dataSource}
@@ -383,17 +379,16 @@ const UserManagementRolesPermissions = () => {
             scroll={{ x: 'max-content' }}
             expandable={{
               expandedRowKeys,
-              expandedRowRender: (record: RolePermissionI) => (
+              expandedRowRender: (record: DepartmentI) => (
                 <div className='p-4'>
                   <p className='text-sm text-gray-600'>
-                    <strong>Mô tả:</strong> {record.description}
+                    <strong>Chi nhánh:</strong> {record.branch}
                   </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Phân quyền:</strong> {record.permissions.join(', ')}
-                  </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Trạng thái:</strong> {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-                  </p>
+                  {record.description && (
+                    <p className='text-sm text-gray-600 mt-2'>
+                      <strong>Mô tả:</strong> {record.description}
+                    </p>
+                  )}
                 </div>
               ),
               onExpand: (_expanded, record) => toggleExpand(record.key),
@@ -404,15 +399,16 @@ const UserManagementRolesPermissions = () => {
         </div>
       </div>
 
-      {/* Role Permission Modal */}
-      <RolePermissionModal
+      <DepartmentModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
-        initialData={editingRolePermission}
+        branchesList={branchesList}
+        usersList={usersList}
+        initialData={editingDepartment}
       />
     </PageWrapper>
   )
 }
 
-export default UserManagementRolesPermissions
+export default Departments

@@ -1,59 +1,73 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Modal } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { Modal, Upload, message } from 'antd'
+import { ExclamationCircleOutlined, DownloadOutlined, UploadOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
 import { FISButton, FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import { AddIcon } from '@images'
-import RolePermissionModal from './components/RolePermissionModal'
-import RolesPermissionsFilter from './components/RolesPermissionsFilter'
-import { useRolesPermissions } from './useRolesPermissions'
-import { buildRoleDetailPath } from '@constants'
+import EmployeeModal from './components/EmployeeModal'
+import EmployeesFilter from './components/EmployeesFilter'
+import { useEmployees } from './useEmployees'
+import { buildEmployeeDetailPath } from '@constants'
 
-// Role Permission type
-interface RolePermissionI {
+// Employee type
+interface EmployeeI {
   key: string
   name: string
-  description: string
-  permissions: string[]
+  employeeCode: string
+  department: string
+  skillGroup?: string
+  phone?: string
+  email?: string
+  position?: string
+  portraitPhoto?: string
   status?: string
 }
 
-// Fake data cho danh sách Vai trò & phân quyền
-const FAKE_ROLES_PERMISSIONS_DATA: RolePermissionI[] = [
+// Fake data cho danh sách nhân viên
+const FAKE_EMPLOYEES_DATA: EmployeeI[] = [
   {
     key: '1',
-    name: 'Quản trị viên',
-    description: 'Toàn quyền truy cập hệ thống',
-    permissions: ['read', 'write', 'delete', 'admin'],
+    name: 'Nguyễn Văn A',
+    employeeCode: 'NV001',
+    department: 'Phòng Kinh doanh',
+    skillGroup: 'Kinh doanh',
+    phone: '0901234567',
+    email: 'nva@example.com',
+    position: 'Nhân viên kinh doanh',
     status: 'active'
   },
   {
     key: '2',
-    name: 'Điều hành',
-    description: 'Quyền quản lý và điều phối hoạt động',
-    permissions: ['read', 'write', 'manage'],
+    name: 'Trần Thị B',
+    employeeCode: 'NV002',
+    department: 'Phòng Kế toán',
+    skillGroup: 'Kế toán',
+    phone: '0902345678',
+    email: 'ttb@example.com',
+    position: 'Kế toán viên',
     status: 'active'
   },
   {
     key: '3',
-    name: 'Kế toán',
-    description: 'Quyền xem và quản lý tài chính',
-    permissions: ['read', 'write', 'finance'],
+    name: 'Lê Văn C',
+    employeeCode: 'NV003',
+    department: 'Phòng IT',
+    skillGroup: 'Công nghệ thông tin',
+    phone: '0903456789',
+    email: 'lvc@example.com',
+    position: 'Lập trình viên',
     status: 'active'
   },
   {
     key: '4',
-    name: 'Người xem',
-    description: 'Chỉ có quyền xem dữ liệu',
-    permissions: ['read'],
-    status: 'active'
-  },
-  {
-    key: '5',
-    name: 'Nhân viên kho',
-    description: 'Quyền quản lý kho hàng',
-    permissions: ['read', 'write', 'warehouse'],
+    name: 'Phạm Thị D',
+    employeeCode: 'NV004',
+    department: 'Phòng Nhân sự',
+    skillGroup: 'Nhân sự',
+    phone: '0904567890',
+    email: 'ptd@example.com',
+    position: 'Chuyên viên nhân sự',
     status: 'inactive'
   }
 ]
@@ -87,47 +101,62 @@ const Checkbox = ({ checked = false, indeterminate = false, onChange }: Checkbox
   )
 }
 
-const UserManagementRolesPermissions = () => {
+const Employees = () => {
   const navigate = useNavigate()
-  // Use rolesPermissions hook for filter and search
-  const rolesPermissions = useRolesPermissions()
+  const employees = useEmployees()
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingRolePermission, setEditingRolePermission] = useState<RolePermissionI | null>(null)
+  const [editingEmployee, setEditingEmployee] = useState<EmployeeI | null>(null)
 
   // Get filter values from form
-  const filterValues = rolesPermissions.watch()
+  const filterValues = employees.watch()
 
   // Apply filters to data
   const dataSource = useMemo(() => {
-    let filtered = [...FAKE_ROLES_PERMISSIONS_DATA]
+    let filtered = [...FAKE_EMPLOYEES_DATA]
 
     // Filter by name
     if (filterValues.name) {
       const searchTerm = filterValues.name.toLowerCase()
-      filtered = filtered.filter((role) => role.name.toLowerCase().includes(searchTerm))
+      filtered = filtered.filter((emp) => emp.name.toLowerCase().includes(searchTerm))
     }
 
-    // Filter by description
-    if (filterValues.description) {
-      const searchTerm = filterValues.description.toLowerCase()
-      filtered = filtered.filter((role) => role.description.toLowerCase().includes(searchTerm))
+    // Filter by employeeCode
+    if (filterValues.employeeCode) {
+      const searchTerm = filterValues.employeeCode.toLowerCase()
+      filtered = filtered.filter((emp) => emp.employeeCode.toLowerCase().includes(searchTerm))
+    }
+
+    // Filter by department
+    if (filterValues.department) {
+      filtered = filtered.filter((emp) => emp.department === filterValues.department)
+    }
+
+    // Filter by skillGroup
+    if (filterValues.skillGroup) {
+      filtered = filtered.filter((emp) => emp.skillGroup === filterValues.skillGroup)
+    }
+
+    // Filter by status
+    if (filterValues.status) {
+      filtered = filtered.filter((emp) => emp.status === filterValues.status)
     }
 
     // Filter by search (general search)
-    if (rolesPermissions.search) {
-      const searchTerm = rolesPermissions.search.toLowerCase()
+    if (employees.search) {
+      const searchTerm = employees.search.toLowerCase()
       filtered = filtered.filter(
-        (role) =>
-          role.name.toLowerCase().includes(searchTerm) ||
-          role.description.toLowerCase().includes(searchTerm) ||
-          role.permissions.some((p) => p.toLowerCase().includes(searchTerm))
+        (emp) =>
+          emp.name.toLowerCase().includes(searchTerm) ||
+          emp.employeeCode.toLowerCase().includes(searchTerm) ||
+          emp.department.toLowerCase().includes(searchTerm) ||
+          emp.position?.toLowerCase().includes(searchTerm)
       )
     }
 
     return filtered
-  }, [filterValues, rolesPermissions.search])
+  }, [filterValues, employees.search])
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
@@ -173,48 +202,47 @@ const UserManagementRolesPermissions = () => {
   }
 
   const handleAddNew = () => {
-    setEditingRolePermission(null)
+    setEditingEmployee(null)
     setIsModalOpen(true)
   }
 
-  const handleEdit = (record: RolePermissionI) => {
-    setEditingRolePermission(record)
+  const handleEdit = (record: EmployeeI) => {
+    setEditingEmployee(record)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setEditingRolePermission(null)
+    setEditingEmployee(null)
   }
 
-  const handleModalSubmit = async (formData: { name: string; description: string; permissions: string[] }) => {
+  const handleModalSubmit = async (formData: any) => {
     try {
-      if (editingRolePermission) {
-        // TODO: Call API to update role permission
+      if (editingEmployee) {
+        // TODO: Call API to update employee
         // eslint-disable-next-line no-console
-        console.log('Update role permission:', editingRolePermission.key, formData)
+        console.log('Update employee:', editingEmployee.key, formData)
       } else {
-        // TODO: Call API to create role permission
+        // TODO: Call API to create employee
         // eslint-disable-next-line no-console
-        console.log('Create role permission:', formData)
+        console.log('Create employee:', formData)
       }
       handleModalClose()
-      // TODO: Refresh role permission list
-    } catch (error) {
-      console.error('Error saving role permission:', error)
-      // TODO: Show error notification
+      // TODO: Refresh employee list
+    } catch (_error) {
+      // Error handling - TODO: Show error notification
     }
   }
 
-  const handleDelete = (record: RolePermissionI) => {
+  const handleDelete = (record: EmployeeI) => {
     Modal.confirm({
       title: 'Xác nhận xóa',
       icon: <ExclamationCircleOutlined />,
       content: (
         <div>
-          <p>Bạn có chắc chắn muốn xóa Vai trò & phân quyền này không?</p>
+          <p>Bạn có chắc chắn muốn xóa hồ sơ nhân viên này không?</p>
           <p className='mt-2 font-medium text-gray-900'>{record.name}</p>
-          <p className='mt-1 text-sm text-gray-500'>{record.description}</p>
+          <p className='mt-1 text-sm text-gray-500'>{record.employeeCode}</p>
           <p className='mt-1 text-sm text-gray-500'>Hành động này không thể hoàn tác.</p>
         </div>
       ),
@@ -222,22 +250,27 @@ const UserManagementRolesPermissions = () => {
       okType: 'danger',
       cancelText: 'Hủy',
       onOk: async () => {
-        try {
-          // TODO: Call API to delete role permission
-          // eslint-disable-next-line no-console
-          console.log('Delete role permission:', record.key)
-          // TODO: Refresh role permission list
-        } catch (error) {
-          console.error('Error deleting role permission:', error)
-          // TODO: Show error notification
-          // Re-throw để modal không đóng khi có lỗi
-          throw error
-        }
+        // TODO: Call API to delete employee
+        // eslint-disable-next-line no-console
+        console.log('Delete employee:', record.key)
+        // TODO: Refresh employee list
       },
-      onCancel: () => {
-        // User cancelled
-      }
+      onCancel: () => {}
     })
+  }
+
+  const handleExport = (format: 'pdf' | 'xlsx') => {
+    // TODO: Implement export functionality
+    // eslint-disable-next-line no-console
+    console.log(`Export employees to ${format}`)
+    message.info(`Chức năng xuất file ${format.toUpperCase()} đang được phát triển`)
+  }
+
+  const handleBulkImport = (file: File) => {
+    // TODO: Implement bulk import functionality
+    // eslint-disable-next-line no-console
+    console.log('Bulk import employees from file:', file.name)
+    message.info('Chức năng nhập liệu hàng loạt đang được phát triển')
   }
 
   const getStatusBadge = (status?: string) => {
@@ -250,10 +283,25 @@ const UserManagementRolesPermissions = () => {
     }
     return (
       <span className='inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800'>
-        Không hoạt động
+        Đã nghỉ việc
       </span>
     )
   }
+
+  const departmentsList = [
+    { value: 'Phòng Kinh doanh', label: 'Phòng Kinh doanh' },
+    { value: 'Phòng Kế toán', label: 'Phòng Kế toán' },
+    { value: 'Phòng IT', label: 'Phòng IT' },
+    { value: 'Phòng Nhân sự', label: 'Phòng Nhân sự' }
+  ]
+
+  const skillGroupsList = [
+    { value: 'Kinh doanh', label: 'Kinh doanh' },
+    { value: 'Kế toán', label: 'Kế toán' },
+    { value: 'Công nghệ thông tin', label: 'Công nghệ thông tin' },
+    { value: 'Nhân sự', label: 'Nhân sự' },
+    { value: 'Vận hành', label: 'Vận hành' }
+  ]
 
   const columns: any = [
     {
@@ -261,13 +309,13 @@ const UserManagementRolesPermissions = () => {
       key: 'name',
       width: 200,
       title: () => {
-        return <FISTableHeaderCell label='Tên vai trò' hasRightDivider />
+        return <FISTableHeaderCell label='Tên nhân viên' hasRightDivider />
       },
-      render: (_: any, row: RolePermissionI) => (
+      render: (_: any, row: EmployeeI) => (
         <FISTableCell
           content={
             <button
-              onClick={() => navigate(buildRoleDetailPath(row.key))}
+              onClick={() => navigate(buildEmployeeDetailPath(row.key))}
               className='text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left'
             >
               {row.name}
@@ -278,32 +326,46 @@ const UserManagementRolesPermissions = () => {
       )
     },
     {
-      dataIndex: 'description',
-      key: 'description',
-      width: 300,
-      title: () => <FISTableHeaderCell label='Mô tả' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.description} textAlign='left' />
+      dataIndex: 'employeeCode',
+      key: 'employeeCode',
+      width: 150,
+      title: () => <FISTableHeaderCell label='Mã nhân viên' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.employeeCode} textAlign='left' />
     },
     {
-      dataIndex: 'permissions',
-      key: 'permissions',
-      width: 250,
-      title: () => <FISTableHeaderCell label='Phân quyền' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.permissions.join(', ')} textAlign='left' />
+      dataIndex: 'department',
+      key: 'department',
+      width: 200,
+      title: () => <FISTableHeaderCell label='Phòng ban' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.department} textAlign='left' />
+    },
+    {
+      dataIndex: 'skillGroup',
+      key: 'skillGroup',
+      width: 180,
+      title: () => <FISTableHeaderCell label='Nhóm kỹ năng' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.skillGroup || '-'} textAlign='left' />
+    },
+    {
+      dataIndex: 'position',
+      key: 'position',
+      width: 180,
+      title: () => <FISTableHeaderCell label='Chức vụ' hasRightDivider />,
+      render: (_: any, row: EmployeeI) => <FISTableCell content={row.position || '-'} textAlign='left' />
     },
     {
       dataIndex: 'status',
       key: 'status',
       width: 150,
       title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => getStatusBadge(row.status)
+      render: (_: any, row: EmployeeI) => getStatusBadge(row.status)
     },
     {
       title: () => <FISTableHeaderCell label='' />,
       dataIndex: 'actions',
       key: 'actions',
-      width: 100,
-      render: (_: any, record: RolePermissionI) => (
+      width: 120,
+      render: (_: any, record: EmployeeI) => (
         <FISTableCell
           style={{ textAlign: 'center' }}
           icon={
@@ -360,18 +422,44 @@ const UserManagementRolesPermissions = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Vai trò & phân quyền' breadcrumbItems={rolesPermissions.breadcrumbItems}>
+    <PageWrapper className='p-5' title='Hồ sơ nhân viên' breadcrumbItems={employees.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
-          filterContent={<RolesPermissionsFilter control={rolesPermissions.control} />}
-          actionButtons={
-            <FISButton variant='primary' startIcon={<AddIcon />} onClick={handleAddNew}>
-              Tạo mới
-            </FISButton>
+          filterContent={
+            <EmployeesFilter
+              control={employees.control}
+              departmentsList={departmentsList}
+              skillGroupsList={skillGroupsList}
+            />
           }
-          {...rolesPermissions}
-          searchPlaceholder='Tìm kiếm Vai trò & phân quyền...'
+          actionButtons={
+            <div className='flex gap-2'>
+              <Upload
+                accept='.xlsx,.xls'
+                beforeUpload={(file) => {
+                  handleBulkImport(file)
+                  return false
+                }}
+                showUploadList={false}
+              >
+                <FISButton variant='secondary' startIcon={<UploadOutlined />}>
+                  Nhập Excel
+                </FISButton>
+              </Upload>
+              <FISButton variant='secondary' startIcon={<DownloadOutlined />} onClick={() => handleExport('xlsx')}>
+                Xuất Excel
+              </FISButton>
+              <FISButton variant='secondary' startIcon={<DownloadOutlined />} onClick={() => handleExport('pdf')}>
+                Xuất PDF
+              </FISButton>
+              <FISButton variant='primary' startIcon={<AddIcon />} onClick={handleAddNew}>
+                Tạo mới
+              </FISButton>
+            </div>
+          }
+          {...employees}
+          searchPlaceholder='Tìm kiếm nhân viên...'
         />
 
         {/* FISTable */}
@@ -383,16 +471,16 @@ const UserManagementRolesPermissions = () => {
             scroll={{ x: 'max-content' }}
             expandable={{
               expandedRowKeys,
-              expandedRowRender: (record: RolePermissionI) => (
+              expandedRowRender: (record: EmployeeI) => (
                 <div className='p-4'>
                   <p className='text-sm text-gray-600'>
-                    <strong>Mô tả:</strong> {record.description}
+                    <strong>Email:</strong> {record.email || '-'}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Phân quyền:</strong> {record.permissions.join(', ')}
+                    <strong>Số điện thoại:</strong> {record.phone || '-'}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Trạng thái:</strong> {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                    <strong>Chức vụ:</strong> {record.position || '-'}
                   </p>
                 </div>
               ),
@@ -404,15 +492,17 @@ const UserManagementRolesPermissions = () => {
         </div>
       </div>
 
-      {/* Role Permission Modal */}
-      <RolePermissionModal
+      {/* Employee Modal */}
+      <EmployeeModal
         open={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
-        initialData={editingRolePermission}
+        departmentsList={departmentsList}
+        skillGroupsList={skillGroupsList}
+        initialData={editingEmployee}
       />
     </PageWrapper>
   )
 }
 
-export default UserManagementRolesPermissions
+export default Employees

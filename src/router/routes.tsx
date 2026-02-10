@@ -147,10 +147,24 @@ export const routes: RouteObject[] = [
         }
       },
       {
+        path: ROUTES.userManagementUserDetail,
+        lazy: async () => {
+          const UserDetailComponent = await import('../pages/user-management/users/detail')
+          return { Component: UserDetailComponent.default }
+        }
+      },
+      {
         path: ROUTES.userManagementRolesPermissions,
         lazy: async () => {
           const UserManagementRolesPermissionsComponent = await import('../pages/user-management/roles-permissions')
           return { Component: UserManagementRolesPermissionsComponent.default }
+        }
+      },
+      {
+        path: ROUTES.userManagementRoleDetail,
+        lazy: async () => {
+          const RoleDetailComponent = await import('../pages/user-management/roles-permissions/detail')
+          return { Component: RoleDetailComponent.default }
         }
       },
       {
@@ -163,8 +177,62 @@ export const routes: RouteObject[] = [
       {
         path: ROUTES.userManagementProfile,
         lazy: async () => {
-          const ProfileComponent = await import('../pages/profile')
+          const ProfileComponent = await import('../pages/user-management/profile')
           return { Component: ProfileComponent.default }
+        }
+      },
+      {
+        path: ROUTES.organizationStructure,
+        loader: async () => {
+          throw redirect(ROUTES.organizationStructureBranches)
+        }
+      },
+      {
+        path: ROUTES.organizationStructureBranches,
+        lazy: async () => {
+          const BranchesComponent = await import('../pages/organization-structure/branches')
+          return { Component: BranchesComponent.default }
+        }
+      },
+      {
+        path: ROUTES.organizationStructureBranchDetail,
+        lazy: async () => {
+          const BranchDetailComponent = await import('../pages/organization-structure/branches/detail')
+          return { Component: BranchDetailComponent.default }
+        }
+      },
+      {
+        path: ROUTES.organizationStructureDepartments,
+        lazy: async () => {
+          const DepartmentsComponent = await import('../pages/organization-structure/departments')
+          return { Component: DepartmentsComponent.default }
+        }
+      },
+      {
+        path: ROUTES.organizationStructureDepartmentDetail,
+        lazy: async () => {
+          const DepartmentDetailComponent = await import('../pages/organization-structure/departments/detail')
+          return { Component: DepartmentDetailComponent.default }
+        }
+      },
+      {
+        path: ROUTES.employeeProfile,
+        loader: async () => {
+          throw redirect(ROUTES.employeeProfileList)
+        }
+      },
+      {
+        path: ROUTES.employeeProfileList,
+        lazy: async () => {
+          const EmployeesComponent = await import('../pages/employee-profile')
+          return { Component: EmployeesComponent.default }
+        }
+      },
+      {
+        path: ROUTES.employeeProfileDetail,
+        lazy: async () => {
+          const EmployeeDetailComponent = await import('../pages/employee-profile/detail')
+          return { Component: EmployeeDetailComponent.default }
         }
       },
       {
@@ -182,10 +250,24 @@ export const routes: RouteObject[] = [
         }
       },
       {
+        path: ROUTES.categoryManagementCustomerProfileDetail,
+        lazy: async () => {
+          const CustomerDetailComponent = await import('../pages/category-management/customer-profile/detail')
+          return { Component: CustomerDetailComponent.default }
+        }
+      },
+      {
         path: ROUTES.categoryManagementPartnerProfile,
         lazy: async () => {
           const CategoryManagementPartnerProfileComponent = await import('../pages/category-management/partner-profile')
           return { Component: CategoryManagementPartnerProfileComponent.default }
+        }
+      },
+      {
+        path: ROUTES.categoryManagementPartnerProfileDetail,
+        lazy: async () => {
+          const PartnerDetailComponent = await import('../pages/category-management/partner-profile/detail')
+          return { Component: PartnerDetailComponent.default }
         }
       },
       {

@@ -38,5 +38,6 @@ export default defineConfig({
       '@redux/*': path.resolve(__dirname, './src/redux/*'),
       '@redux': path.resolve(__dirname, './src/redux')
     }
-  }
+  },
+  base: "/", 
 })
