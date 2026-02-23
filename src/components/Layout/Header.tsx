@@ -77,11 +77,7 @@ const Header: React.FC = () => {
           </button>
           {/* Notification Badge - số chưa đọc */}
           <NotificationBadge count={notificationUnreadCount} />
-          {isNotificationOpen && (
-            <NotificationDropdown
-              onUnreadChange={setNotificationUnreadCount}
-            />
-          )}
+          {isNotificationOpen && <NotificationDropdown onUnreadChange={setNotificationUnreadCount} />}
         </div>
 
         {/* Settings Button */}

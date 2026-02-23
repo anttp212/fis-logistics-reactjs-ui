@@ -1,18 +1,18 @@
 import React, { useCallback, useRef, useState } from 'react'
 import { WarningOutlined, InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons'
-import type { NotificationItem, NotificationType } from '@app-types/notification'
+import type { NotificationItemI, NotificationTypeT } from '@app-types/notification'
 
 const PAGE_SIZE = 10
 
 // Mock: tạo dữ liệu mẫu
-function createMockNotifications(page: number): NotificationItem[] {
-  const types: NotificationType[] = ['warning', 'info', 'success']
-  const titles: Record<NotificationType, string> = {
+function createMockNotifications(page: number): NotificationItemI[] {
+  const types: NotificationTypeT[] = ['warning', 'info', 'success']
+  const titles: Record<NotificationTypeT, string> = {
     warning: 'Cảnh báo',
     info: 'Thông tin',
     success: 'Hoàn thành'
   }
-  const list: NotificationItem[] = []
+  const list: NotificationItemI[] = []
   const start = (page - 1) * PAGE_SIZE
   for (let i = 0; i < PAGE_SIZE; i++) {
     const idx = start + i
@@ -34,10 +34,7 @@ function createMockNotifications(page: number): NotificationItem[] {
   return list
 }
 
-const typeConfig: Record<
-  NotificationType,
-  { icon: React.ReactNode; bg: string; text: string; label: string }
-> = {
+const typeConfig: Record<NotificationTypeT, { icon: React.ReactNode; bg: string; text: string; label: string }> = {
   warning: {
     icon: <WarningOutlined />,
     bg: 'bg-amber-100',
@@ -68,17 +65,13 @@ function formatTime(iso: string): string {
   return d.toLocaleDateString('vi-VN')
 }
 
-interface NotificationDropdownProps {
+interface NotificationDropdownPropsI {
   onClose?: () => void
   onUnreadChange?: (count: number) => void
 }
 
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
-  onUnreadChange
-}) => {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(() =>
-    createMockNotifications(1)
-  )
+const NotificationDropdown: React.FC<NotificationDropdownPropsI> = ({ onUnreadChange }) => {
+  const [notifications, setNotifications] = useState<NotificationItemI[]>(() => createMockNotifications(1))
   const [page, setPage] = useState(1)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
@@ -91,9 +84,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   }, [unreadCount, onUnreadChange])
 
   const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    )
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)))
   }, [])
 
   const loadMore = useCallback(() => {
@@ -122,11 +113,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
     <div className='absolute right-0 mt-2 w-[380px] bg-white rounded-lg shadow-lg border border-gray-200 z-50 flex flex-col max-h-[420px]'>
       <div className='px-4 py-3 border-b border-gray-200 flex items-center justify-between'>
         <h3 className='text-sm font-semibold text-gray-800'>Thông báo</h3>
-        {unreadCount > 0 && (
-          <span className='text-xs text-gray-500'>
-            {unreadCount} chưa đọc
-          </span>
-        )}
+        {unreadCount > 0 && <span className='text-xs text-gray-500'>{unreadCount} chưa đọc</span>}
       </div>
 
       <div
@@ -136,9 +123,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         style={{ maxHeight: 360 }}
       >
         {notifications.length === 0 ? (
-          <div className='px-4 py-8 text-center text-gray-500 text-sm'>
-            Không có thông báo
-          </div>
+          <div className='px-4 py-8 text-center text-gray-500 text-sm'>Không có thông báo</div>
         ) : (
           <ul className='divide-y divide-gray-100'>
             {notifications.map((item) => {
@@ -157,24 +142,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                     </span>
                     <div className='flex-1 min-w-0'>
                       <div className='flex items-center gap-2'>
-                        <span
-                          className={`text-xs font-medium ${config.text}`}
-                        >
-                          {config.label}
-                        </span>
-                        {!item.read && (
-                          <span className='w-2 h-2 rounded-full bg-blue-500 flex-shrink-0' />
-                        )}
+                        <span className={`text-xs font-medium ${config.text}`}>{config.label}</span>
+                        {!item.read && <span className='w-2 h-2 rounded-full bg-blue-500 flex-shrink-0' />}
                       </div>
-                      <p className='text-sm font-medium text-gray-800 mt-0.5 truncate'>
-                        {item.title}
-                      </p>
-                      <p className='text-xs text-gray-500 mt-0.5 line-clamp-2'>
-                        {item.message}
-                      </p>
-                      <p className='text-xs text-gray-400 mt-1'>
-                        {formatTime(item.createdAt)}
-                      </p>
+                      <p className='text-sm font-medium text-gray-800 mt-0.5 truncate'>{item.title}</p>
+                      <p className='text-xs text-gray-500 mt-0.5 line-clamp-2'>{item.message}</p>
+                      <p className='text-xs text-gray-400 mt-1'>{formatTime(item.createdAt)}</p>
                     </div>
                   </button>
                 </li>
@@ -183,15 +156,9 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </ul>
         )}
 
-        {loadingMore && (
-          <div className='px-4 py-3 text-center text-gray-500 text-sm'>
-            Đang tải thêm...
-          </div>
-        )}
+        {loadingMore && <div className='px-4 py-3 text-center text-gray-500 text-sm'>Đang tải thêm...</div>}
         {!hasMore && notifications.length > 0 && (
-          <div className='px-4 py-2 text-center text-gray-400 text-xs'>
-            Đã xem hết thông báo
-          </div>
+          <div className='px-4 py-2 text-center text-gray-400 text-xs'>Đã xem hết thông báo</div>
         )}
       </div>
     </div>

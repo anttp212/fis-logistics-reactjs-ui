@@ -1,9 +1,9 @@
 // Loại thông báo: cảnh báo, thông tin, hoàn thành
-export type NotificationType = 'warning' | 'info' | 'success'
+export type NotificationTypeT = 'warning' | 'info' | 'success'
 
-export interface NotificationItem {
+export interface NotificationItemI {
   id: string
-  type: NotificationType
+  type: NotificationTypeT
   title: string
   message: string
   read: boolean
