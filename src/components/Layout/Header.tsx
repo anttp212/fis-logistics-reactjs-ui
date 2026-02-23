@@ -4,30 +4,47 @@ import { useAppSelector, useAppDispatch } from '@hooks'
 import { ROUTES } from '@constants'
 import { clearAuth } from '@slices/auth.slice'
 import { HelpCircleIcon, BellIcon, SettingsIcon, ChevronDownIcon } from '@images'
+import NotificationDropdown from './NotificationDropdown'
+
+const NotificationBadge: React.FC<{ count: number }> = ({ count }) => {
+  if (count <= 0) return null
+  return (
+    <span className='absolute -top-0.5 -right-0.5 bg-[#DF3E3F] text-white text-[10px] font-medium px-1 rounded min-w-[16px] h-4 flex items-center justify-center'>
+      {count > 99 ? '99+' : count}
+    </span>
+  )
+}
 
 const Header: React.FC = () => {
   const user = useAppSelector((state) => state.auth?.user)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false)
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const notificationRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setIsDropdownOpen(false)
+      }
+      if (notificationRef.current && !notificationRef.current.contains(target)) {
+        setIsNotificationOpen(false)
       }
     }
 
-    if (isDropdownOpen) {
+    if (isDropdownOpen || isNotificationOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDropdownOpen])
+  }, [isDropdownOpen, isNotificationOpen])
 
   const handleLogout = () => {
     dispatch(clearAuth())
@@ -49,15 +66,18 @@ const Header: React.FC = () => {
           <HelpCircleIcon className='w-4 h-4' />
         </button>
 
-        {/* Notification Button with Badge */}
-        <div className='relative'>
-          <button className='p-1.5 hover:bg-white/10 rounded-md transition-colors'>
+        {/* Notification Button with Badge & Dropdown */}
+        <div className='relative' ref={notificationRef}>
+          <button
+            type='button'
+            onClick={() => setIsNotificationOpen((v) => !v)}
+            className='p-1.5 hover:bg-white/10 rounded-md transition-colors'
+          >
             <BellIcon className='w-4 h-4' />
           </button>
-          {/* Notification Badge */}
-          <span className='absolute -top-0.5 -right-0.5 bg-[#DF3E3F] text-white text-[10px] font-medium px-1 rounded min-w-[16px] h-4 flex items-center justify-center'>
-            15
-          </span>
+          {/* Notification Badge - số chưa đọc */}
+          <NotificationBadge count={notificationUnreadCount} />
+          {isNotificationOpen && <NotificationDropdown onUnreadChange={setNotificationUnreadCount} />}
         </div>
 
         {/* Settings Button */}
