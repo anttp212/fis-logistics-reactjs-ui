@@ -179,34 +179,21 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`${isCollapsed ? 'w-[80px]' : 'w-[280px]'} flex-shrink-0 bg-[#242173] text-white flex flex-col justify-between transition-all duration-500 gap-3`}
+      className={`${isCollapsed ? 'w-[80px]' : 'w-[280px]'} flex-shrink-0 bg-[#242173] text-white flex flex-col transition-all duration-500`}
     >
+      {/* Header: logo / brand */}
       <div
-        className={`flex w-full mt-8 px-4 relative transition-all duration-500 ease-in-out ${isCollapsed ? 'justify-center' : 'justify-between'}`}
+        className={`flex w-full mt-8 px-4  transition-all duration-500 ease-in-out ${isCollapsed ? 'justify-center' : 'justify-start'}`}
       >
-        <strong>LOGIVERSE</strong>
-        <div
-          className={`transition-all duration-500 ease-in-out ${isCollapsed ? 'absolute top-0 right-[-12px]' : 'relative'}`}
-        >
-          <FISIconButton
-            size='sm'
-            icon={
-              <ExpandIcon
-                className={` transition-transform duration-500 ease-in-out ${isCollapsed ? 'rotate-180' : 'rotate-0'}`}
-              />
-            }
-            variant='primary-white'
-            onClick={() => setIsCollapsed(!isCollapsed)}
-          />
-        </div>
+        {/* {!isCollapsed && <strong className='text-white'>LOGIVERSE</strong>} */}
       </div>
 
-      {/* Navigation Menu */}
+      {/* Navigation Menu - flex-1 để chiếm khoảng giữa */}
       <div
         className={`overflow-y-scroll flex-1 transition-all duration-500 ease-in-out ${isCollapsed ? 'px-5' : 'px-4'}`}
         style={{
-          msOverflowStyle: 'none', // IE & Edge
-          scrollbarWidth: 'none' // Firefox
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none'
         }}
       >
         <nav className='gap-1 flex flex-col transition-all duration-500 ease-in-out'>
@@ -223,6 +210,28 @@ const Sidebar: React.FC = () => {
             />
           ))}
         </nav>
+      </div>
+
+      {/* Bottom: version label song song với toggle button */}
+      <div
+        className={`flex flex-row w-full py-4 border-t border-white/10 transition-all duration-500 ease-in-out items-center gap-2 ${isCollapsed ? 'justify-center px-0' : 'justify-between px-4'}`}
+      >
+        {!isCollapsed && (
+          <span className='text-xs text-white/60 shrink-0' title='Phiên bản ứng dụng'>
+            v{import.meta.env.VITE_APP_VERSION ?? '1.0.0'}
+          </span>
+        )}
+        <FISIconButton
+          size='sm'
+          icon={
+            <ExpandIcon
+              className={`transition-transform duration-500 ease-in-out ${isCollapsed ? 'rotate-180' : 'rotate-0'}`}
+            />
+          }
+          variant='primary-white'
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          title={isCollapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+        />
       </div>
     </div>
   )

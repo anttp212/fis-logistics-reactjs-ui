@@ -40,9 +40,11 @@ export function usePermissions() {
     if (roleLower === 'admin' || roleName === 'Admin') {
       list = buildMenuPermissions(getAllPermissionKeys())
     } else if (roleName === 'Tài xế') {
-      list = buildMenuPermissions(['depot'])
+      const depotKeys = getAllPermissionKeys().filter((k) => k === 'depot' || k.startsWith('depot.'))
+      list = buildMenuPermissions(depotKeys)
     } else if (roleName === 'Bảo vệ') {
-      list = buildMenuPermissions(['warehouse'])
+      const warehouseKeys = getAllPermissionKeys().filter((k) => k === 'warehouse' || k.startsWith('warehouse.'))
+      list = buildMenuPermissions(warehouseKeys)
     } else if (roleLower === 'quản trị viên' || roleLower === 'administrator') {
       list = buildPermissionsFromEntries(entries, {
         view: true,

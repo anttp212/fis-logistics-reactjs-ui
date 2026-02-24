@@ -58,7 +58,12 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className='bg-[#242173] text-white px-4 py-3 flex items-center justify-end'>
+    <header className='bg-[#242173] text-white px-4 py-3 flex items-center justify-between'>
+      {/* Logo */}
+      <div className='flex items-center shrink-0'>
+        <span className='text-lg font-bold tracking-tight text-white'>LOGIVERSE</span>
+      </div>
+
       {/* Right Side - Actions */}
       <div className='flex items-center gap-1'>
         {/* Help Button */}

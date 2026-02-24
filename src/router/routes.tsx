@@ -119,18 +119,284 @@ export const routes: RouteObject[] = [
           return { Component: HomeComponent.default }
         }
       },
+      // Quản lý kho: path tương đối, sub-routes trước, redirect sau
       {
-        path: ROUTES.warehouse,
+        path: 'warehouse/service-registration-portal',
         lazy: async () => {
-          const WarehouseComponent = await import('../pages/warehouse')
-          return { Component: WarehouseComponent.default }
+          const C = await import('../pages/warehouse/service-registration-portal')
+          return { Component: C.default }
         }
       },
       {
-        path: ROUTES.depot,
+        path: 'warehouse/assessment-approval',
         lazy: async () => {
-          const DepotComponent = await import('../pages/depot')
-          return { Component: DepotComponent.default }
+          const C = await import('../pages/warehouse/assessment-approval')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/payment-management',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/payment-management')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/ycdv-list-tracking',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/ycdv-list-tracking')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/stock-approval-lock',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/stock-approval-lock')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/ycdv-execution-tracking',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/ycdv-execution-tracking')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/planning-receive-ycdv',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/planning-receive-ycdv')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/planning-operations',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/planning-operations')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/planning-approval',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/planning-approval')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/execution-operations',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/execution-operations')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/execution-reconciliation',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/execution-reconciliation')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/execution-confirm-lock',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/execution-confirm-lock')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/storage-fee',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/storage-fee')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/vas-fee',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/vas-fee')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/tally-job-sheet',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/tally-job-sheet')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/billing-erp-sync',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/billing-erp-sync')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/execution-result',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/execution-result')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/report-wms',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/report-wms')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse/log-audit',
+        lazy: async () => {
+          const C = await import('../pages/warehouse/log-audit')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'warehouse',
+        loader: async () => {
+          throw redirect(ROUTES.warehouseServiceRegistrationPortal)
+        }
+      },
+      // Depot: dùng path tương đối (không dấu /) để chắc chắn match dưới layout
+      {
+        path: 'depot/service-registration',
+        lazy: async () => {
+          const C = await import('../pages/depot/service-registration')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/fee-config',
+        lazy: async () => {
+          const C = await import('../pages/depot/fee-config')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/borrow-empty',
+        lazy: async () => {
+          const C = await import('../pages/depot/borrow-empty')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/return-empty',
+        lazy: async () => {
+          const C = await import('../pages/depot/return-empty')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/borrow-return-orders',
+        lazy: async () => {
+          const C = await import('../pages/depot/borrow-return-orders')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/container-lifecycle',
+        lazy: async () => {
+          const C = await import('../pages/depot/container-lifecycle')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/payment-gateway',
+        lazy: async () => {
+          const C = await import('../pages/depot/payment-gateway')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/invoice-docs',
+        lazy: async () => {
+          const C = await import('../pages/depot/invoice-docs')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/yard-planning',
+        lazy: async () => {
+          const C = await import('../pages/depot/yard-planning')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/operational-schedule',
+        lazy: async () => {
+          const C = await import('../pages/depot/operational-schedule')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/staff-equipment',
+        lazy: async () => {
+          const C = await import('../pages/depot/staff-equipment')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/job-order',
+        lazy: async () => {
+          const C = await import('../pages/depot/job-order')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/recognition-reconciliation',
+        lazy: async () => {
+          const C = await import('../pages/depot/recognition-reconciliation')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/barrier-display',
+        lazy: async () => {
+          const C = await import('../pages/depot/barrier-display')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/dms-confirmation',
+        lazy: async () => {
+          const C = await import('../pages/depot/dms-confirmation')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/output-billing',
+        lazy: async () => {
+          const C = await import('../pages/depot/output-billing')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/vehicle-service-log',
+        lazy: async () => {
+          const C = await import('../pages/depot/vehicle-service-log')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/performance-stats',
+        lazy: async () => {
+          const C = await import('../pages/depot/performance-stats')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot/operations-dashboard',
+        lazy: async () => {
+          const C = await import('../pages/depot/operations-dashboard')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'depot',
+        loader: async () => {
+          throw redirect(ROUTES.depotServiceRegistration)
         }
       },
       {
@@ -350,11 +616,67 @@ export const routes: RouteObject[] = [
           return { Component: SystemConfigNotificationTemplateComponent.default }
         }
       },
+      // Quản lý vận chuyển: path tương đối, sub-routes trước, redirect sau
       {
-        path: ROUTES.transportation,
+        path: 'transportation/vehicle-dispatch',
         lazy: async () => {
-          const TransportationComponent = await import('../pages/transportation')
-          return { Component: TransportationComponent.default }
+          const C = await import('../pages/transportation/vehicle-dispatch')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-approval',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-approval')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/service-request-portal',
+        lazy: async () => {
+          const C = await import('../pages/transportation/service-request-portal')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/reception-assessment',
+        lazy: async () => {
+          const C = await import('../pages/transportation/reception-assessment')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/dispatch-planning',
+        lazy: async () => {
+          const C = await import('../pages/transportation/dispatch-planning')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/trip-monitoring',
+        lazy: async () => {
+          const C = await import('../pages/transportation/trip-monitoring')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/trip-settlement',
+        lazy: async () => {
+          const C = await import('../pages/transportation/trip-settlement')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/tally-billing',
+        lazy: async () => {
+          const C = await import('../pages/transportation/tally-billing')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation',
+        loader: async () => {
+          throw redirect(ROUTES.transportationVehicleDispatch)
         }
       }
     ]
