@@ -398,12 +398,11 @@ const UserManagementRolesPermissions = () => {
                     <strong>Mô tả:</strong> {record.description}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Phân quyền:</strong>{' '}
-                    {(record.menuPermissions || []).length} menu đã cấu hình quyền (Xem/Tạo/Sửa/Xóa/Tìm kiếm)
+                    <strong>Phân quyền:</strong> {(record.menuPermissions || []).length} menu đã cấu hình quyền
+                    (Xem/Tạo/Sửa/Xóa/Tìm kiếm)
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Trạng thái:</strong>{' '}
-                    {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                    <strong>Trạng thái:</strong> {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
                   </p>
                 </div>
               ),

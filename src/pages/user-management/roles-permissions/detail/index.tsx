@@ -350,9 +350,7 @@ const RoleDetail = () => {
             {/* Permissions */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
               <h3 className='text-lg font-semibold text-gray-900 mb-4'>Phân quyền theo menu</h3>
-              <p className='text-sm text-gray-500 mb-4'>
-                Mỗi menu có các quyền: Xem, Tạo, Chỉnh sửa, Xóa, Tìm kiếm
-              </p>
+              <p className='text-sm text-gray-500 mb-4'>Mỗi menu có các quyền: Xem, Tạo, Chỉnh sửa, Xóa, Tìm kiếm</p>
               <div className='border border-gray-200 rounded-lg overflow-hidden overflow-x-auto'>
                 <table className='w-full text-sm'>
                   <thead className='bg-gray-50'>

@@ -51,28 +51,36 @@ const SubMenu: React.FC<{
       {subItems
         .filter((sub) => !sub.permissionKey || canView(sub.permissionKey))
         .map((subItem) => {
-        const isActiveOrChild = currentPath === subItem.to || currentPath.startsWith(subItem.to + '/')
-        return (
-          <NavLink
-            key={subItem.to}
-            to={subItem.to}
-            className={`flex h-[36px] pl-[52px] items-center mt-1 rounded-lg transition-all text-white text-base font-medium ${
-              isActiveOrChild ? 'bg-white/15' : hoverMenuStyles
-            }`}
-          >
-            <FISText variant='Paragraph/Sm' color='com/navigation/label/default' className='line-clamp-1'>
-              {subItem.label}
-            </FISText>
-          </NavLink>
-        )
-      })}
+          const isActiveOrChild = currentPath === subItem.to || currentPath.startsWith(subItem.to + '/')
+          return (
+            <NavLink
+              key={subItem.to}
+              to={subItem.to}
+              className={`flex h-[36px] pl-[52px] items-center mt-1 rounded-lg transition-all text-white text-base font-medium ${
+                isActiveOrChild ? 'bg-white/15' : hoverMenuStyles
+              }`}
+            >
+              <FISText variant='Paragraph/Sm' color='com/navigation/label/default' className='line-clamp-1'>
+                {subItem.label}
+              </FISText>
+            </NavLink>
+          )
+        })}
     </div>
   </div>
 ))
 
 SubMenu.displayName = 'SubMenu'
 
-const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isCollapsed = false, permissionKey: _permissionKey, canView }) => {
+const MenuItem: React.FC<MenuItemPropsI> = ({
+  to,
+  icon,
+  label,
+  subItems,
+  isCollapsed = false,
+  permissionKey: _permissionKey,
+  canView
+}) => {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false)
   const location = useLocation()
 
@@ -149,12 +157,7 @@ const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isColla
       </div>
 
       {!isCollapsed && (
-        <SubMenu
-          subItems={subItems}
-          isExpanded={isMenuExpanded}
-          currentPath={location.pathname}
-          canView={canView}
-        />
+        <SubMenu subItems={subItems} isExpanded={isMenuExpanded} currentPath={location.pathname} canView={canView} />
       )}
     </div>
   )

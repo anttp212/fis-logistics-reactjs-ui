@@ -57,10 +57,13 @@ export function usePermissions() {
       list = buildPermissionsFromEntries(entries, { view: true, search: true })
     }
 
-    const byKey = list.reduce((acc, p) => {
-      acc[p.menuKey] = p
-      return acc
-    }, {} as Record<string, MenuPermissionI>)
+    const byKey = list.reduce(
+      (acc, p) => {
+        acc[p.menuKey] = p
+        return acc
+      },
+      {} as Record<string, MenuPermissionI>
+    )
     return { list, byKey }
   }, [user?.role, t])
 

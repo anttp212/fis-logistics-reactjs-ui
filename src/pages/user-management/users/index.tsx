@@ -296,11 +296,13 @@ const UserManagementUsers = () => {
   }
 
   const getRoleLabel = (role: string) => {
+    /* eslint-disable @typescript-eslint/naming-convention */
     const roleMap: Record<string, string> = {
       Admin: 'Admin',
       'Tài xế': 'Tài xế',
       'Bảo vệ': 'Bảo vệ'
     }
+    /* eslint-enable @typescript-eslint/naming-convention */
     return roleMap[role] || role
   }
 
@@ -444,11 +446,7 @@ const UserManagementUsers = () => {
         {/* Table Toolbar with Filter */}
         <TableToolbar
           filterContent={
-            <UsersFilter
-              control={users.control}
-              userGroupsList={userGroupsList}
-              departmentsList={departmentsList}
-            />
+            <UsersFilter control={users.control} userGroupsList={userGroupsList} departmentsList={departmentsList} />
           }
           actionButtons={
             <FISButton variant='primary' startIcon={<AddIcon />} onClick={handleAddNew}>

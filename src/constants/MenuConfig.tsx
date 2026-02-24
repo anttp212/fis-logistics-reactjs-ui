@@ -177,7 +177,8 @@ export const MENU_ENTRIES: MenuEntryI[] = [
   }
 ]
 
-/** Icon map theo permissionKey (cho menu cha) */
+/** Icon map theo permissionKey (cho menu cha) - keys phải khớp permissionKey trong MENU_ENTRIES */
+/* eslint-disable @typescript-eslint/naming-convention */
 const MENU_ICONS: Record<string, React.ReactNode> = {
   'user-management': <SettingsIcon className='w-5 h-5' />,
   'organization-structure': <ConfigIcon className='w-5 h-5' />,
@@ -185,6 +186,7 @@ const MENU_ICONS: Record<string, React.ReactNode> = {
   'notification-management': <BellIcon className='w-5 h-5' />,
   'system-config': <ConfigIcon className='w-5 h-5' />
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export interface MenuItemConfigI {
   to: string
@@ -237,15 +239,17 @@ export function getMenuTree(t: TFunction): MenuItemConfigI[] {
       result.push({
         to: root.path,
         icon:
-          root.permissionKey === 'home'
-            ? <DashboardIcon className='w-5 h-5' />
-            : root.permissionKey === 'warehouse'
-              ? <WarehouseIcon className='w-5 h-5' />
-              : root.permissionKey === 'depot'
-                ? <DepotIcon className='w-5 h-5' />
-                : root.permissionKey === 'transportation'
-                  ? <TransportationIcon className='w-5 h-5' />
-                  : <DashboardIcon className='w-5 h-5' />,
+          root.permissionKey === 'home' ? (
+            <DashboardIcon className='w-5 h-5' />
+          ) : root.permissionKey === 'warehouse' ? (
+            <WarehouseIcon className='w-5 h-5' />
+          ) : root.permissionKey === 'depot' ? (
+            <DepotIcon className='w-5 h-5' />
+          ) : root.permissionKey === 'transportation' ? (
+            <TransportationIcon className='w-5 h-5' />
+          ) : (
+            <DashboardIcon className='w-5 h-5' />
+          ),
         label:
           typeof root.labelKey === 'string' && root.labelKey.startsWith('common.menu')
             ? t(root.labelKey as never)
@@ -265,10 +269,7 @@ export function getMenuEntriesForPermissionMatrix(
   return MENU_ENTRIES.filter((e) => !e.parentKey || e.parentKey !== '__root').map((e) => ({
     permissionKey: e.permissionKey,
     path: e.path,
-    label:
-      typeof e.labelKey === 'string' && e.labelKey.startsWith('common.menu')
-        ? t(e.labelKey as never)
-        : e.labelKey
+    label: typeof e.labelKey === 'string' && e.labelKey.startsWith('common.menu') ? t(e.labelKey as never) : e.labelKey
   }))
 }
 
@@ -292,10 +293,7 @@ export function getAllPermissionKeys(): string[] {
  * Tạo menuPermissions: các menu trong fullAccessKeys được full quyền (view, create, edit, delete, search);
  * các menu còn lại chỉ view + search (hoặc không quyền nếu grantOthersView = false).
  */
-export function buildMenuPermissions(
-  fullAccessKeys: string[],
-  grantOthersViewSearch = false
-): MenuPermissionI[] {
+export function buildMenuPermissions(fullAccessKeys: string[], grantOthersViewSearch = false): MenuPermissionI[] {
   const keys = getAllPermissionKeys()
   const fullSet = new Set(fullAccessKeys)
   return keys.map((menuKey) => {

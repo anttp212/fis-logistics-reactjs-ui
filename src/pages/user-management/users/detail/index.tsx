@@ -25,6 +25,7 @@ interface UserDetailI {
 const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
   await new Promise((resolve) => setTimeout(resolve, 500))
 
+  /* eslint-disable @typescript-eslint/naming-convention */
   const fakeUsers: Record<string, UserDetailI> = {
     '1': {
       key: '1',
@@ -66,6 +67,7 @@ const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
       description: 'Tất cả quyền quản lý kho'
     }
   }
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   return fakeUsers[userId] || null
 }
@@ -106,11 +108,13 @@ const UserDetail = () => {
   }, [id])
 
   const getRoleLabel = (role: string) => {
+    /* eslint-disable @typescript-eslint/naming-convention */
     const roleMap: Record<string, string> = {
       Admin: 'Admin',
       'Tài xế': 'Tài xế',
       'Bảo vệ': 'Bảo vệ'
     }
+    /* eslint-enable @typescript-eslint/naming-convention */
     return roleMap[role] || role
   }
 

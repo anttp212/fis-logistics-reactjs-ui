@@ -85,9 +85,7 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
         reset({
           name: initialData.name || '',
           description: initialData.description || '',
-          menuPermissions: initialData.menuPermissions?.length
-            ? initialData.menuPermissions
-            : defaultMenuPermissions
+          menuPermissions: initialData.menuPermissions?.length ? initialData.menuPermissions : defaultMenuPermissions
         })
       } else {
         reset({
@@ -113,9 +111,7 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
     action: keyof Omit<MenuPermissionI, 'menuKey'>,
     checked: boolean
   ) => {
-    const next = (menuPermissions || []).map((p) =>
-      p.menuKey === menuKey ? { ...p, [action]: checked } : p
-    )
+    const next = (menuPermissions || []).map((p) => (p.menuKey === menuKey ? { ...p, [action]: checked } : p))
     setValue('menuPermissions', next, { shouldDirty: true })
   }
 
@@ -155,18 +151,14 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
             render={({ field }) => (
               <div>
                 <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả vai trò' />
-                {errors.description && (
-                  <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>
-                )}
+                {errors.description && <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>}
               </div>
             )}
           />
 
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-2'>Phân quyền theo menu</label>
-            <p className='text-xs text-gray-500 mb-2'>
-              Mỗi menu có các quyền: Xem, Tạo, Chỉnh sửa, Xóa, Tìm kiếm
-            </p>
+            <p className='text-xs text-gray-500 mb-2'>Mỗi menu có các quyền: Xem, Tạo, Chỉnh sửa, Xóa, Tìm kiếm</p>
             <div className='border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto'>
               <table className='w-full text-sm'>
                 <thead className='bg-gray-50 sticky top-0'>
@@ -189,9 +181,7 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
                           <td key={action} className='py-2 px-2 text-center'>
                             <Checkbox
                               checked={perm?.[action] ?? false}
-                              onChange={(e) =>
-                                handlePermissionChange(entry.permissionKey, action, e.target.checked)
-                              }
+                              onChange={(e) => handlePermissionChange(entry.permissionKey, action, e.target.checked)}
                             />
                           </td>
                         ))}
