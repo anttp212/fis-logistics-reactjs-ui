@@ -1,0 +1,90 @@
+// Đồng bộ CSS checkbox trong table body (FISTable) với checkbox trong table header
+.ant-table-wrapper {
+  // Cùng chiều cao tối thiểu hàng header và body để cột checkbox thẳng hàng
+  .ant-table-thead > tr,
+  .ant-table-tbody > tr {
+    min-height: 44px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    min-height: 44px;
+  }
+
+  // Cột checkbox ở header: right-component-father đã có display flex, align center, justify center
+  .ant-table-thead th .header-cell-container .right-component-father {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Cột checkbox (cột đầu tiên): cùng padding để checkbox thẳng hàng dọc
+  .ant-table-thead > tr > th:first-child.ant-table-cell,
+  .ant-table-tbody > tr > td:first-child.ant-table-cell {
+    padding: 12px 16px !important;
+    vertical-align: middle;
+  }
+
+  // Căn giữa theo chiều dọc: ô checkbox header và body cùng cách hiển thị
+  .ant-table-thead > tr > th:first-child .header-cell-container,
+  .ant-table-tbody > tr > td:first-child .column-cell-container {
+    display: flex;
+    align-items: center;
+    min-height: 100%;
+  }
+
+  // Bỏ padding thừa bên trong ô checkbox body để trùng với header
+  .ant-table-tbody > tr > td:first-child .column-cell-container .left-right-content {
+    padding: 0;
+  }
+
+  // Cột checkbox ở body: đồng bộ layout và kích thước với header
+  .ant-table-tbody td .column-cell-container {
+    .content-box,
+    .icon-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // Checkbox trong body: cùng kích thước và style với header
+    input[type='checkbox'] {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      margin: 0;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      accent-color: #2563eb;
+      &:focus {
+        outline: 2px solid #93c5fd;
+        outline-offset: 2px;
+      }
+    }
+    .content-box,
+    .icon-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // Checkbox trong body: cùng kích thước và style với header
+    input[type='checkbox'] {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      margin: 0;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      accent-color: #2563eb;
+      &:focus {
+        outline: 2px solid #93c5fd;
+        outline-offset: 2px;
+      }
+    }
+  }
+}

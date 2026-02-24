@@ -5,6 +5,7 @@ const DEFAULT_FILTER_VALUES = {
   search: '',
   name: '',
   userGroup: '',
+  department: '',
   role: '',
   status: ''
 }

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import './index.css'
 import './assets/styles/antd.scss'
+import './assets/styles/fis-table.scss'
 
 import Router from './router'
 import { Provider } from 'react-redux'

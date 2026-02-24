@@ -7,13 +7,12 @@ import { ROUTES } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
 
-// Extended User type with more details
 interface UserDetailI {
   key: string
   username: string
   email: string
   userGroup: string
-  role: 'admin' | 'operator' | 'accountant' | 'viewer'
+  role: string
   status?: string
   fullName?: string
   phone?: string
@@ -22,82 +21,49 @@ interface UserDetailI {
   description?: string
 }
 
-// Fake API function to get user detail
+// Fake API function to get user detail (3 tài khoản: admin, taixe, baove)
 const fetchUserDetail = async (userId: string): Promise<UserDetailI | null> => {
-  // Simulate API call delay
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  // Fake user data
   const fakeUsers: Record<string, UserDetailI> = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '1': {
       key: '1',
-      username: 'admin001',
-      email: 'admin001@example.com',
+      username: 'admin',
+      email: 'admin@example.com',
       userGroup: 'Văn phòng',
-      role: 'admin',
+      role: 'Admin',
       status: 'active',
-      fullName: 'Nguyễn Văn Admin',
+      fullName: 'Admin',
       phone: '0901234567',
       createdAt: '2024-01-15',
       lastLogin: '2024-12-20 10:30:00',
-      description: 'Quản trị viên hệ thống với quyền truy cập đầy đủ'
+      description: 'Toàn quyền hệ thống'
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '2': {
       key: '2',
-      username: 'operator001',
-      email: 'operator001@example.com',
-      userGroup: 'Nhân viên hiện trường',
-      role: 'operator',
+      username: 'taixe',
+      email: 'taixe@example.com',
+      userGroup: 'Tài xế',
+      role: 'Tài xế',
       status: 'active',
-      fullName: 'Trần Thị Điều hành',
+      fullName: 'Tài xế',
       phone: '0902345678',
       createdAt: '2024-02-20',
       lastLogin: '2024-12-20 09:15:00',
-      description: 'Nhân viên điều hành tại hiện trường'
+      description: 'Tất cả quyền quản lý depot'
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '3': {
       key: '3',
-      username: 'accountant001',
-      email: 'accountant001@example.com',
-      userGroup: 'Văn phòng',
-      role: 'accountant',
+      username: 'baove',
+      email: 'baove@example.com',
+      userGroup: 'Bảo vệ',
+      role: 'Bảo vệ',
       status: 'active',
-      fullName: 'Lê Văn Kế toán',
+      fullName: 'Bảo vệ',
       phone: '0903456789',
       createdAt: '2024-03-10',
       lastLogin: '2024-12-19 16:45:00',
-      description: 'Kế toán viên phụ trách tài chính'
-    },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '4': {
-      key: '4',
-      username: 'viewer001',
-      email: 'viewer001@example.com',
-      userGroup: 'Khách hàng',
-      role: 'viewer',
-      status: 'inactive',
-      fullName: 'Phạm Thị Xem',
-      phone: '0904567890',
-      createdAt: '2024-04-05',
-      lastLogin: '2024-12-15 14:20:00',
-      description: 'Người dùng chỉ xem, không có quyền chỉnh sửa'
-    },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '5': {
-      key: '5',
-      username: 'operator002',
-      email: 'operator002@example.com',
-      userGroup: 'Nhân viên hiện trường',
-      role: 'operator',
-      status: 'active',
-      fullName: 'Hoàng Văn Vận hành',
-      phone: '0905678901',
-      createdAt: '2024-05-12',
-      lastLogin: '2024-12-20 11:00:00',
-      description: 'Nhân viên vận hành tại hiện trường'
+      description: 'Tất cả quyền quản lý kho'
     }
   }
 
@@ -141,10 +107,9 @@ const UserDetail = () => {
 
   const getRoleLabel = (role: string) => {
     const roleMap: Record<string, string> = {
-      admin: 'Quản trị viên',
-      operator: 'Điều hành',
-      accountant: 'Kế toán',
-      viewer: 'Người xem'
+      Admin: 'Admin',
+      'Tài xế': 'Tài xế',
+      'Bảo vệ': 'Bảo vệ'
     }
     return roleMap[role] || role
   }

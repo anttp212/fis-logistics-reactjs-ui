@@ -8,7 +8,8 @@ interface UserFormDataI {
   email: string
   password: string
   userGroup: string
-  role: 'admin' | 'operator' | 'accountant' | 'viewer'
+  department: string
+  role: string
 }
 
 interface UserI {
@@ -16,7 +17,8 @@ interface UserI {
   username: string
   email: string
   userGroup: string
-  role: 'admin' | 'operator' | 'accountant' | 'viewer'
+  department?: string
+  role: string
   status?: string
 }
 
@@ -25,6 +27,7 @@ interface UserModalPropsI {
   onClose: () => void
   onSubmit: (data: UserFormDataI) => void
   userGroupsList: { value: string; label: string }[]
+  departmentsList: { value: string; label: string }[]
   initialData?: UserI | null
   isLoading?: boolean
 }
@@ -34,6 +37,7 @@ const UserModal: FC<UserModalPropsI> = ({
   onClose,
   onSubmit,
   userGroupsList,
+  departmentsList,
   initialData,
   isLoading = false
 }) => {
@@ -49,7 +53,8 @@ const UserModal: FC<UserModalPropsI> = ({
       email: '',
       password: '',
       userGroup: '',
-      role: 'viewer'
+      department: '',
+      role: 'Bảo vệ'
     }
   })
 
@@ -62,7 +67,8 @@ const UserModal: FC<UserModalPropsI> = ({
           email: initialData.email || '',
           password: '', // Không fill password khi edit
           userGroup: initialData.userGroup || '',
-          role: initialData.role || 'viewer'
+          department: initialData.department ?? '',
+          role: initialData.role || 'Bảo vệ'
         })
       } else {
         reset({
@@ -70,7 +76,8 @@ const UserModal: FC<UserModalPropsI> = ({
           email: '',
           password: '',
           userGroup: '',
-          role: 'viewer'
+          department: '',
+          role: 'Bảo vệ'
         })
       }
     }
@@ -85,12 +92,11 @@ const UserModal: FC<UserModalPropsI> = ({
     onClose()
   }
 
-  // Role options
+  // Role options: Admin, Tài xế, Bảo vệ
   const roleOptions = [
-    { value: 'admin', label: 'Quản trị viên' },
-    { value: 'operator', label: 'Điều hành' },
-    { value: 'accountant', label: 'Kế toán' },
-    { value: 'viewer', label: 'Người xem' }
+    { value: 'Admin', label: 'Admin' },
+    { value: 'Tài xế', label: 'Tài xế' },
+    { value: 'Bảo vệ', label: 'Bảo vệ' }
   ]
 
   return (
@@ -195,6 +201,30 @@ const UserModal: FC<UserModalPropsI> = ({
                     size='large'
                   />
                   {errors.userGroup && <p className='mt-1 text-sm text-red-600'>{errors.userGroup.message}</p>}
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Phòng ban */}
+          <div>
+            <Controller
+              name='department'
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>Phòng ban</label>
+                  <Select
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder='Chọn phòng ban'
+                    options={departmentsList}
+                    className='w-full'
+                    size='large'
+                    allowClear
+                  />
+                  {errors.department && <p className='mt-1 text-sm text-red-600'>{errors.department.message}</p>}
                 </div>
               )}
             />

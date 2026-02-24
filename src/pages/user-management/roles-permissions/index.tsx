@@ -9,52 +9,40 @@ import RolePermissionModal from './components/RolePermissionModal'
 import RolesPermissionsFilter from './components/RolesPermissionsFilter'
 import { useRolesPermissions } from './useRolesPermissions'
 import { buildRoleDetailPath } from '@constants'
+import { buildMenuPermissions, getAllPermissionKeys } from '@constants'
+import type { MenuPermissionI } from '@app-types/permission'
 
 // Role Permission type
 interface RolePermissionI {
   key: string
   name: string
   description: string
-  permissions: string[]
+  menuPermissions: MenuPermissionI[]
   status?: string
 }
 
-// Fake data cho danh sách Vai trò & phân quyền
+// 3 vai trò: Admin (tất cả quyền), Tài xế (full quyền depot), Bảo vệ (full quyền kho)
 const FAKE_ROLES_PERMISSIONS_DATA: RolePermissionI[] = [
   {
-    key: '1',
-    name: 'Quản trị viên',
-    description: 'Toàn quyền truy cập hệ thống',
-    permissions: ['read', 'write', 'delete', 'admin'],
+    key: 'admin',
+    name: 'Admin',
+    description: 'Toàn quyền hệ thống',
+    menuPermissions: buildMenuPermissions(getAllPermissionKeys()),
     status: 'active'
   },
   {
-    key: '2',
-    name: 'Điều hành',
-    description: 'Quyền quản lý và điều phối hoạt động',
-    permissions: ['read', 'write', 'manage'],
+    key: 'driver',
+    name: 'Tài xế',
+    description: 'Tất cả quyền quản lý depot',
+    menuPermissions: buildMenuPermissions(['depot']),
     status: 'active'
   },
   {
-    key: '3',
-    name: 'Kế toán',
-    description: 'Quyền xem và quản lý tài chính',
-    permissions: ['read', 'write', 'finance'],
+    key: 'security',
+    name: 'Bảo vệ',
+    description: 'Tất cả quyền quản lý kho',
+    menuPermissions: buildMenuPermissions(['warehouse']),
     status: 'active'
-  },
-  {
-    key: '4',
-    name: 'Người xem',
-    description: 'Chỉ có quyền xem dữ liệu',
-    permissions: ['read'],
-    status: 'active'
-  },
-  {
-    key: '5',
-    name: 'Nhân viên kho',
-    description: 'Quyền quản lý kho hàng',
-    permissions: ['read', 'write', 'warehouse'],
-    status: 'inactive'
   }
 ]
 
@@ -122,7 +110,7 @@ const UserManagementRolesPermissions = () => {
         (role) =>
           role.name.toLowerCase().includes(searchTerm) ||
           role.description.toLowerCase().includes(searchTerm) ||
-          role.permissions.some((p) => p.toLowerCase().includes(searchTerm))
+          role.menuPermissions.some((p) => p.menuKey.toLowerCase().includes(searchTerm))
       )
     }
 
@@ -187,7 +175,11 @@ const UserManagementRolesPermissions = () => {
     setEditingRolePermission(null)
   }
 
-  const handleModalSubmit = async (formData: { name: string; description: string; permissions: string[] }) => {
+  const handleModalSubmit = async (formData: {
+    name: string
+    description: string
+    menuPermissions: MenuPermissionI[]
+  }) => {
     try {
       if (editingRolePermission) {
         // TODO: Call API to update role permission
@@ -287,9 +279,26 @@ const UserManagementRolesPermissions = () => {
     {
       dataIndex: 'permissions',
       key: 'permissions',
-      width: 250,
+      width: 280,
       title: () => <FISTableHeaderCell label='Phân quyền' hasRightDivider />,
-      render: (_: any, row: RolePermissionI) => <FISTableCell content={row.permissions.join(', ')} textAlign='left' />
+      render: (_: any, row: RolePermissionI) => {
+        const perms = row.menuPermissions || []
+        const viewCount = perms.filter((p) => p.view).length
+        const createCount = perms.filter((p) => p.create).length
+        const editCount = perms.filter((p) => p.edit).length
+        const deleteCount = perms.filter((p) => p.delete).length
+        const searchCount = perms.filter((p) => p.search).length
+        const summary = [
+          viewCount ? `Xem: ${viewCount}` : null,
+          createCount ? `Tạo: ${createCount}` : null,
+          editCount ? `Sửa: ${editCount}` : null,
+          deleteCount ? `Xóa: ${deleteCount}` : null,
+          searchCount ? `Tìm: ${searchCount}` : null
+        ]
+          .filter(Boolean)
+          .join(', ')
+        return <FISTableCell content={summary || '—'} textAlign='left' />
+      }
     },
     {
       dataIndex: 'status',
@@ -389,10 +398,12 @@ const UserManagementRolesPermissions = () => {
                     <strong>Mô tả:</strong> {record.description}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Phân quyền:</strong> {record.permissions.join(', ')}
+                    <strong>Phân quyền:</strong>{' '}
+                    {(record.menuPermissions || []).length} menu đã cấu hình quyền (Xem/Tạo/Sửa/Xóa/Tìm kiếm)
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Trạng thái:</strong> {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                    <strong>Trạng thái:</strong>{' '}
+                    {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
                   </p>
                 </div>
               ),

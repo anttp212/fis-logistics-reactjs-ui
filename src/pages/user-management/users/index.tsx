@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
@@ -7,6 +8,8 @@ import { AddIcon } from '@images'
 import UserModal from './components/UserModal'
 import UsersFilter from './components/UsersFilter'
 import { useGetUserGroupsQuery } from '../user-group/userGroup.api'
+import { useGetDepartmentsQuery } from '../../organization-structure/departments/departments.api'
+import { buildUserDetailPath } from '@constants'
 import { useUsers } from './useUsers'
 
 // User type
@@ -15,50 +18,38 @@ interface UserI {
   username: string
   email: string
   userGroup: string
-  role: 'admin' | 'operator' | 'accountant' | 'viewer'
+  department?: string
+  role: string
   status?: string
 }
 
-// Fake data cho danh sách người dùng
+// 3 tài khoản mẫu theo vai trò: Admin, Tài xế, Bảo vệ
 const FAKE_USERS_DATA: UserI[] = [
   {
     key: '1',
-    username: 'admin001',
-    email: 'admin001@example.com',
+    username: 'admin',
+    email: 'admin@example.com',
     userGroup: 'Văn phòng',
-    role: 'admin',
+    department: 'Phòng Kinh doanh',
+    role: 'Admin',
     status: 'active'
   },
   {
     key: '2',
-    username: 'operator001',
-    email: 'operator001@example.com',
-    userGroup: 'Nhân viên hiện trường',
-    role: 'operator',
+    username: 'taixe',
+    email: 'taixe@example.com',
+    userGroup: 'Tài xế',
+    department: 'Phòng Kế toán',
+    role: 'Tài xế',
     status: 'active'
   },
   {
     key: '3',
-    username: 'accountant001',
-    email: 'accountant001@example.com',
-    userGroup: 'Văn phòng',
-    role: 'accountant',
-    status: 'active'
-  },
-  {
-    key: '4',
-    username: 'viewer001',
-    email: 'viewer001@example.com',
-    userGroup: 'Khách hàng',
-    role: 'viewer',
-    status: 'inactive'
-  },
-  {
-    key: '5',
-    username: 'operator002',
-    email: 'operator002@example.com',
-    userGroup: 'Nhân viên hiện trường',
-    role: 'operator',
+    username: 'baove',
+    email: 'baove@example.com',
+    userGroup: 'Bảo vệ',
+    department: 'Phòng Nhân sự',
+    role: 'Bảo vệ',
     status: 'active'
   }
 ]
@@ -93,11 +84,13 @@ const Checkbox = ({ checked = false, indeterminate = false, onChange }: Checkbox
 }
 
 const UserManagementUsers = () => {
+  const navigate = useNavigate()
   // Use users hook for filter and search
   const users = useUsers()
 
-  // Get user groups for select dropdown
+  // Get user groups and departments for select dropdowns
   const { data: userGroupsResponse } = useGetUserGroupsQuery()
+  const { data: departmentsResponse } = useGetDepartmentsQuery()
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -126,6 +119,11 @@ const UserManagementUsers = () => {
     // Filter by role
     if (filterValues.role) {
       filtered = filtered.filter((user) => user.role === filterValues.role)
+    }
+
+    // Filter by department
+    if (filterValues.department) {
+      filtered = filtered.filter((user) => user.department === filterValues.department)
     }
 
     // Filter by status
@@ -162,6 +160,22 @@ const UserManagementUsers = () => {
       { value: 'Nhân viên hiện trường', label: 'Nhân viên hiện trường' }
     ]
   }, [userGroupsResponse])
+
+  // Get departments list for select (API or fallback)
+  const departmentsList = useMemo(() => {
+    if (departmentsResponse?.data?.data && Array.isArray(departmentsResponse.data.data)) {
+      return departmentsResponse.data.data.map((d) => ({
+        value: d.name,
+        label: d.name
+      }))
+    }
+    return [
+      { value: 'Phòng Kinh doanh', label: 'Phòng Kinh doanh' },
+      { value: 'Phòng Kế toán', label: 'Phòng Kế toán' },
+      { value: 'Phòng Nhân sự', label: 'Phòng Nhân sự' },
+      { value: 'Phòng IT', label: 'Phòng IT' }
+    ]
+  }, [departmentsResponse])
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
@@ -226,7 +240,8 @@ const UserManagementUsers = () => {
     email: string
     password: string
     userGroup: string
-    role: 'admin' | 'operator' | 'accountant' | 'viewer'
+    department: string
+    role: string
   }) => {
     try {
       if (editingUser) {
@@ -282,10 +297,9 @@ const UserManagementUsers = () => {
 
   const getRoleLabel = (role: string) => {
     const roleMap: Record<string, string> = {
-      admin: 'Quản trị viên',
-      operator: 'Điều hành',
-      accountant: 'Kế toán',
-      viewer: 'Người xem'
+      Admin: 'Admin',
+      'Tài xế': 'Tài xế',
+      'Bảo vệ': 'Bảo vệ'
     }
     return roleMap[role] || role
   }
@@ -313,7 +327,20 @@ const UserManagementUsers = () => {
       title: () => {
         return <FISTableHeaderCell label='Tên người dùng' hasRightDivider />
       },
-      render: (_: any, row: UserI) => <FISTableCell content={row.username} textAlign='left' />
+      render: (_: any, row: UserI) => (
+        <FISTableCell
+          textAlign='left'
+          content={
+            <button
+              type='button'
+              onClick={() => navigate(buildUserDetailPath(row.key))}
+              className='text-blue-600 hover:text-blue-800 hover:underline font-medium text-left cursor-pointer'
+            >
+              {row.username}
+            </button>
+          }
+        />
+      )
     },
     {
       dataIndex: 'email',
@@ -328,6 +355,13 @@ const UserManagementUsers = () => {
       width: 200,
       title: () => <FISTableHeaderCell label='Nhóm người dùng' hasRightDivider />,
       render: (_: any, row: UserI) => <FISTableCell content={row.userGroup} textAlign='left' />
+    },
+    {
+      dataIndex: 'department',
+      key: 'department',
+      width: 180,
+      title: () => <FISTableHeaderCell label='Phòng ban' hasRightDivider />,
+      render: (_: any, row: UserI) => <FISTableCell content={row.department ?? '—'} textAlign='left' />
     },
     {
       dataIndex: 'role',
@@ -409,7 +443,13 @@ const UserManagementUsers = () => {
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
-          filterContent={<UsersFilter control={users.control} userGroupsList={userGroupsList} />}
+          filterContent={
+            <UsersFilter
+              control={users.control}
+              userGroupsList={userGroupsList}
+              departmentsList={departmentsList}
+            />
+          }
           actionButtons={
             <FISButton variant='primary' startIcon={<AddIcon />} onClick={handleAddNew}>
               Tạo mới
@@ -437,6 +477,9 @@ const UserManagementUsers = () => {
                     <strong>Nhóm:</strong> {record.userGroup}
                   </p>
                   <p className='text-sm text-gray-600 mt-2'>
+                    <strong>Phòng ban:</strong> {record.department ?? '—'}
+                  </p>
+                  <p className='text-sm text-gray-600 mt-2'>
                     <strong>Vai trò:</strong> {getRoleLabel(record.role)}
                   </p>
                 </div>
@@ -455,6 +498,7 @@ const UserManagementUsers = () => {
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
         userGroupsList={userGroupsList}
+        departmentsList={departmentsList}
         initialData={editingUser}
       />
     </PageWrapper>

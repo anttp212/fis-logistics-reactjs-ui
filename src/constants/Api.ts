@@ -27,6 +27,10 @@ export const API_ENDPOINTS = {
     create: '/user-groups',
     update: '/user-groups/:id',
     delete: '/user-groups/:id'
+  },
+  department: {
+    list: '/departments',
+    detail: '/departments/:id'
   }
 } as const
 
@@ -46,5 +50,6 @@ export const API_TAGS = {
   auth: 'Auth',
   user: 'User',
   currentUser: 'CurrentUser',
-  userGroup: 'UserGroup'
+  userGroup: 'UserGroup',
+  department: 'Department'
 } as const

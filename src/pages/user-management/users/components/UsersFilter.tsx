@@ -6,15 +6,15 @@ import { FISInputText } from 'fis-component'
 interface UsersFilterPropsI {
   control: Control<any>
   userGroupsList: { value: string; label: string }[]
+  departmentsList: { value: string; label: string }[]
 }
 
-const UsersFilter = ({ control, userGroupsList }: UsersFilterPropsI) => {
-  // Role options
+const UsersFilter = ({ control, userGroupsList, departmentsList }: UsersFilterPropsI) => {
+  // Role options: Admin, Tài xế, Bảo vệ
   const roleOptions = [
-    { value: 'admin', label: 'Quản trị viên' },
-    { value: 'operator', label: 'Điều hành' },
-    { value: 'accountant', label: 'Kế toán' },
-    { value: 'viewer', label: 'Người xem' }
+    { value: 'Admin', label: 'Admin' },
+    { value: 'Tài xế', label: 'Tài xế' },
+    { value: 'Bảo vệ', label: 'Bảo vệ' }
   ]
 
   // Status options
@@ -47,6 +47,26 @@ const UsersFilter = ({ control, userGroupsList }: UsersFilterPropsI) => {
                 onBlur={field.onBlur}
                 placeholder='Chọn nhóm người dùng'
                 options={userGroupsList}
+                className='w-full'
+                allowClear
+              />
+            </div>
+          )}
+        />
+      </Col>
+      <Col span={24}>
+        <Controller
+          name='department'
+          control={control}
+          render={({ field }) => (
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>Phòng ban</label>
+              <Select
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder='Chọn phòng ban'
+                options={departmentsList}
                 className='w-full'
                 allowClear
               />
