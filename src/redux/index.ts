@@ -5,6 +5,7 @@ import { combineReducers } from 'redux'
 import authSlice from '@slices/auth.slice'
 import { loginApi } from '../pages/auth/login/login.api'
 import { userGroupApi } from '../pages/user-management/user-group/userGroup.api'
+import { departmentsApi } from '../pages/organization-structure/departments/departments.api'
 
 // Persist config
 const persistConfig = {
@@ -16,7 +17,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
   [loginApi.reducerPath]: loginApi.reducer,
-  [userGroupApi.reducerPath]: userGroupApi.reducer
+  [userGroupApi.reducerPath]: userGroupApi.reducer,
+  [departmentsApi.reducerPath]: departmentsApi.reducer
 })
 
 // Wrap the root reducer with persistReducer
@@ -34,7 +36,7 @@ const store = configureStore({
       immutableCheck: {
         warnAfter: 128 // Warn if state operations take longer than 128ms
       }
-    }).concat(loginApi.middleware, userGroupApi.middleware) // Add RTK Query middleware
+    }).concat(loginApi.middleware, userGroupApi.middleware, departmentsApi.middleware) // Add RTK Query middleware
 })
 
 // Create a persistor

@@ -1,19 +1,23 @@
 import { Modal, Checkbox } from 'antd'
 import { useForm, Controller } from 'react-hook-form'
 import { FISButton, FISInputText } from 'fis-component'
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { getMenuEntriesForPermissionMatrix } from '@constants'
+import type { MenuPermissionI } from '@app-types/permission'
+import { PERMISSION_ACTIONS } from '@app-types/permission'
 
 interface RolePermissionFormDataI {
   name: string
   description: string
-  permissions: string[]
+  menuPermissions: MenuPermissionI[]
 }
 
 interface RolePermissionI {
   key: string
   name: string
   description: string
-  permissions: string[]
+  menuPermissions: MenuPermissionI[]
   status?: string
 }
 
@@ -25,6 +29,14 @@ interface RolePermissionModalPropsI {
   isLoading?: boolean
 }
 
+const ACTION_LABELS: Record<(typeof PERMISSION_ACTIONS)[number], string> = {
+  view: 'Xem',
+  create: 'Tạo',
+  edit: 'Chỉnh sửa',
+  delete: 'Xóa',
+  search: 'Tìm kiếm'
+}
+
 const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
   open,
   onClose,
@@ -33,52 +45,57 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
   isLoading = false
 }) => {
   const isEditMode = !!initialData
+  const { t } = useTranslation()
 
-  // Available permissions
-  const availablePermissions = [
-    { value: 'read', label: 'Đọc' },
-    { value: 'write', label: 'Ghi' },
-    { value: 'delete', label: 'Xóa' },
-    { value: 'admin', label: 'Quản trị' },
-    { value: 'manage', label: 'Quản lý' },
-    { value: 'finance', label: 'Tài chính' },
-    { value: 'warehouse', label: 'Kho hàng' }
-  ]
+  const menuEntries = useMemo(() => getMenuEntriesForPermissionMatrix(t), [t])
+
+  const defaultMenuPermissions: MenuPermissionI[] = useMemo(
+    () =>
+      menuEntries.map((e) => ({
+        menuKey: e.permissionKey,
+        view: true,
+        create: false,
+        edit: false,
+        delete: false,
+        search: true
+      })),
+    [menuEntries]
+  )
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
     watch
   } = useForm<RolePermissionFormDataI>({
     defaultValues: {
       name: '',
       description: '',
-      permissions: []
+      menuPermissions: defaultMenuPermissions
     }
   })
 
-  const selectedPermissions = watch('permissions')
+  const menuPermissions = watch('menuPermissions')
 
-  // Reset form khi modal mở/đóng hoặc initialData thay đổi
   useEffect(() => {
     if (open) {
       if (initialData) {
         reset({
           name: initialData.name || '',
           description: initialData.description || '',
-          permissions: initialData.permissions || []
+          menuPermissions: initialData.menuPermissions?.length ? initialData.menuPermissions : defaultMenuPermissions
         })
       } else {
         reset({
           name: '',
           description: '',
-          permissions: []
+          menuPermissions: defaultMenuPermissions
         })
       }
     }
-  }, [open, initialData, reset])
+  }, [open, initialData, reset, defaultMenuPermissions])
 
   const handleFormSubmit = (data: RolePermissionFormDataI) => {
     onSubmit(data)
@@ -89,12 +106,13 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
     onClose()
   }
 
-  const handlePermissionChange = (permission: string, checked: boolean, onChange: (value: string[]) => void) => {
-    if (checked) {
-      onChange([...selectedPermissions, permission])
-    } else {
-      onChange(selectedPermissions.filter((p) => p !== permission))
-    }
+  const handlePermissionChange = (
+    menuKey: string,
+    action: keyof Omit<MenuPermissionI, 'menuKey'>,
+    checked: boolean
+  ) => {
+    const next = (menuPermissions || []).map((p) => (p.menuKey === menuKey ? { ...p, [action]: checked } : p))
+    setValue('menuPermissions', next, { shouldDirty: true })
   }
 
   return (
@@ -103,85 +121,79 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
       onCancel={handleCancel}
       footer={null}
       title={isEditMode ? 'Chỉnh sửa Vai trò & phân quyền' : 'Tạo mới Vai trò & phân quyền'}
-      width={700}
+      width={800}
       destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4'>
-          {/* Tên vai trò */}
-          <div>
-            <Controller
-              name='name'
-              control={control}
-              rules={{
-                required: 'Tên vai trò là bắt buộc',
-                minLength: {
-                  value: 2,
-                  message: 'Tên vai trò phải có ít nhất 2 ký tự'
-                }
-              }}
-              render={({ field }) => (
-                <div>
-                  <FISInputText {...field} textLabel='Tên vai trò' placeholder='Nhập tên vai trò' />
-                  {errors.name && <p className='mt-1 text-sm text-red-600'>{errors.name.message}</p>}
-                </div>
-              )}
-            />
-          </div>
+          <Controller
+            name='name'
+            control={control}
+            rules={{
+              required: 'Tên vai trò là bắt buộc',
+              minLength: { value: 2, message: 'Tên vai trò phải có ít nhất 2 ký tự' }
+            }}
+            render={({ field }) => (
+              <div>
+                <FISInputText {...field} textLabel='Tên vai trò' placeholder='Nhập tên vai trò' />
+                {errors.name && <p className='mt-1 text-sm text-red-600'>{errors.name.message}</p>}
+              </div>
+            )}
+          />
 
-          {/* Mô tả */}
-          <div>
-            <Controller
-              name='description'
-              control={control}
-              rules={{
-                required: 'Mô tả là bắt buộc',
-                minLength: {
-                  value: 3,
-                  message: 'Mô tả phải có ít nhất 3 ký tự'
-                }
-              }}
-              render={({ field }) => (
-                <div>
-                  <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả vai trò' />
-                  {errors.description && <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>}
-                </div>
-              )}
-            />
-          </div>
+          <Controller
+            name='description'
+            control={control}
+            rules={{
+              required: 'Mô tả là bắt buộc',
+              minLength: { value: 3, message: 'Mô tả phải có ít nhất 3 ký tự' }
+            }}
+            render={({ field }) => (
+              <div>
+                <FISInputText {...field} textLabel='Mô tả' placeholder='Nhập mô tả vai trò' />
+                {errors.description && <p className='mt-1 text-sm text-red-600'>{errors.description.message}</p>}
+              </div>
+            )}
+          />
 
-          {/* Phân quyền */}
           <div>
-            <Controller
-              name='permissions'
-              control={control}
-              rules={{
-                required: 'Phân quyền là bắt buộc',
-                validate: (value) => value.length > 0 || 'Vui lòng chọn ít nhất một quyền'
-              }}
-              render={({ field }) => (
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-2'>Phân quyền</label>
-                  <div className='border border-gray-300 rounded-lg p-4 space-y-2 max-h-48 overflow-y-auto'>
-                    {availablePermissions.map((permission) => (
-                      <div key={permission.value} className='flex items-center'>
-                        <Checkbox
-                          checked={field.value?.includes(permission.value)}
-                          onChange={(e) => handlePermissionChange(permission.value, e.target.checked, field.onChange)}
-                        >
-                          <span className='ml-2'>{permission.label}</span>
-                        </Checkbox>
-                      </div>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Phân quyền theo menu</label>
+            <p className='text-xs text-gray-500 mb-2'>Mỗi menu có các quyền: Xem, Tạo, Chỉnh sửa, Xóa, Tìm kiếm</p>
+            <div className='border border-gray-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto'>
+              <table className='w-full text-sm'>
+                <thead className='bg-gray-50 sticky top-0'>
+                  <tr>
+                    <th className='text-left py-2 px-3 font-medium text-gray-700'>Menu</th>
+                    {PERMISSION_ACTIONS.map((action) => (
+                      <th key={action} className='text-center py-2 px-2 font-medium text-gray-700'>
+                        {ACTION_LABELS[action]}
+                      </th>
                     ))}
-                  </div>
-                  {errors.permissions && <p className='mt-1 text-sm text-red-600'>{errors.permissions.message}</p>}
-                </div>
-              )}
-            />
+                  </tr>
+                </thead>
+                <tbody>
+                  {menuEntries.map((entry) => {
+                    const perm = (menuPermissions || []).find((p) => p.menuKey === entry.permissionKey)
+                    return (
+                      <tr key={entry.permissionKey} className='border-t border-gray-100 hover:bg-gray-50/50'>
+                        <td className='py-2 px-3 text-gray-900'>{entry.label}</td>
+                        {PERMISSION_ACTIONS.map((action) => (
+                          <td key={action} className='py-2 px-2 text-center'>
+                            <Checkbox
+                              checked={perm?.[action] ?? false}
+                              onChange={(e) => handlePermissionChange(entry.permissionKey, action, e.target.checked)}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        {/* Footer buttons */}
         <div className='flex justify-end gap-2 mt-6 pt-4 border-t border-gray-200'>
           <FISButton variant='secondary' onClick={handleCancel} disabled={isLoading}>
             Hủy

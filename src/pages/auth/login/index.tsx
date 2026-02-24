@@ -36,12 +36,17 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormDataI) => {
     setIsLoading(true)
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      // Mock login validation
-      if (data.username === 'admin' && data.password === '123456') {
-        // ✅ Set mock token and user data in Redux
+      // Mock: 3 tài khoản admin, taixe, baove (mật khẩu 123456)
+      const mockAccounts: Array<{ user: string; pass: string; name: string; email: string; role: string }> = [
+        { user: 'admin', pass: '123456', name: 'Admin', email: 'admin@example.com', role: 'Admin' },
+        { user: 'taixe', pass: '123456', name: 'Tài xế', email: 'taixe@example.com', role: 'Tài xế' },
+        { user: 'baove', pass: '123456', name: 'Bảo vệ', email: 'baove@example.com', role: 'Bảo vệ' }
+      ]
+      const account = mockAccounts.find((a) => a.user === data.username && a.pass === data.password)
+
+      if (account) {
         dispatch(
           setTokenData({
             accessToken: 'mock-access-token-123456',
@@ -50,21 +55,17 @@ const Login: React.FC = () => {
             refreshToken: 'mock-refresh-token-789'
           })
         )
-
         dispatch(
           setUser({
-            id: 'user-123',
-            name: 'Admin User',
-            email: 'admin@example.com',
-            avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff',
-            role: 'admin'
+            id: account.user,
+            name: account.name,
+            email: account.email,
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(account.name)}&background=6366f1&color=fff`,
+            role: account.role
           })
         )
-
         const redirectTo = searchParams.get('redirect') || ROUTES.home
         navigate(redirectTo, { replace: true })
-
-        // Note: Redux-persist automatically saves to localStorage!
       } else {
         setError('root', {
           message: 'Tên đăng nhập hoặc mật khẩu không đúng'

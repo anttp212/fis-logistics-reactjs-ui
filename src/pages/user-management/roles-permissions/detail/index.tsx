@@ -3,122 +3,76 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { ROUTES } from '@constants'
+import { ROUTES, getMenuEntriesForPermissionMatrix, buildMenuPermissions, getAllPermissionKeys } from '@constants'
 import { FISButton } from 'fis-component'
 import { BackIcon } from '@images'
+import { useTranslation } from 'react-i18next'
+import type { MenuPermissionI } from '@app-types/permission'
+import { PERMISSION_ACTIONS } from '@app-types/permission'
 
-// Extended Role Permission type with more details
 interface RolePermissionDetailI {
   key: string
   name: string
   description: string
-  permissions: string[]
+  menuPermissions: MenuPermissionI[]
   status?: string
   createdAt?: string
   updatedAt?: string
   userCount?: number
-  permissionDetails?: {
-    id: string
-    name: string
-    description: string
-    category: string
-  }[]
 }
 
-// Fake API function to get role permission detail
+// Fake API function to get role permission detail (3 vai trò: Admin, Tài xế, Bảo vệ)
 const fetchRolePermissionDetail = async (roleId: string): Promise<RolePermissionDetailI | null> => {
-  // Simulate API call delay
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  // Fake role permission data with extended details
   const fakeRoles: Record<string, RolePermissionDetailI> = {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '1': {
-      key: '1',
-      name: 'Quản trị viên',
-      description: 'Toàn quyền truy cập hệ thống',
-      permissions: ['read', 'write', 'delete', 'admin'],
+    admin: {
+      key: 'admin',
+      name: 'Admin',
+      description: 'Toàn quyền hệ thống',
+      menuPermissions: buildMenuPermissions(getAllPermissionKeys()),
       status: 'active',
       createdAt: '2024-01-10',
       updatedAt: '2024-12-15',
-      userCount: 5,
-      permissionDetails: [
-        { id: '1', name: 'Đọc dữ liệu', description: 'Xem tất cả dữ liệu trong hệ thống', category: 'Cơ bản' },
-        { id: '2', name: 'Ghi dữ liệu', description: 'Tạo và chỉnh sửa dữ liệu', category: 'Cơ bản' },
-        { id: '3', name: 'Xóa dữ liệu', description: 'Xóa dữ liệu trong hệ thống', category: 'Cơ bản' },
-        { id: '4', name: 'Quản trị', description: 'Toàn quyền quản trị hệ thống', category: 'Quản trị' }
-      ]
+      userCount: 1
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '2': {
-      key: '2',
-      name: 'Điều hành',
-      description: 'Quyền quản lý và điều phối hoạt động',
-      permissions: ['read', 'write', 'manage'],
+    driver: {
+      key: 'driver',
+      name: 'Tài xế',
+      description: 'Tất cả quyền quản lý depot',
+      menuPermissions: buildMenuPermissions(['depot']),
       status: 'active',
       createdAt: '2024-02-15',
       updatedAt: '2024-12-10',
-      userCount: 12,
-      permissionDetails: [
-        { id: '1', name: 'Đọc dữ liệu', description: 'Xem dữ liệu trong hệ thống', category: 'Cơ bản' },
-        { id: '2', name: 'Ghi dữ liệu', description: 'Tạo và chỉnh sửa dữ liệu', category: 'Cơ bản' },
-        { id: '3', name: 'Quản lý', description: 'Quản lý và điều phối hoạt động', category: 'Điều hành' }
-      ]
+      userCount: 1
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '3': {
-      key: '3',
-      name: 'Kế toán',
-      description: 'Quyền xem và quản lý tài chính',
-      permissions: ['read', 'write', 'finance'],
+    security: {
+      key: 'security',
+      name: 'Bảo vệ',
+      description: 'Tất cả quyền quản lý kho',
+      menuPermissions: buildMenuPermissions(['warehouse']),
       status: 'active',
       createdAt: '2024-03-20',
       updatedAt: '2024-12-05',
-      userCount: 8,
-      permissionDetails: [
-        { id: '1', name: 'Đọc dữ liệu', description: 'Xem dữ liệu trong hệ thống', category: 'Cơ bản' },
-        { id: '2', name: 'Ghi dữ liệu', description: 'Tạo và chỉnh sửa dữ liệu', category: 'Cơ bản' },
-        { id: '3', name: 'Tài chính', description: 'Quản lý tài chính và kế toán', category: 'Tài chính' }
-      ]
-    },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '4': {
-      key: '4',
-      name: 'Người xem',
-      description: 'Chỉ có quyền xem dữ liệu',
-      permissions: ['read'],
-      status: 'active',
-      createdAt: '2024-04-05',
-      updatedAt: '2024-11-20',
-      userCount: 25,
-      permissionDetails: [
-        { id: '1', name: 'Đọc dữ liệu', description: 'Xem dữ liệu trong hệ thống', category: 'Cơ bản' }
-      ]
-    },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    '5': {
-      key: '5',
-      name: 'Nhân viên kho',
-      description: 'Quyền quản lý kho hàng',
-      permissions: ['read', 'write', 'warehouse'],
-      status: 'inactive',
-      createdAt: '2024-05-12',
-      updatedAt: '2024-11-15',
-      userCount: 15,
-      permissionDetails: [
-        { id: '1', name: 'Đọc dữ liệu', description: 'Xem dữ liệu trong hệ thống', category: 'Cơ bản' },
-        { id: '2', name: 'Ghi dữ liệu', description: 'Tạo và chỉnh sửa dữ liệu', category: 'Cơ bản' },
-        { id: '3', name: 'Kho hàng', description: 'Quản lý kho hàng và xuất nhập', category: 'Kho hàng' }
-      ]
+      userCount: 1
     }
   }
 
   return fakeRoles[roleId] || null
 }
 
+const ACTION_LABELS: Record<(typeof PERMISSION_ACTIONS)[number], string> = {
+  view: 'Xem',
+  create: 'Tạo',
+  edit: 'Chỉnh sửa',
+  delete: 'Xóa',
+  search: 'Tìm kiếm'
+}
+
 const RoleDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [role, setRole] = useState<RolePermissionDetailI | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -167,20 +121,12 @@ const RoleDetail = () => {
   }
 
   const getPermissionCategoryGroups = () => {
-    if (!role?.permissionDetails) return []
-
-    const categories = role.permissionDetails.reduce(
-      (acc, perm) => {
-        if (!acc[perm.category]) {
-          acc[perm.category] = []
-        }
-        acc[perm.category].push(perm)
-        return acc
-      },
-      {} as Record<string, typeof role.permissionDetails>
-    )
-
-    return Object.entries(categories)
+    if (!role?.menuPermissions?.length) return []
+    const entries = getMenuEntriesForPermissionMatrix(t)
+    return entries.map((entry) => {
+      const perm = role.menuPermissions.find((p) => p.menuKey === entry.permissionKey)
+      return { entry, perm }
+    })
   }
 
   const handleActivateDeactivate = () => {
@@ -403,42 +349,38 @@ const RoleDetail = () => {
 
             {/* Permissions */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Danh sách phân quyền</h3>
-              {role.permissionDetails && role.permissionDetails.length > 0 ? (
-                <div className='space-y-6'>
-                  {getPermissionCategoryGroups().map(([category, permissions]) => (
-                    <div key={category}>
-                      <h4 className='text-sm font-semibold text-gray-700 mb-3'>{category}</h4>
-                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                        {permissions.map((perm) => (
-                          <div key={perm.id} className='border border-gray-200 rounded-lg p-4'>
-                            <div className='flex items-start justify-between'>
-                              <div className='flex-1'>
-                                <p className='text-sm font-medium text-gray-900'>{perm.name}</p>
-                                <p className='text-xs text-gray-500 mt-1'>{perm.description}</p>
-                              </div>
-                            </div>
-                          </div>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Phân quyền theo menu</h3>
+              <p className='text-sm text-gray-500 mb-4'>Mỗi menu có các quyền: Xem, Tạo, Chỉnh sửa, Xóa, Tìm kiếm</p>
+              <div className='border border-gray-200 rounded-lg overflow-hidden overflow-x-auto'>
+                <table className='w-full text-sm'>
+                  <thead className='bg-gray-50'>
+                    <tr>
+                      <th className='text-left py-2 px-3 font-medium text-gray-700'>Menu</th>
+                      {PERMISSION_ACTIONS.map((action) => (
+                        <th key={action} className='text-center py-2 px-2 font-medium text-gray-700'>
+                          {ACTION_LABELS[action]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getPermissionCategoryGroups().map(({ entry, perm }) => (
+                      <tr key={entry.permissionKey} className='border-t border-gray-100'>
+                        <td className='py-2 px-3 text-gray-900'>{entry.label}</td>
+                        {PERMISSION_ACTIONS.map((action) => (
+                          <td key={action} className='py-2 px-2 text-center'>
+                            {perm?.[action] ? (
+                              <span className='text-green-600'>✓</span>
+                            ) : (
+                              <span className='text-gray-300'>—</span>
+                            )}
+                          </td>
                         ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className='text-sm text-gray-500'>
-                  <p>Danh sách phân quyền cơ bản:</p>
-                  <div className='mt-2 flex flex-wrap gap-2'>
-                    {role.permissions.map((perm, index) => (
-                      <span
-                        key={index}
-                        className='inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800'
-                      >
-                        {perm}
-                      </span>
+                      </tr>
                     ))}
-                  </div>
-                </div>
-              )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </>
         )}

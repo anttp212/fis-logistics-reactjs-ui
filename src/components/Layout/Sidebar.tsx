@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getMenuItems } from '@constants'
+import { getMenuTree } from '@constants'
 import { ChevronDownIcon, ExpandIcon } from '@images'
 import { FISIconButton, FISText } from 'fis-component'
+import { usePermissions } from '@hooks'
 
 interface SubMenuItemI {
   to: string
   label: string
+  permissionKey?: string
 }
 
 interface MenuItemPropsI {
@@ -16,6 +18,8 @@ interface MenuItemPropsI {
   label: string
   subItems?: SubMenuItemI[]
   isCollapsed?: boolean
+  permissionKey?: string
+  canView: (menuKey: string) => boolean
 }
 
 // Shared styles
@@ -23,12 +27,13 @@ const baseMenuStyles = 'flex gap-3 rounded-lg transition-all duration-300 ease-i
 const activeMenuStyles = 'bg-white/20'
 const hoverMenuStyles = 'hover:bg-white/10 hover:text-white'
 
-// SubMenu Component
+// SubMenu Component - chỉ hiển thị subItem nếu user có quyền xem
 const SubMenu: React.FC<{
   subItems: SubMenuItemI[]
   isExpanded: boolean
   currentPath: string
-}> = React.memo(({ subItems, isExpanded, currentPath }) => (
+  canView: (menuKey: string) => boolean
+}> = React.memo(({ subItems, isExpanded, currentPath, canView }) => (
   <div
     className={`flex gap-2 overflow-hidden transition-all duration-300 ease-in-out  ${
       isExpanded ? 'opacity-100' : 'max-h-0 opacity-0'
@@ -43,29 +48,39 @@ const SubMenu: React.FC<{
       ))}
     </div> */}
     <div className='w-full'>
-      {subItems.map((subItem) => {
-        const isActiveOrChild = currentPath === subItem.to || currentPath.startsWith(subItem.to + '/')
-        return (
-          <NavLink
-            key={subItem.to}
-            to={subItem.to}
-            className={`flex h-[36px] pl-[52px] items-center mt-1 rounded-lg transition-all text-white text-base font-medium ${
-              isActiveOrChild ? 'bg-white/15' : hoverMenuStyles
-            }`}
-          >
-            <FISText variant='Paragraph/Sm' color='com/navigation/label/default' className='line-clamp-1'>
-              {subItem.label}
-            </FISText>
-          </NavLink>
-        )
-      })}
+      {subItems
+        .filter((sub) => !sub.permissionKey || canView(sub.permissionKey))
+        .map((subItem) => {
+          const isActiveOrChild = currentPath === subItem.to || currentPath.startsWith(subItem.to + '/')
+          return (
+            <NavLink
+              key={subItem.to}
+              to={subItem.to}
+              className={`flex h-[36px] pl-[52px] items-center mt-1 rounded-lg transition-all text-white text-base font-medium ${
+                isActiveOrChild ? 'bg-white/15' : hoverMenuStyles
+              }`}
+            >
+              <FISText variant='Paragraph/Sm' color='com/navigation/label/default' className='line-clamp-1'>
+                {subItem.label}
+              </FISText>
+            </NavLink>
+          )
+        })}
     </div>
   </div>
 ))
 
 SubMenu.displayName = 'SubMenu'
 
-const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isCollapsed = false }) => {
+const MenuItem: React.FC<MenuItemPropsI> = ({
+  to,
+  icon,
+  label,
+  subItems,
+  isCollapsed = false,
+  permissionKey: _permissionKey,
+  canView
+}) => {
   const [isMenuExpanded, setIsMenuExpanded] = useState(false)
   const location = useLocation()
 
@@ -141,7 +156,9 @@ const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isColla
         )}
       </div>
 
-      {!isCollapsed && <SubMenu subItems={subItems} isExpanded={isMenuExpanded} currentPath={location.pathname} />}
+      {!isCollapsed && (
+        <SubMenu subItems={subItems} isExpanded={isMenuExpanded} currentPath={location.pathname} canView={canView} />
+      )}
     </div>
   )
 }
@@ -149,9 +166,16 @@ const MenuItem: React.FC<MenuItemPropsI> = ({ to, icon, label, subItems, isColla
 const Sidebar: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { t } = useTranslation()
+  const { canView } = usePermissions()
 
-  // Get menu items with translations
-  const menuItems = useMemo(() => getMenuItems(t), [t])
+  // Menu từ MenuConfig, lọc theo quyền xem
+  const menuItems = useMemo(() => {
+    const tree = getMenuTree(t)
+    return tree.filter((item) => {
+      if (item.permissionKey) return canView(item.permissionKey)
+      return true
+    })
+  }, [t, canView])
 
   return (
     <div
@@ -194,6 +218,8 @@ const Sidebar: React.FC = () => {
               label={item.label}
               subItems={item.subItems}
               isCollapsed={isCollapsed}
+              permissionKey={item.permissionKey}
+              canView={canView}
             />
           ))}
         </nav>
