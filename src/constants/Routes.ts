@@ -5,6 +5,11 @@
 export const ROUTES = {
   // Protected routes (with layout)
   home: '/home',
+  // Public portal (no login required)
+  portal: '/portal',
+  portalTransportRequest: '/portal/transport-request',
+  portalExportRequest: '/portal/export-request',
+  portalImportRequest: '/portal/import-request',
   warehouse: '/warehouse',
   warehouseServiceRegistrationPortal: '/warehouse/service-registration-portal',
   warehouseAssessmentApproval: '/warehouse/assessment-approval',

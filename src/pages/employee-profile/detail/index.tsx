@@ -293,6 +293,7 @@ const EmployeeDetail = () => {
       title='Chi tiết hồ sơ nhân viên'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.employeeProfileList)}
       actionButtons={
         <div className='flex gap-2'>
           {employee && (

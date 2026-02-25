@@ -106,6 +106,35 @@ export const routes: RouteObject[] = [
     element: <SmartRedirect />
   },
 
+  // 🌐 Public portal routes (no layout / no auth)
+  {
+    path: ROUTES.portalTransportRequest,
+    lazy: async () => {
+      const C = await import('../pages/portal/transport-request')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalExportRequest,
+    lazy: async () => {
+      const C = await import('../pages/portal/export-request')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalImportRequest,
+    lazy: async () => {
+      const C = await import('../pages/portal/import-request')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portal,
+    loader: async () => {
+      throw redirect(ROUTES.portalTransportRequest)
+    }
+  },
+
   // 🔐 Protected routes with layout
   {
     path: ROUTES.root,
