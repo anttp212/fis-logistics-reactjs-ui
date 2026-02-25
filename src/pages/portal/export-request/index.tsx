@@ -3,10 +3,7 @@ import { PageWrapper } from '@components'
 import PortalLayout from '../PortalLayout'
 
 const PortalExportRequestPage: React.FC = () => {
-  const breadcrumbItems = [
-    { label: 'Portal' },
-    { label: 'Yêu cầu xuất hàng', active: true }
-  ]
+  const breadcrumbItems = [{ label: 'Portal' }, { label: 'Yêu cầu xuất hàng', active: true }]
 
   return (
     <PortalLayout activeKey='export'>

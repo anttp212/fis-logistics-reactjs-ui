@@ -3,10 +3,7 @@ import { PageWrapper } from '@components'
 import PortalLayout from '../PortalLayout'
 
 const PortalTransportRequestPage: React.FC = () => {
-  const breadcrumbItems = [
-    { label: 'Portal' },
-    { label: 'Yêu cầu vận chuyển', active: true }
-  ]
+  const breadcrumbItems = [{ label: 'Portal' }, { label: 'Yêu cầu vận chuyển', active: true }]
 
   return (
     <PortalLayout activeKey='transport'>

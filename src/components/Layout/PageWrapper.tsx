@@ -49,9 +49,7 @@ const PageWrapper: React.FC<PageWrapperPropsI> = ({
 
         <div>{actionButtons}</div>
       </div>
-      <div className={`h-full rounded-tr-2xl rounded-tl-2xl mt-4  overflow-y-auto ${className}`}>
-        {children}
-      </div>
+      <div className={`h-full rounded-tr-2xl rounded-tl-2xl mt-4  overflow-y-auto ${className}`}>{children}</div>
     </div>
   )
 }
