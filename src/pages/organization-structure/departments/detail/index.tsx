@@ -128,6 +128,7 @@ const DepartmentDetail = () => {
       title='Chi tiết phòng ban'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.organizationStructureDepartments)}
       actionButtons={
         <FISButton
           variant='tertiary'

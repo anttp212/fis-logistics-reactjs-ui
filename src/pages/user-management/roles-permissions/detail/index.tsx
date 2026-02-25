@@ -239,6 +239,7 @@ const RoleDetail = () => {
       title='Chi tiết vai trò & phân quyền'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.userManagementRolesPermissions)}
       actionButtons={
         <div className='flex gap-2'>
           {role && (

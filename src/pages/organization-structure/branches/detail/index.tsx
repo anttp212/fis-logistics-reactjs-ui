@@ -138,6 +138,7 @@ const BranchDetail = () => {
       title='Chi tiết chi nhánh'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.organizationStructureBranches)}
       actionButtons={
         <FISButton
           variant='tertiary'

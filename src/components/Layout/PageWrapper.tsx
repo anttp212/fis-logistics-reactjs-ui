@@ -13,6 +13,7 @@ interface PageWrapperPropsI {
   title?: string
   children: ReactNode
   hasBackButton?: boolean
+  onBackClick?: () => void
   breadcrumbItems?: BreadcrumbItemPropsI[]
   actionButtons?: ReactNode
   className?: string
@@ -24,6 +25,7 @@ const PageWrapper: React.FC<PageWrapperPropsI> = ({
   breadcrumbItems = [],
   title = '',
   hasBackButton = false,
+  onBackClick,
   actionButtons
 }) => {
   return (
@@ -32,7 +34,14 @@ const PageWrapper: React.FC<PageWrapperPropsI> = ({
 
       <div className=' mt-1 flex justify-between items-center'>
         <div className='flex gap-2 justify-center items-center'>
-          {hasBackButton && <FISIconButton variant='tertiary-invisible' icon={<BackIcon />} />}
+          {hasBackButton && (
+            <FISIconButton
+              variant='tertiary-invisible'
+              icon={<BackIcon />}
+              onClick={onBackClick}
+              title='Quay lại trang danh sách'
+            />
+          )}
           <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2'>
             {title}
           </FISText>
@@ -40,9 +49,7 @@ const PageWrapper: React.FC<PageWrapperPropsI> = ({
 
         <div>{actionButtons}</div>
       </div>
-      <div className={`h-full rounded-tr-2xl rounded-tl-2xl mt-4 bg-white overflow-y-auto ${className}`}>
-        {children}
-      </div>
+      <div className={`h-full rounded-tr-2xl rounded-tl-2xl mt-4  overflow-y-auto ${className}`}>{children}</div>
     </div>
   )
 }

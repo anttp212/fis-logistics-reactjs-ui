@@ -240,6 +240,7 @@ const CustomerDetail = () => {
       title='Chi tiết hồ sơ khách hàng'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.categoryManagementCustomerProfile)}
       actionButtons={
         <FISButton
           variant='tertiary'

@@ -341,6 +341,7 @@ const PartnerDetail = () => {
       title='Chi tiết hồ sơ đối tác'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.categoryManagementPartnerProfile)}
       actionButtons={
         <FISButton
           variant='tertiary'

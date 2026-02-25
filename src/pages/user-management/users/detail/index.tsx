@@ -191,6 +191,7 @@ const UserDetail = () => {
       title='Chi tiết tài khoản người dùng'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
+      onBackClick={() => navigate(ROUTES.userManagementUsers)}
       actionButtons={
         <div className='flex gap-2'>
           {user && (
