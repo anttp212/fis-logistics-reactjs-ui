@@ -15,4 +15,3 @@ const PortalImportRequestPage: React.FC = () => {
 }
 
 export default PortalImportRequestPage
-

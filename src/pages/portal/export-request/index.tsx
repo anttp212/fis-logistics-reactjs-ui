@@ -15,4 +15,3 @@ const PortalExportRequestPage: React.FC = () => {
 }
 
 export default PortalExportRequestPage
-
