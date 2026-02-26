@@ -7,9 +7,12 @@ export const ROUTES = {
   home: '/home',
   // Public portal (no login required)
   portal: '/portal',
-  portalTransportRequest: '/portal/transport-request',
-  portalExportRequest: '/portal/export-request',
-  portalImportRequest: '/portal/import-request',
+  portalRequest: '/portal/request',
+  portalInbound: '/portal/inbound',
+  portalOutbound: '/portal/outbound',
+  portalStorage: '/portal/storage',
+  portalVas: '/portal/vas',
+  portalCrossDocking: '/portal/cross-docking',
   warehouse: '/warehouse',
   warehouseServiceRegistrationPortal: '/warehouse/service-registration-portal',
   warehouseAssessmentApproval: '/warehouse/assessment-approval',
@@ -102,6 +105,7 @@ export const ROUTES = {
 
   // Root and fallback
   root: '/',
+  landing: '/',
   wildcard: '*'
 
   // Future routes (examples)

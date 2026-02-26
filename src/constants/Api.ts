@@ -31,6 +31,9 @@ export const API_ENDPOINTS = {
   department: {
     list: '/departments',
     detail: '/departments/:id'
+  },
+  portal: {
+    inboundRegistration: '/portal/inbound/registration'
   }
 } as const
 

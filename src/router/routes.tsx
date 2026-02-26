@@ -100,38 +100,61 @@ const authLoader = async () => {
 // ============================================
 
 export const routes: RouteObject[] = [
-  // 🔄 Root redirect first
+  // 🏠 Landing page (public home at /)
   {
     index: true,
-    element: <SmartRedirect />
+    lazy: async () => {
+      const LandingPage = await import('../pages/landing')
+      return { Component: LandingPage.default }
+    }
   },
 
   // 🌐 Public portal routes (no layout / no auth)
   {
-    path: ROUTES.portalTransportRequest,
+    path: ROUTES.portalInbound,
     lazy: async () => {
-      const C = await import('../pages/portal/transport-request')
+      const C = await import('../pages/portal/inbound')
       return { Component: C.default }
     }
   },
   {
-    path: ROUTES.portalExportRequest,
+    path: ROUTES.portalOutbound,
     lazy: async () => {
-      const C = await import('../pages/portal/export-request')
+      const C = await import('../pages/portal/outbound')
       return { Component: C.default }
     }
   },
   {
-    path: ROUTES.portalImportRequest,
+    path: ROUTES.portalStorage,
     lazy: async () => {
-      const C = await import('../pages/portal/import-request')
+      const C = await import('../pages/portal/storage')
       return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalVas,
+    lazy: async () => {
+      const C = await import('../pages/portal/vas')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalCrossDocking,
+    lazy: async () => {
+      const C = await import('../pages/portal/cross-docking')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalRequest,
+    loader: async () => {
+      throw redirect(ROUTES.portalInbound)
     }
   },
   {
     path: ROUTES.portal,
     loader: async () => {
-      throw redirect(ROUTES.portalTransportRequest)
+      throw redirect(ROUTES.portalInbound)
     }
   },
 
