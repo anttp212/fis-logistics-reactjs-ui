@@ -284,10 +284,7 @@ export const vehicleDispatchApi = createApi({
   baseQuery: baseQuery,
   tagTypes: [API_TAGS.vehicleDispatch],
   endpoints: (builder) => ({
-    getVehicleDispatchList: builder.query<
-      { data: VehicleDispatchOrderI[]; total: number },
-      void
-    >({
+    getVehicleDispatchList: builder.query<{ data: VehicleDispatchOrderI[]; total: number }, void>({
       queryFn: async () => ({
         data: { data: DUMMY_ORDERS, total: DUMMY_ORDERS.length }
       }),

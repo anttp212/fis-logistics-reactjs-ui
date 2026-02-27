@@ -4,13 +4,7 @@ import { ROUTES, buildVehicleDispatchDetailPath } from '@constants'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper, TableToolbar } from '@components'
-import {
-  FISTable,
-  FISTableCell,
-  FISTableHeaderCell,
-  FISIconButton,
-  FISButtonGroup
-} from 'fis-component'
+import { FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
 import VehicleDispatchFilter from './components/VehicleDispatchFilter'
 import ShipmentDetailModal from './components/ShipmentDetailModal'
 import AssignDriverModal from './components/AssignDriverModal'
@@ -67,10 +61,10 @@ const VehicleDispatchPage = () => {
   const [assignOrderKey, setAssignOrderKey] = useState<string>('')
 
   // API trả về trực tiếp: listResponse = { data: orders[], total }, driversResponse = drivers[]
-  const orders: VehicleDispatchOrderI[] = listResponse?.data ?? []
   const drivers: import('./vehicleDispatch.api').DriverI[] = driversResponse ?? []
 
   const dataSource = useMemo(() => {
+    const orders: VehicleDispatchOrderI[] = listResponse?.data ?? []
     let filtered = [...orders]
     if (filterValues?.billBooking) {
       filtered = filtered.filter((o) =>
@@ -78,14 +72,10 @@ const VehicleDispatchPage = () => {
       )
     }
     if (filterValues?.owner) {
-      filtered = filtered.filter((o) =>
-        o.owner.toLowerCase().includes(String(filterValues.owner).toLowerCase())
-      )
+      filtered = filtered.filter((o) => o.owner.toLowerCase().includes(String(filterValues.owner).toLowerCase()))
     }
     if (filterValues?.opr) {
-      filtered = filtered.filter((o) =>
-        o.opr.toLowerCase().includes(String(filterValues.opr).toLowerCase())
-      )
+      filtered = filtered.filter((o) => o.opr.toLowerCase().includes(String(filterValues.opr).toLowerCase()))
     }
     if (vehicleDispatch.search) {
       const s = vehicleDispatch.search.toLowerCase()
@@ -97,17 +87,14 @@ const VehicleDispatchPage = () => {
       )
     }
     return filtered
-  }, [orders, filterValues, vehicleDispatch.search])
+  }, [listResponse?.data, filterValues, vehicleDispatch.search])
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const isAllSelected = selectedRowKeys.length === dataSource.length && dataSource.length > 0
-  const isIndeterminate =
-    selectedRowKeys.length > 0 && selectedRowKeys.length < dataSource.length
+  const isIndeterminate = selectedRowKeys.length > 0 && selectedRowKeys.length < dataSource.length
 
   const handleSelect = (key: React.Key) => {
-    setSelectedRowKeys((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-    )
+    setSelectedRowKeys((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
   }
   const toggleSelectAll = () => {
     setSelectedRowKeys(isAllSelected ? [] : dataSource.map((o) => o.key))
@@ -117,21 +104,12 @@ const VehicleDispatchPage = () => {
     selectedRowKeys,
     onChange: setSelectedRowKeys,
     renderCell: (checked, record) => (
-      <FISTableCell
-        icon={<Checkbox checked={checked} onChange={() => handleSelect(record.key)} />}
-        hasBorder={false}
-      />
+      <FISTableCell icon={<Checkbox checked={checked} onChange={() => handleSelect(record.key)} />} hasBorder={false} />
     ),
     columnTitle: (
       <FISTableHeaderCell
         label=''
-        rightComponent={
-          <Checkbox
-            checked={isAllSelected}
-            indeterminate={isIndeterminate}
-            onChange={toggleSelectAll}
-          />
-        }
+        rightComponent={<Checkbox checked={isAllSelected} indeterminate={isIndeterminate} onChange={toggleSelectAll} />}
         hasRightDivider={false}
       />
     )
@@ -176,11 +154,7 @@ const VehicleDispatchPage = () => {
     setAssignDriverModalOpen(true)
   }
 
-  const handleAssignDriverConfirm = async (
-    orderKey: string,
-    shipmentKey: string,
-    driverId: string
-  ) => {
+  const handleAssignDriverConfirm = async (orderKey: string, shipmentKey: string, driverId: string) => {
     await assignDriver({ orderKey, shipmentDetailKey: shipmentKey, driverId })
     const driver = drivers.find((d) => d.id === driverId)
     if (driver) {
@@ -201,16 +175,12 @@ const VehicleDispatchPage = () => {
     }
   }
 
-  const handleSaveShipment = async (
-    orderKey: string,
-    shipmentKey: string,
-    data: Partial<ShipmentDetailI>
-  ) => {
+  const handleSaveShipment = async (orderKey: string, shipmentKey: string, data: Partial<ShipmentDetailI>) => {
     await updateShipmentDetail({ orderKey, shipmentKey, data })
   }
 
-  const handleConfirmShipment = (orderKey: string, shipmentKey: string) => {
-    console.log('Confirm shipment', orderKey, shipmentKey)
+  const handleConfirmShipment = (_orderKey: string, _shipmentKey: string) => {
+    // TODO: Call API xác nhận shipment
   }
 
   const columns = [
@@ -219,9 +189,7 @@ const VehicleDispatchPage = () => {
       key: 'lotId',
       width: 120,
       title: () => <FISTableHeaderCell label='ID lô hàng' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell content={row.lotId} textAlign='left' />
-      )
+      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.lotId} textAlign='left' />
     },
     {
       dataIndex: 'billBooking',
@@ -248,9 +216,7 @@ const VehicleDispatchPage = () => {
       key: 'owner',
       width: 180,
       title: () => <FISTableHeaderCell label='CHỦ HÀNG' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell content={row.owner} textAlign='left' />
-      )
+      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.owner} textAlign='left' />
     },
     {
       dataIndex: 'quantity',
@@ -266,27 +232,21 @@ const VehicleDispatchPage = () => {
       key: 'time',
       width: 150,
       title: () => <FISTableHeaderCell label='THỜI GIAN' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell content={row.time} textAlign='left' />
-      )
+      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.time} textAlign='left' />
     },
     {
       dataIndex: 'opr',
       key: 'opr',
       width: 100,
       title: () => <FISTableHeaderCell label='OPR' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell content={row.opr} textAlign='left' />
-      )
+      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.opr} textAlign='left' />
     },
     {
       dataIndex: 'createdBy',
       key: 'createdBy',
       width: 150,
       title: () => <FISTableHeaderCell label='NGƯỜI TẠO LỆNH' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell content={row.createdBy} textAlign='left' />
-      )
+      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.createdBy} textAlign='left' />
     },
     {
       title: () => <FISTableHeaderCell label='THAO TÁC' />,
@@ -305,12 +265,7 @@ const VehicleDispatchPage = () => {
                     <FISIconButton
                       size='xs'
                       icon={
-                        <svg
-                          className='w-4 h-4'
-                          fill='none'
-                          stroke='currentColor'
-                          viewBox='0 0 24 24'
-                        >
+                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                           <path
                             strokeLinecap='round'
                             strokeLinejoin='round'
@@ -337,12 +292,7 @@ const VehicleDispatchPage = () => {
                     <FISIconButton
                       size='xs'
                       icon={
-                        <svg
-                          className='w-4 h-4'
-                          fill='none'
-                          stroke='currentColor'
-                          viewBox='0 0 24 24'
-                        >
+                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                           <path
                             strokeLinecap='round'
                             strokeLinejoin='round'
@@ -363,12 +313,7 @@ const VehicleDispatchPage = () => {
                     <FISIconButton
                       size='xs'
                       icon={
-                        <svg
-                          className='w-4 h-4'
-                          fill='none'
-                          stroke='currentColor'
-                          viewBox='0 0 24 24'
-                        >
+                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                           <path
                             strokeLinecap='round'
                             strokeLinejoin='round'
@@ -397,11 +342,7 @@ const VehicleDispatchPage = () => {
   ]
 
   return (
-    <PageWrapper
-      className='p-5'
-      title='Điều xe'
-      breadcrumbItems={breadcrumbItems}
-    >
+    <PageWrapper className='p-5' title='Điều xe' breadcrumbItems={breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         <TableToolbar
           filterContent={<VehicleDispatchFilter control={vehicleDispatch.control} />}

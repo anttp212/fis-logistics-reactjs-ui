@@ -7,11 +7,7 @@ const DEFAULT_FILTER_VALUES = {
   opr: ''
 }
 
-const BREADCRUMB_ITEMS = [
-  { label: 'Trang chủ' },
-  { label: 'Quản lý vận chuyển' },
-  { label: 'Điều xe' }
-]
+const BREADCRUMB_ITEMS = [{ label: 'Trang chủ' }, { label: 'Quản lý vận chuyển' }, { label: 'Điều xe' }]
 
 export const useVehicleDispatch = () => {
   const tableToolbar = useTableToolbar({

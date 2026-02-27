@@ -27,36 +27,28 @@ const ShipmentDetailModal = ({
       key: 'status',
       width: 120,
       title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.status} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.status} textAlign='left' />
     },
     {
       dataIndex: 'containerNo',
       key: 'containerNo',
       width: 120,
       title: () => <FISTableHeaderCell label='Container No' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.containerNo} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.containerNo} textAlign='left' />
     },
     {
       dataIndex: 'size',
       key: 'size',
       width: 80,
       title: () => <FISTableHeaderCell label='Kích thước' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.size} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.size} textAlign='left' />
     },
     {
       dataIndex: 'weight',
       key: 'weight',
       width: 100,
       title: () => <FISTableHeaderCell label='Trọng lượng' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.weight} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.weight} textAlign='left' />
     },
     {
       dataIndex: 'assignedDriver',
@@ -94,9 +86,7 @@ const ShipmentDetailModal = ({
       key: 'dispatchNote',
       width: 150,
       title: () => <FISTableHeaderCell label='Ghi chú điều vận' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.dispatchNote || '—'} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.dispatchNote || '—'} textAlign='left' />
     },
     {
       title: () => <FISTableHeaderCell label='Thao tác' />,

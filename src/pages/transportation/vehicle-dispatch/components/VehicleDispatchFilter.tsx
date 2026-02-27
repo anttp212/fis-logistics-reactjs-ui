@@ -13,27 +13,21 @@ const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
         <Controller
           name='billBooking'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Bill/Booking' placeholder='Nhập Bill/Booking' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Bill/Booking' placeholder='Nhập Bill/Booking' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='owner'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='Chủ hàng' placeholder='Nhập chủ hàng' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='Chủ hàng' placeholder='Nhập chủ hàng' />}
         />
       </Col>
       <Col span={24}>
         <Controller
           name='opr'
           control={control}
-          render={({ field }) => (
-            <FISInputText {...field} textLabel='OPR' placeholder='Nhập OPR' />
-          )}
+          render={({ field }) => <FISInputText {...field} textLabel='OPR' placeholder='Nhập OPR' />}
         />
       </Col>
     </Row>

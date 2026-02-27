@@ -155,14 +155,8 @@ const TransportationReport = () => {
     () => filteredData.filter((r) => r.status === 'Đang vận chuyển').length,
     [filteredData]
   )
-  const totalCompleted = useMemo(
-    () => filteredData.filter((r) => r.status === 'Đã hoàn tất').length,
-    [filteredData]
-  )
-  const totalIncident = useMemo(
-    () => filteredData.filter((r) => r.status === 'Sự cố/Delay').length,
-    [filteredData]
-  )
+  const totalCompleted = useMemo(() => filteredData.filter((r) => r.status === 'Đã hoàn tất').length, [filteredData])
+  const totalIncident = useMemo(() => filteredData.filter((r) => r.status === 'Sự cố/Delay').length, [filteredData])
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize
@@ -178,172 +172,141 @@ const TransportationReport = () => {
       key: 'stt',
       width: 60,
       title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={String(row.stt)} textAlign='center' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={String(row.stt)} textAlign='center' />
     },
     {
       dataIndex: 'orderCode',
       key: 'orderCode',
       width: 140,
       title: () => <FISTableHeaderCell label='MÃ LỆNH/CHUYỂN' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.orderCode} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.orderCode} textAlign='left' />
     },
     {
       dataIndex: 'driverName',
       key: 'driverName',
       width: 130,
       title: () => <FISTableHeaderCell label='Tên tài xế' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.driverName} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.driverName} textAlign='left' />
     },
     {
       dataIndex: 'vehicleType',
       key: 'vehicleType',
       width: 100,
       title: () => <FISTableHeaderCell label='Loại xe' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.vehicleType} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.vehicleType} textAlign='left' />
     },
     {
       dataIndex: 'plateNumber',
       key: 'plateNumber',
       width: 110,
       title: () => <FISTableHeaderCell label='Biển số' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.plateNumber} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.plateNumber} textAlign='left' />
     },
     {
       dataIndex: 'containerCode',
       key: 'containerCode',
       width: 130,
       title: () => <FISTableHeaderCell label='Mã container' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.containerCode} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.containerCode} textAlign='left' />
     },
     {
       dataIndex: 'goods',
       key: 'goods',
       width: 130,
       title: () => <FISTableHeaderCell label='Hàng hóa' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.goods} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.goods} textAlign='left' />
     },
     {
       dataIndex: 'status',
       key: 'status',
       width: 140,
       title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.status} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.status} textAlign='left' />
     },
     {
       dataIndex: 'startTime',
       key: 'startTime',
       width: 100,
       title: () => <FISTableHeaderCell label='Bắt đầu' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.startTime} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.startTime} textAlign='left' />
     },
     {
       dataIndex: 'endTime',
       key: 'endTime',
       width: 100,
       title: () => <FISTableHeaderCell label='Kết thúc' />,
-      render: (_: unknown, row: TransportationRecordI) => (
-        <FISTableCell content={row.endTime} textAlign='left' />
-      )
+      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.endTime} textAlign='left' />
     }
   ]
 
-  const breadcrumbItems = [
-    { label: 'Trang chủ', onClick: () => navigate(ROUTES.home) },
-    { label: 'Báo cáo Vận Tải' }
-  ]
+  const breadcrumbItems = [{ label: 'Trang chủ', onClick: () => navigate(ROUTES.home) }, { label: 'Báo cáo Vận Tải' }]
 
   return (
-    <PageWrapper
-      className='p-5'
-      title='Báo cáo Vận Tải'
-      breadcrumbItems={breadcrumbItems}
-    >
+    <PageWrapper className='p-5' title='Báo cáo Vận Tải' breadcrumbItems={breadcrumbItems}>
       <div className='flex flex-col gap-6'>
         {/* Filter */}
         <div className='bg-white rounded-lg border border-gray-200 p-4'>
           <div className='flex flex-nowrap items-end gap-4 overflow-x-auto'>
             <div className='flex-shrink-0'>
-            <Controller
-              name='fromDate'
-              control={control}
-              render={({ field }) => (
-                <FISInputDate
-                  textLabel='Từ ngày'
-                  placeholder='dd/mm/yyyy'
-                  value={field.value}
-                  onChange={field.onChange}
-                  picker='date'
-                  format='DD/MM/YYYY'
-                />
-              )}
-            />
+              <Controller
+                name='fromDate'
+                control={control}
+                render={({ field }) => (
+                  <FISInputDate
+                    textLabel='Từ ngày'
+                    placeholder='dd/mm/yyyy'
+                    value={field.value}
+                    onChange={field.onChange}
+                    picker='date'
+                    format='DD/MM/YYYY'
+                  />
+                )}
+              />
             </div>
             <div className='flex-shrink-0'>
-            <Controller
-              name='toDate'
-              control={control}
-              render={({ field }) => (
-                <FISInputDate
-                  textLabel='Đến ngày'
-                  placeholder='dd/mm/yyyy'
-                  value={field.value}
-                  onChange={field.onChange}
-                  picker='date'
-                  format='DD/MM/YYYY'
-                />
-              )}
-            />
+              <Controller
+                name='toDate'
+                control={control}
+                render={({ field }) => (
+                  <FISInputDate
+                    textLabel='Đến ngày'
+                    placeholder='dd/mm/yyyy'
+                    value={field.value}
+                    onChange={field.onChange}
+                    picker='date'
+                    format='DD/MM/YYYY'
+                  />
+                )}
+              />
             </div>
             <div className='flex-shrink-0'>
-            <Controller
-              name='status'
-              control={control}
-              render={({ field }) => (
-                <FISSelect
-                  textLabel='Trạng thái'
-                  placeholder='Chọn trạng thái'
-                  options={TRANG_THAI_OPTIONS}
-                  value={field.value}
-                  onChange={field.onChange}
-                />
-              )}
-            />
+              <Controller
+                name='status'
+                control={control}
+                render={({ field }) => (
+                  <FISSelect
+                    textLabel='Trạng thái'
+                    placeholder='Chọn trạng thái'
+                    options={TRANG_THAI_OPTIONS}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
             </div>
             <div className='flex-shrink-0 min-w-[200px]'>
-            <Controller
-              name='search'
-              control={control}
-              render={({ field }) => (
-                <FISInputText
-                  {...field}
-                  textLabel='Tìm kiếm'
-                  placeholder='Mã lệnh, cont, tài xế'
-                />
-              )}
-            />
+              <Controller
+                name='search'
+                control={control}
+                render={({ field }) => (
+                  <FISInputText {...field} textLabel='Tìm kiếm' placeholder='Mã lệnh, cont, tài xế' />
+                )}
+              />
             </div>
             <div className='flex-shrink-0'>
-            <FISButton variant='primary' onClick={handleFilter}>
-              Lọc dữ liệu
-            </FISButton>
+              <FISButton variant='primary' onClick={handleFilter}>
+                Lọc dữ liệu
+              </FISButton>
             </div>
           </div>
         </div>
@@ -370,12 +333,7 @@ const TransportationReport = () => {
 
         {/* Table */}
         <div className='bg-white rounded-lg   overflow-hidden'>
-          <FISTable
-            dataSource={paginatedData}
-            columns={columns}
-            scroll={{ x: 'max-content' }}
-            pagination={false}
-          />
+          <FISTable dataSource={paginatedData} columns={columns} scroll={{ x: 'max-content' }} pagination={false} />
           <div className='p-4 mt-2 '>
             <FISPagination
               current={page}

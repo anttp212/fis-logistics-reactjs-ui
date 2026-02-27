@@ -297,7 +297,7 @@ export const MENU_ENTRIES: MenuEntryI[] = [
     permissionKey: 'transportation.vehicle-dispatch',
     labelKey: 'Điều xe',
     parentKey: 'transportation'
-  },
+  }
   // {
   //   path: ROUTES.transportationVehicleApproval,
   //   permissionKey: 'transportation.vehicle-approval',

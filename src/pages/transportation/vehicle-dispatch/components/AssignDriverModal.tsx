@@ -16,14 +16,7 @@ interface FormValuesI {
   driverId: string
 }
 
-const AssignDriverModal = ({
-  open,
-  onClose,
-  drivers,
-  shipment,
-  orderKey,
-  onConfirm
-}: AssignDriverModalPropsI) => {
+const AssignDriverModal = ({ open, onClose, drivers, shipment, orderKey, onConfirm }: AssignDriverModalPropsI) => {
   const { control, handleSubmit, watch, reset } = useForm<FormValuesI>({
     defaultValues: { driverId: '' }
   })
@@ -77,21 +70,14 @@ const AssignDriverModal = ({
             control={control}
             rules={{ required: 'Vui lòng chọn tài xế' }}
             render={({ field }) => (
-              <FISSelect
-                {...field}
-                textLabel='Danh sách tài xế'
-                placeholder='Chọn tài xế'
-                options={driverOptions}
-              />
+              <FISSelect {...field} textLabel='Danh sách tài xế' placeholder='Chọn tài xế' options={driverOptions} />
             )}
           />
         </div>
 
         {selectedDriver && (
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
-              Số điện thoại tài xế
-            </label>
+            <label className='block text-sm font-medium text-gray-700 mb-2'>Số điện thoại tài xế</label>
             <div className='p-3 bg-gray-50 rounded-lg'>
               <p className='font-medium text-gray-900'>{selectedDriver.name}</p>
               <p className='text-sm text-gray-600 mt-1'>{selectedDriver.phone}</p>

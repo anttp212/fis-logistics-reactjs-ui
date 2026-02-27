@@ -3,13 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import {
-  FISTable,
-  FISTableCell,
-  FISTableHeaderCell,
-  FISButton,
-  FISButtonGroup
-} from 'fis-component'
+import { FISTable, FISTableCell, FISTableHeaderCell, FISButton, FISButtonGroup } from 'fis-component'
 import { ROUTES } from '@constants'
 import { BackIcon } from '@images'
 import ShipmentDetailModal from '../components/ShipmentDetailModal'
@@ -45,32 +39,23 @@ const VehicleDispatchDetail = () => {
     setAssignDriverModalOpen(true)
   }
 
-  const handleAssignDriverConfirm = async (
-    orderKey: string,
-    shipmentKey: string,
-    driverId: string
-  ) => {
+  const handleAssignDriverConfirm = async (orderKey: string, shipmentKey: string, driverId: string) => {
     await assignDriver({ orderKey, shipmentDetailKey: shipmentKey, driverId })
     setAssignDriverModalOpen(false)
     setSelectedShipment(null)
     setAssignOrderKey('')
   }
 
-  const handleSaveShipment = async (
-    orderKey: string,
-    shipmentKey: string,
-    data: Partial<ShipmentDetailI>
-  ) => {
+  const handleSaveShipment = async (orderKey: string, shipmentKey: string, data: Partial<ShipmentDetailI>) => {
     await updateShipmentDetail({ orderKey, shipmentKey, data })
   }
 
-  const handleConfirmShipment = (orderKey: string, shipmentKey: string) => {
-    console.log('Confirm shipment', orderKey, shipmentKey)
+  const handleConfirmShipment = (_orderKey: string, _shipmentKey: string) => {
+    // TODO: Call API xác nhận shipment
   }
 
   const handleEdit = () => {
     // TODO: Navigate to edit page or open edit modal
-    console.log('Edit', order)
   }
 
   const handleDelete = () => {
@@ -112,36 +97,28 @@ const VehicleDispatchDetail = () => {
       key: 'status',
       width: 120,
       title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.status} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.status} textAlign='left' />
     },
     {
       dataIndex: 'containerNo',
       key: 'containerNo',
       width: 120,
       title: () => <FISTableHeaderCell label='Container No' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.containerNo} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.containerNo} textAlign='left' />
     },
     {
       dataIndex: 'size',
       key: 'size',
       width: 80,
       title: () => <FISTableHeaderCell label='Kích thước' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.size} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.size} textAlign='left' />
     },
     {
       dataIndex: 'weight',
       key: 'weight',
       width: 100,
       title: () => <FISTableHeaderCell label='Trọng lượng' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.weight} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.weight} textAlign='left' />
     },
     {
       dataIndex: 'assignedDriver',
@@ -180,9 +157,7 @@ const VehicleDispatchDetail = () => {
       key: 'dispatchNote',
       width: 150,
       title: () => <FISTableHeaderCell label='Ghi chú điều vận' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.dispatchNote || '—'} textAlign='left' />
-      )
+      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.dispatchNote || '—'} textAlign='left' />
     },
     {
       title: () => <FISTableHeaderCell label='Thao tác' />,
@@ -225,7 +200,11 @@ const VehicleDispatchDetail = () => {
           <FISButton variant='secondary-negative' onClick={handleDelete}>
             Xóa
           </FISButton>
-          <FISButton variant='tertiary' startIcon={<BackIcon />} onClick={() => navigate(ROUTES.transportationVehicleDispatch)}>
+          <FISButton
+            variant='tertiary'
+            startIcon={<BackIcon />}
+            onClick={() => navigate(ROUTES.transportationVehicleDispatch)}
+          >
             Quay lại
           </FISButton>
         </div>
