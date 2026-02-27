@@ -34,6 +34,14 @@ export const API_ENDPOINTS = {
   },
   portal: {
     inboundRegistration: '/portal/inbound/registration'
+  },
+  vehicleDispatch: {
+    list: '/vehicle-dispatch',
+    detail: '/vehicle-dispatch/:id',
+    create: '/vehicle-dispatch',
+    update: '/vehicle-dispatch/:id',
+    delete: '/vehicle-dispatch/:id',
+    assignDriver: '/vehicle-dispatch/:id/assign-driver'
   }
 } as const
 
@@ -54,5 +62,6 @@ export const API_TAGS = {
   user: 'User',
   currentUser: 'CurrentUser',
   userGroup: 'UserGroup',
-  department: 'Department'
+  department: 'Department',
+  vehicleDispatch: 'VehicleDispatch'
 } as const

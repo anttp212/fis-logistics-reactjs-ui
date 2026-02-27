@@ -64,7 +64,7 @@ const Login: React.FC = () => {
             role: account.role
           })
         )
-        const redirectTo = searchParams.get('redirect') || ROUTES.home
+        const redirectTo = searchParams.get('redirect') || ROUTES.reportGateInOut
         navigate(redirectTo, { replace: true })
       } else {
         setError('root', {

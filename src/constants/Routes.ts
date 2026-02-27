@@ -53,8 +53,11 @@ export const ROUTES = {
   depotVehicleServiceLog: '/depot/vehicle-service-log',
   depotPerformanceStats: '/depot/performance-stats',
   depotOperationsDashboard: '/depot/operations-dashboard',
+  reportGateInOut: '/report/gate-in-out',
+  reportTransportation: '/report/transportation',
   transportation: '/transportation',
   transportationVehicleDispatch: '/transportation/vehicle-dispatch',
+  transportationVehicleDispatchDetail: '/transportation/vehicle-dispatch/:id',
   transportationVehicleApproval: '/transportation/vehicle-approval',
   transportationServiceRequestPortal: '/transportation/service-request-portal',
   transportationReceptionAssessment: '/transportation/reception-assessment',
@@ -146,6 +149,10 @@ export const buildCustomerDetailPath = (customerId: string): string => {
 
 export const buildPartnerDetailPath = (partnerId: string): string => {
   return `/category-management/partner-profile/${partnerId}`
+}
+
+export const buildVehicleDispatchDetailPath = (id: string): string => {
+  return `/transportation/vehicle-dispatch/${id}`
 }
 
 // Type for route paths (for TypeScript safety)

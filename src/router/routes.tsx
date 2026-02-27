@@ -171,6 +171,20 @@ export const routes: RouteObject[] = [
           return { Component: HomeComponent.default }
         }
       },
+      {
+        path: 'report/gate-in-out',
+        lazy: async () => {
+          const C = await import('../pages/report/gate-in-out')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'report/transportation',
+        lazy: async () => {
+          const C = await import('../pages/report/transportation')
+          return { Component: C.default }
+        }
+      },
       // Quản lý kho: path tương đối, sub-routes trước, redirect sau
       {
         path: 'warehouse/service-registration-portal',
@@ -669,6 +683,13 @@ export const routes: RouteObject[] = [
         }
       },
       // Quản lý vận chuyển: path tương đối, sub-routes trước, redirect sau
+      {
+        path: 'transportation/vehicle-dispatch/:id',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-dispatch/detail')
+          return { Component: C.default }
+        }
+      },
       {
         path: 'transportation/vehicle-dispatch',
         lazy: async () => {
