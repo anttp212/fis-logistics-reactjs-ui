@@ -37,9 +37,9 @@ export interface DriverI {
   name: string
   phone?: string
   code?: string
-  sortOrder?: number,
-  fullName?: string,
-  employeeCode?: string,
+  sortOrder?: number
+  fullName?: string
+  employeeCode?: string
   vehiclePlateNo?: string
 }
 

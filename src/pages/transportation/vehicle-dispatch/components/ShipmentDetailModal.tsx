@@ -118,13 +118,7 @@ const ShipmentDetailModal = ({
   ]
 
   return (
-    <Modal
-      title={`Chi tiết lô hàng - ${order.billBooking}`}
-      open={open}
-      onCancel={onClose}
-      footer={null}
-      width={1200}
-    >
+    <Modal title={`Chi tiết lô hàng - ${order.billBooking}`} open={open} onCancel={onClose} footer={null} width={1200}>
       <div className='mt-4'>
         <FISTable
           dataSource={order.shipmentDetails || []}

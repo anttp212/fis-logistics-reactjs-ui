@@ -3,16 +3,13 @@ import { Modal, message } from 'antd'
 import { PageWrapper } from '@components'
 import { FISTable, FISTableCell, FISTableHeaderCell, FISButton, FISInputArea, FISBadge } from 'fis-component'
 import { ROUTES, buildVehicleDispatchEditPath } from '@constants'
-import {
-  useGetVehicleDispatchDetailQuery,
-  useCancelVehicleDispatchMutation
-} from '../vehicleDispatch.api'
+import { useGetVehicleDispatchDetailQuery, useCancelVehicleDispatchMutation } from '../vehicleDispatch.api'
 import type { DispatchOrderContainerI } from '../vehicleDispatch.api'
 import {
   useGetVehicleTypesQuery,
   useGetRequestingUnitsQuery,
   useGetLocationsQuery,
-  useGetContainerSizesQuery,
+  useGetContainerSizesQuery
 } from '../vehicleDispatchMaster.api'
 import { useMemo, useState, type ReactNode } from 'react'
 
@@ -32,8 +29,8 @@ const formatDateTime = (isoStr?: string) => {
   return `${day}/${month}/${year} ${hours}:${minutes}`
 }
 
-type BadgeStatus = 'caution' | 'info' | 'positive' | 'negative'
-const STATUS_BADGE: Record<string, { label: string; status: BadgeStatus }> = {
+type BadgeStatusT = 'caution' | 'info' | 'positive' | 'negative'
+const STATUS_BADGE: Record<string, { label: string; status: BadgeStatusT }> = {
   PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
   IN_TRANSIT: { label: 'Đang vận chuyển', status: 'info' },
   COMPLETED: { label: 'Hoàn thành', status: 'positive' },
@@ -61,8 +58,6 @@ const VehicleDispatchDetail = () => {
     () => Object.fromEntries((containerSizes ?? []).map((s) => [s.id, s.name || s.code])),
     [containerSizes]
   )
-
-  console.log('order', order);
 
   const handleEdit = () => {
     if (order) {
@@ -131,7 +126,10 @@ const VehicleDispatchDetail = () => {
       width: 100,
       title: () => <FISTableHeaderCell label='KÍCH THƯỚC' hasRightDivider />,
       render: (_: unknown, row: DispatchOrderContainerI) => (
-        <FISTableCell content={sizeLabels[row.size ?? row.containerSizeId ?? ''] ?? row.size ?? row.containerSizeId ?? '-'} textAlign='left' />
+        <FISTableCell
+          content={sizeLabels[row.size ?? row.containerSizeId ?? ''] ?? row.size ?? row.containerSizeId ?? '-'}
+          textAlign='left'
+        />
       )
     },
     {
@@ -148,12 +146,12 @@ const VehicleDispatchDetail = () => {
       key: 'driver',
       width: 140,
       title: () => <FISTableHeaderCell label='TÀI XẾ' hasRightDivider />,
-      render: (_: unknown, row: DispatchOrderContainerI) =>
-         (
-          
-        <FISTableCell content={String(row.driverName + ' - ' + row.driverPhone + ' - ' + row.driverPlateNo)} textAlign='left' />
-
-        ) 
+      render: (_: unknown, row: DispatchOrderContainerI) => (
+        <FISTableCell
+          content={String(row.driverName + ' - ' + row.driverPhone + ' - ' + row.driverPlateNo)}
+          textAlign='left'
+        />
+      )
     }
   ]
 
@@ -221,16 +219,59 @@ const VehicleDispatchDetail = () => {
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
               <h3 className='text-lg font-semibold text-gray-900 mb-4'>1. Thông tin chung</h3>
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                <InfoItem label='Loại xe' value={vehicleTypeLabels[order.vehicleType ?? order.vehicleTypeId ?? ''] ?? order.vehicleType ?? order.vehicleTypeId} />
-                <InfoItem label='Đơn vị yêu cầu' value={requestingUnitLabels[order.requestUnit ?? order.requestingUnitId ?? ''] ?? order.requestUnit ?? order.requestingUnitId} />
-                <InfoItem label='Điểm đi' value={locationLabels[order.origin ?? order.departureLocationId ?? ''] ?? order.origin ?? order.departureLocationId} />
-                <InfoItem label='Điểm đến' value={locationLabels[order.destination ?? order.destinationLocationId ?? ''] ?? order.destination ?? order.destinationLocationId} />
-                <InfoItem label='Thời gian dự kiến nhận hàng (ở điểm đi)' value={formatDateTime(order.expectedPickupTime ?? order.estimatedPickupTime)} />
-                <InfoItem label='Thời gian dự kiến giao hàng (ở điểm đến)' value={formatDateTime(order.expectedDeliveryTime ?? order.estimatedDeliveryTime)} />
+                <InfoItem
+                  label='Loại xe'
+                  value={
+                    vehicleTypeLabels[order.vehicleType ?? order.vehicleTypeId ?? ''] ??
+                    order.vehicleType ??
+                    order.vehicleTypeId
+                  }
+                />
+                <InfoItem
+                  label='Đơn vị yêu cầu'
+                  value={
+                    requestingUnitLabels[order.requestUnit ?? order.requestingUnitId ?? ''] ??
+                    order.requestUnit ??
+                    order.requestingUnitId
+                  }
+                />
+                <InfoItem
+                  label='Điểm đi'
+                  value={
+                    locationLabels[order.origin ?? order.departureLocationId ?? ''] ??
+                    order.origin ??
+                    order.departureLocationId
+                  }
+                />
+                <InfoItem
+                  label='Điểm đến'
+                  value={
+                    locationLabels[order.destination ?? order.destinationLocationId ?? ''] ??
+                    order.destination ??
+                    order.destinationLocationId
+                  }
+                />
+                <InfoItem
+                  label='Thời gian dự kiến nhận hàng (ở điểm đi)'
+                  value={formatDateTime(order.expectedPickupTime ?? order.estimatedPickupTime)}
+                />
+                <InfoItem
+                  label='Thời gian dự kiến giao hàng (ở điểm đến)'
+                  value={formatDateTime(order.expectedDeliveryTime ?? order.estimatedDeliveryTime)}
+                />
                 <InfoItem label='Nội dung' value={order.content} />
                 <InfoItem label='Tên người nhận' value={order.recipientName ?? '-'} />
                 <InfoItem label='Số điện thoại' value={order.recipientPhone ?? '-'} />
-                <InfoItem label='Trạng thái' value={<FISBadge label={STATUS_BADGE[order.status ?? '']?.label ?? order.status ?? '-'} size='sm' status={STATUS_BADGE[order.status ?? '']?.status ?? 'info'} />} />
+                <InfoItem
+                  label='Trạng thái'
+                  value={
+                    <FISBadge
+                      label={STATUS_BADGE[order.status ?? '']?.label ?? order.status ?? '-'}
+                      size='sm'
+                      status={STATUS_BADGE[order.status ?? '']?.status ?? 'info'}
+                    />
+                  }
+                />
               </div>
             </div>
 
@@ -254,7 +295,6 @@ const VehicleDispatchDetail = () => {
           </>
         )}
       </div>
-
     </PageWrapper>
   )
 }

@@ -40,7 +40,13 @@ const store = configureStore({
       immutableCheck: {
         warnAfter: 128 // Warn if state operations take longer than 128ms
       }
-    }).concat(loginApi.middleware, userGroupApi.middleware, departmentsApi.middleware, vehicleDispatchApi.middleware, vehicleDispatchMasterApi.middleware) // Add RTK Query middleware
+    }).concat(
+      loginApi.middleware,
+      userGroupApi.middleware,
+      departmentsApi.middleware,
+      vehicleDispatchApi.middleware,
+      vehicleDispatchMasterApi.middleware
+    ) // Add RTK Query middleware
 })
 
 // Create a persistor

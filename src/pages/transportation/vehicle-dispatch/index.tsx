@@ -17,11 +17,7 @@ import VehicleDispatchFilter from './components/VehicleDispatchFilter'
 import { useVehicleDispatch } from './useVehicleDispatch'
 import { useGetVehicleDispatchListQuery } from './vehicleDispatch.api'
 import type { DispatchOrderApiI, DispatchOrderContainerI } from './vehicleDispatch.api'
-import {
-  useGetVehicleTypesQuery,
-  useGetRequestingUnitsQuery,
-  useGetLocationsQuery
-} from './vehicleDispatchMaster.api'
+import { useGetVehicleTypesQuery, useGetRequestingUnitsQuery, useGetLocationsQuery } from './vehicleDispatchMaster.api'
 
 /** Row đã flatten: 1 dòng = 1 container */
 interface FlattenedRowI extends DispatchOrderApiI {
@@ -39,8 +35,8 @@ const STATUS_LABELS: Record<string, string> = {
   CANCELLED: 'Huỷ'
 }
 
-type BadgeStatus = 'caution' | 'info' | 'positive' | 'negative'
-const STATUS_BADGE: Record<string, { label: string; status: BadgeStatus }> = {
+type BadgeStatusT = 'caution' | 'info' | 'positive' | 'negative'
+const STATUS_BADGE: Record<string, { label: string; status: BadgeStatusT }> = {
   PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
   IN_TRANSIT: { label: 'Đang vận chuyển', status: 'info' },
   COMPLETED: { label: 'Hoàn thành', status: 'positive' },
@@ -73,13 +69,13 @@ const flattenOrdersToRows = (orders: DispatchOrderApiI[]): FlattenedRowI[] => {
   const rows: FlattenedRowI[] = []
   orders.forEach((order, orderIdx) => {
     const orderIndex = orderIdx + 1
-      rows.push({
-        ...order,
-        _orderId: order.id,
-        _orderIndex: orderIndex,
-        _containerIndex: 0,
-        _container: {}
-      })
+    rows.push({
+      ...order,
+      _orderId: order.id,
+      _orderIndex: orderIndex,
+      _containerIndex: 0,
+      _container: {}
+    })
   })
   return rows
 }
@@ -150,9 +146,7 @@ const VehicleDispatchPage = () => {
       key: 'index',
       width: 50,
       title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-      
-          <FISTableCell content={String(row._orderIndex)} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => <FISTableCell content={String(row._orderIndex)} textAlign='left' />
     },
     {
       dataIndex: 'status',
@@ -170,9 +164,7 @@ const VehicleDispatchPage = () => {
             />
           )
         }
-        return (
-          <FISTableCell content={STATUS_LABELS[statusKey] ?? statusKey ?? '-'} textAlign='left' />
-        )
+        return <FISTableCell content={STATUS_LABELS[statusKey] ?? statusKey ?? '-'} textAlign='left' />
       }
     },
     {
@@ -180,35 +172,63 @@ const VehicleDispatchPage = () => {
       key: 'vehicleType',
       width: 120,
       title: () => <FISTableHeaderCell label='LOẠI XE' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-          <FISTableCell content={vehicleTypeLabels[row.vehicleType ?? row.vehicleTypeId ?? ''] ?? row.vehicleType ?? row.vehicleTypeId ?? '-'} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={
+            vehicleTypeLabels[row.vehicleType ?? row.vehicleTypeId ?? ''] ?? row.vehicleType ?? row.vehicleTypeId ?? '-'
+          }
+          textAlign='left'
+        />
+      )
     },
     {
       dataIndex: 'origin',
       key: 'origin',
       width: 90,
       title: () => <FISTableHeaderCell label='ĐIỂM ĐI' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-        
-          <FISTableCell content={locationLabels[row.origin ?? row.departureLocationId ?? ''] ?? row.origin ?? row.departureLocationId ?? '-'} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={
+            locationLabels[row.origin ?? row.departureLocationId ?? ''] ?? row.origin ?? row.departureLocationId ?? '-'
+          }
+          textAlign='left'
+        />
+      )
     },
     {
       dataIndex: 'destination',
       key: 'destination',
       width: 100,
       title: () => <FISTableHeaderCell label='ĐIỂM ĐẾN' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-        
-          <FISTableCell content={locationLabels[row.destination ?? row.destinationLocationId ?? ''] ?? row.destination ?? row.destinationLocationId ?? '-'} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={
+            locationLabels[row.destination ?? row.destinationLocationId ?? ''] ??
+            row.destination ??
+            row.destinationLocationId ??
+            '-'
+          }
+          textAlign='left'
+        />
+      )
     },
     {
       dataIndex: 'requestUnit',
       key: 'requestUnit',
       width: 110,
       title: () => <FISTableHeaderCell label='ĐƠN VỊ YC' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-       
-          <FISTableCell content={requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ?? row.requestUnit ?? row.requestingUnitId ?? row.depotName ?? '-'} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={
+            requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ??
+            row.requestUnit ??
+            row.requestingUnitId ??
+            row.depotName ??
+            '-'
+          }
+          textAlign='left'
+        />
+      )
     },
     {
       dataIndex: 'containerCount',
@@ -219,10 +239,7 @@ const VehicleDispatchPage = () => {
         isSubsequentContainerRow(row) ? (
           <FISTableCell content='' textAlign='left' />
         ) : (
-          <FISTableCell
-            content={String(row.containerCount ?? (row.containers?.length ?? 0))}
-            textAlign='left'
-          />
+          <FISTableCell content={String(row.containerCount ?? row.containers?.length ?? 0)} textAlign='left' />
         )
     },
     {
@@ -230,18 +247,24 @@ const VehicleDispatchPage = () => {
       key: 'expectedPickupTime',
       width: 120,
       title: () => <FISTableHeaderCell label='TG NHẬN' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-      
-          <FISTableCell content={formatDateTime(row.expectedPickupTime ?? row.estimatedPickupTime ?? row.dispatchDate)} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={formatDateTime(row.expectedPickupTime ?? row.estimatedPickupTime ?? row.dispatchDate)}
+          textAlign='left'
+        />
+      )
     },
     {
       dataIndex: 'expectedDeliveryTime',
       key: 'expectedDeliveryTime',
       width: 120,
       title: () => <FISTableHeaderCell label='TG GIAO HÀNG' hasRightDivider />,
-      render: (_: unknown, row: FlattenedRowI) =>
-      
-          <FISTableCell content={formatDateTime(row.expectedDeliveryTime ?? row.estimatedDeliveryTime)} textAlign='left' />
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={formatDateTime(row.expectedDeliveryTime ?? row.estimatedDeliveryTime)}
+          textAlign='left'
+        />
+      )
     },
     {
       title: () => <FISTableHeaderCell label='THAO TÁC' />,
@@ -249,7 +272,7 @@ const VehicleDispatchPage = () => {
       width: 140,
       render: (_: unknown, record: FlattenedRowI) => (
         <FISTableCell
-            textAlign='right'
+          textAlign='right'
           icon={
             <FISButtonGroup
               size='md'
@@ -305,7 +328,7 @@ const VehicleDispatchPage = () => {
                         )
                       }
                     ]
-                  : []),
+                  : [])
                 // {
                 //   label: '',
                 //   startIcon: (
@@ -356,26 +379,26 @@ const VehicleDispatchPage = () => {
         />
 
         {/* <div className='flex-1 min-h-0 bg-white rounded-lg overflow-hidden p-4 flex flex-col'> */}
-          <FISTable
-            dataSource={dataSource}
-            columns={columns}
-            rowKey={(row) => `${row._orderId}-${row._containerIndex}`}
-            scroll={{  y: 'calc(100vh - 350px)'}}
-            pagination={false}
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowKey={(row) => `${row._orderId}-${row._containerIndex}`}
+          scroll={{ y: 'calc(100vh - 350px)' }}
+          pagination={false}
+        />
+        <div>
+          <FISPagination
+            current={page}
+            pageSize={pageSize}
+            total={total}
+            onChange={(p) => setPage(p)}
+            onShowSizeChange={(_current, _size) => {
+              setPageSize(_current)
+              setPage(1)
+            }}
+            showSizeChanger
           />
-          <div >
-            <FISPagination
-              current={page}
-              pageSize={pageSize}
-              total={total}
-              onChange={(p) => setPage(p)}
-              onShowSizeChange={(_current, _size) => {
-                setPageSize(_current)
-                setPage(1)
-              }}
-              showSizeChanger
-            />
-          </div>
+        </div>
         {/* </div> */}
       </div>
     </PageWrapper>

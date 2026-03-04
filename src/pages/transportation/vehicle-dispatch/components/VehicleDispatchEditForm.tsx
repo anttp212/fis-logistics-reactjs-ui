@@ -1,20 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { Input, message } from 'antd'
-import {
-  FISButton,
-  FISInputDate,
-  FISInputText,
-  FISIconButton,
-  FISSelect,
-  FISText,
-  FISInputArea
-} from 'fis-component'
+import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
 import { AddIcon, DeleteIcon } from '@images'
-import {
-  useGetVehicleDispatchDetailQuery,
-  useUpdateVehicleDispatchMutation
-} from '../vehicleDispatch.api'
+import { useGetVehicleDispatchDetailQuery, useUpdateVehicleDispatchMutation } from '../vehicleDispatch.api'
 import {
   useGetVehicleTypesQuery,
   useGetRequestingUnitsQuery,
@@ -77,12 +66,13 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
   const { data: locations = [] } = useGetLocationsQuery()
   const { data: drivers = [] } = useGetDriversQuery()
   const { data: containerSizes = [] } = useGetContainerSizesQuery()
-  
+
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
   const requestingUnitOptions = useMemo(() => toSelectOptions(requestingUnits), [requestingUnits])
   const locationOptions = useMemo(() => toSelectOptions(locations), [locations])
   const driverOptions = useMemo(
-    () => toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
+    () =>
+      toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
     [drivers]
   )
   const containerSizeOptions = useMemo(
@@ -185,9 +175,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
       onSuccess?.()
     } catch (err: unknown) {
       const errorMessage =
-        err && typeof err === 'object' && 'data' in err
-          ? (err as { data?: { message?: string } })?.data?.message
-          : null
+        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } })?.data?.message : null
       message.error(errorMessage || 'Cập nhật thất bại. Vui lòng thử lại.')
     }
   }
@@ -378,15 +366,15 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 name={`containers.${index}.containerNumber`}
                 control={control}
                 rules={{
-                    required: 'Số container là bắt buộc',
-                    pattern: {
-                      value: /^[A-Z]{4}[0-9]{7}$/,
-                      message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
-                    }
-                  }}
+                  required: 'Số container là bắt buộc',
+                  pattern: {
+                    value: /^[A-Z]{4}[0-9]{7}$/,
+                    message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
+                  }
+                }}
                 render={({ field: f }) => (
                   <FISInputText
-                  required
+                    required
                     {...f}
                     textLabel='Số container'
                     placeholder='Nhập số container'
@@ -401,7 +389,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 rules={{ required: 'Vui lòng chọn kích thước' }}
                 render={({ field: f }) => (
                   <FISSelect
-                  required
+                    required
                     {...f}
                     textLabel='Kích thước'
                     placeholder='Chọn kích thước'
@@ -417,7 +405,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 rules={{ required: 'Trọng lượng là bắt buộc' }}
                 render={({ field: f }) => (
                   <FISInputText
-                  required
+                    required
                     {...f}
                     type='number'
                     textLabel='Trọng lượng'
@@ -445,22 +433,17 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
               />
               <div className='flex items-end gap-2'>
                 {fields.length > 1 && (
-                 <FISIconButton
-                 icon={<DeleteIcon />}
-                 onClick={() => remove(index)}
-                 size='md'
-                 variant='secondary-negative'
-               />
+                  <FISIconButton
+                    icon={<DeleteIcon />}
+                    onClick={() => remove(index)}
+                    size='md'
+                    variant='secondary-negative'
+                  />
                 )}
               </div>
             </div>
           ))}
-          <FISButton
-            type='button'
-            variant='secondary'
-            startIcon={<AddIcon />}
-            onClick={handleAddContainer}
-          >
+          <FISButton type='button' variant='secondary' startIcon={<AddIcon />} onClick={handleAddContainer}>
             Thêm container
           </FISButton>
         </div>

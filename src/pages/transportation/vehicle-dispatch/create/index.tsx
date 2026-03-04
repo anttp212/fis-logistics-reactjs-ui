@@ -3,15 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { Input, message } from 'antd'
 import { PageWrapper } from '@components'
-import {
-  FISButton,
-  FISInputDate,
-  FISInputText,
-  FISIconButton,
-  FISSelect,
-  FISText,
-  FISInputArea
-} from 'fis-component'
+import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
 import { ROUTES } from '@constants'
 import { DeleteIcon } from '@images'
 import { useCreateVehicleDispatchMutation } from '../vehicleDispatch.api'
@@ -74,9 +66,10 @@ const VehicleDispatchCreatePage = () => {
   const requestingUnitOptions = useMemo(() => toSelectOptions(requestingUnits), [requestingUnits])
   const locationOptions = useMemo(() => toSelectOptions(locations), [locations])
   const driverOptions = useMemo(
-    () => toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
+    () =>
+      toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
     [drivers]
-  );
+  )
 
   const containerSizeOptions = useMemo(
     () => toSelectOptions(containerSizes.map((s) => ({ id: s.id, name: s.name || s.code }))),
@@ -152,9 +145,7 @@ const VehicleDispatchCreatePage = () => {
       navigate(ROUTES.transportationVehicleDispatch)
     } catch (err: unknown) {
       const errorMessage =
-        err && typeof err === 'object' && 'data' in err
-          ? (err as { data?: { message?: string } })?.data?.message
-          : null
+        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } })?.data?.message : null
       message.error(errorMessage || 'Tạo yêu cầu điều xe thất bại. Vui lòng thử lại.')
     }
   }
@@ -185,7 +176,7 @@ const VehicleDispatchCreatePage = () => {
               render={({ field }) => (
                 <FISSelect
                   {...field}
-              required
+                  required
                   textLabel='Loại xe'
                   placeholder='Chọn loại xe'
                   options={vehicleTypeOptions}
@@ -242,42 +233,42 @@ const VehicleDispatchCreatePage = () => {
                 />
               )}
             />
-             <Controller
-            name='recipientName'
-            control={control}
-            rules={{ required: 'Vui lòng nhập tên người nhận' }}
-            render={({ field }) => (
-              <FISInputText
-              required
-                {...field}
-                textLabel='Tên người nhận'
-                placeholder='Nhập tên người nhận'
-                negative={!!errors.recipientName}
-                message={errors.recipientName?.message}
-              />
-            )}
-          />
-          <Controller
-            name='recipientPhone'
-            control={control}
-            rules={{
-              required: 'Vui lòng nhập số điện thoại người nhận',
-              pattern: {
-                value: /^$|^(\+84|0)[0-9]{9,10}$/,
-                message: 'Số điện thoại người nhận không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
-              }
-            }}
-            render={({ field }) => (
-              <FISInputText
-                {...field}
-              required
-                textLabel='Số điện thoại'
-                placeholder='Nhập số điện thoại người nhận'
-                negative={!!errors.recipientPhone}
-                message={errors.recipientPhone?.message}
-              />
-            )}
-          />
+            <Controller
+              name='recipientName'
+              control={control}
+              rules={{ required: 'Vui lòng nhập tên người nhận' }}
+              render={({ field }) => (
+                <FISInputText
+                  required
+                  {...field}
+                  textLabel='Tên người nhận'
+                  placeholder='Nhập tên người nhận'
+                  negative={!!errors.recipientName}
+                  message={errors.recipientName?.message}
+                />
+              )}
+            />
+            <Controller
+              name='recipientPhone'
+              control={control}
+              rules={{
+                required: 'Vui lòng nhập số điện thoại người nhận',
+                pattern: {
+                  value: /^$|^(\+84|0)[0-9]{9,10}$/,
+                  message: 'Số điện thoại người nhận không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
+                }
+              }}
+              render={({ field }) => (
+                <FISInputText
+                  {...field}
+                  required
+                  textLabel='Số điện thoại'
+                  placeholder='Nhập số điện thoại người nhận'
+                  negative={!!errors.recipientPhone}
+                  message={errors.recipientPhone?.message}
+                />
+              )}
+            />
             <Controller
               name='expectedPickupTime'
               control={control}
@@ -347,12 +338,12 @@ const VehicleDispatchCreatePage = () => {
                   name={`containers.${index}.containerNumber`}
                   control={control}
                   rules={{
-                  required: 'Số container là bắt buộc',
-                  pattern: {
-                    value: /^[A-Z]{4}[0-9]{7}$/,
-                    message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
-                  }
-                }}
+                    required: 'Số container là bắt buộc',
+                    pattern: {
+                      value: /^[A-Z]{4}[0-9]{7}$/,
+                      message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
+                    }
+                  }}
                   render={({ field: f }) => (
                     <FISInputText
                       {...f}
@@ -415,20 +406,16 @@ const VehicleDispatchCreatePage = () => {
                 <div className='flex items-end gap-2'>
                   {fields.length > 1 && (
                     <FISIconButton
-                    icon={<DeleteIcon />}
-                    onClick={() => remove(index)}
-                    size='md'
-                    variant='secondary-negative'
-                  />
+                      icon={<DeleteIcon />}
+                      onClick={() => remove(index)}
+                      size='md'
+                      variant='secondary-negative'
+                    />
                   )}
                 </div>
               </div>
             ))}
-            <FISButton
-              type='button'
-              variant='secondary'
-              onClick={handleAddContainer}
-            >
+            <FISButton type='button' variant='secondary' onClick={handleAddContainer}>
               Thêm container
             </FISButton>
           </div>
@@ -451,11 +438,7 @@ const VehicleDispatchCreatePage = () => {
         </div>
 
         <div className='flex justify-end gap-2'>
-          <FISButton
-            type='button'
-            variant='secondary'
-            onClick={() => navigate(ROUTES.transportationVehicleDispatch)}
-          >
+          <FISButton type='button' variant='secondary' onClick={() => navigate(ROUTES.transportationVehicleDispatch)}>
             Hủy
           </FISButton>
           <FISButton type='submit' variant='primary' disabled={isLoading}>

@@ -14,7 +14,17 @@ interface DrawerI {
   textSave?: string
   textReset?: string
 }
-const FISDrawer: FC<DrawerI> = ({ open, onClose, title, onReset, onSave, children, textCancel, textSave, textReset }) => {
+const FISDrawer: FC<DrawerI> = ({
+  open,
+  onClose,
+  title,
+  onReset,
+  onSave,
+  children,
+  textCancel,
+  textSave,
+  textReset
+}) => {
   const { t } = useTranslation()
   return (
     <Drawer

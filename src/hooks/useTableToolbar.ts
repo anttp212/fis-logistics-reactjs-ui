@@ -109,10 +109,7 @@ export const useTableToolbar = <TFormValues extends Record<string, any> = any, T
   )
 
   // Auto-generate filterFields from defaultFilterValues keys
-  const filterFields = useMemo(
-    () => Object.keys(defaultFilterValues) as (keyof TFilters)[],
-    [defaultFilterValues]
-  )
+  const filterFields = useMemo(() => Object.keys(defaultFilterValues) as (keyof TFilters)[], [defaultFilterValues])
 
   const parseFiltersFromUrl = useMemo(
     () => createParseFiltersFromUrl<TFilters>(filterFields, defaultFilterValues as any),

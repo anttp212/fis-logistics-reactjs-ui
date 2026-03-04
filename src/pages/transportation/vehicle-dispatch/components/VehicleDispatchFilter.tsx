@@ -4,19 +4,18 @@ import { Controller, Control } from 'react-hook-form'
 import { FISInputDate, FISSelect } from 'fis-component'
 import { useGetVehicleTypesQuery, useGetDriversQuery } from '../vehicleDispatchMaster.api'
 
-
 const toSelectOptions = (items: { id: string; name: string }[] | undefined, allLabel = 'Tất cả') => [
   { items: [{ label: allLabel, value: '' }, ...(items ?? []).map((item) => ({ label: item.name, value: item.id }))] }
 ]
 
-  /** Parse string sang Date: full ISO dùng new Date(), YYYY-MM-DD dùng local để tránh lệch timezone */
-  const parseDateValue = (val: string): Date | null => {
-    if (!val) return null
-    if (val.includes('T')) return new Date(val)
-    const parts = val.split('-').map(Number)
-    if (parts.length !== 3) return new Date(val)
-    return new Date(parts[0], parts[1] - 1, parts[2])
-  }
+/** Parse string sang Date: full ISO dùng new Date(), YYYY-MM-DD dùng local để tránh lệch timezone */
+const parseDateValue = (val: string): Date | null => {
+  if (!val) return null
+  if (val.includes('T')) return new Date(val)
+  const parts = val.split('-').map(Number)
+  if (parts.length !== 3) return new Date(val)
+  return new Date(parts[0], parts[1] - 1, parts[2])
+}
 
 const STATUS_OPTIONS = [
   {
@@ -39,9 +38,10 @@ const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
   const { data: drivers = [] } = useGetDriversQuery()
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
   const driverOptions = useMemo(
-    () => toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
+    () =>
+      toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
     [drivers]
-  );
+  )
   return (
     <Row gutter={[12, 12]}>
       <Col span={24}>
@@ -55,7 +55,7 @@ const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
               placeholder='Chọn trạng thái'
               options={STATUS_OPTIONS}
               removeSelectedText='Xóa lựa chọn'
-              multiDisplayText={ (count) => `${count} lựa chọn`}
+              multiDisplayText={(count) => `${count} lựa chọn`}
               selectedGroupLabel='Đã chọn'
               multi
             />

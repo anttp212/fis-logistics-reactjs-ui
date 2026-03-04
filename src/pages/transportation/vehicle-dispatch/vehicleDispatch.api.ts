@@ -17,7 +17,7 @@ export interface DispatchOrderContainerI {
   containerWeight?: number
   driver?: string
   driverId?: string
-  driverName?: string,
+  driverName?: string
   driverPhone?: string
   driverPlateNo?: string
 }
@@ -135,9 +135,7 @@ export interface DriverI {
   phone: string
 }
 
-const DUMMY_DRIVERS: DriverI[] = [
-  
-]
+const DUMMY_DRIVERS: DriverI[] = []
 
 // ============================================
 // API
@@ -208,7 +206,16 @@ export const vehicleDispatchApi = createApi({
       },
       transformResponse: (response: DispatchOrderListResponseI) => ({
         data: response.data ?? [],
-        pagination: response.pagination ?? { page: 1, size: 20, totalElements: 0, totalPages: 0, first: true, last: true, hasNext: false, hasPrevious: false }
+        pagination: response.pagination ?? {
+          page: 1,
+          size: 20,
+          totalElements: 0,
+          totalPages: 0,
+          first: true,
+          last: true,
+          hasNext: false,
+          hasPrevious: false
+        }
       }),
       providesTags: [API_TAGS.vehicleDispatch]
     }),
@@ -218,7 +225,8 @@ export const vehicleDispatchApi = createApi({
         url: API_ENDPOINTS.vehicleDispatch.detail.replace(':id', id),
         method: 'GET'
       }),
-      transformResponse: (response: { data?: VehicleDispatchDetailI }) => response?.data ?? ({} as VehicleDispatchDetailI),
+      transformResponse: (response: { data?: VehicleDispatchDetailI }) =>
+        response?.data ?? ({} as VehicleDispatchDetailI),
       providesTags: (_result, _error, id) => [{ type: API_TAGS.vehicleDispatch, id }]
     }),
 
