@@ -1,8 +1,16 @@
 import { FilterIcon, SearchIcon } from '@images'
 import { FISIconButton, FISInputText } from 'fis-component'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { Control, Controller, FieldValues } from 'react-hook-form'
 import FISDrawer from '../Drawer'
+
+const hasActiveFilters = (filters?: Record<string, any>): boolean => {
+  if (!filters || typeof filters !== 'object') return false
+  return Object.values(filters).some((v) => {
+    if (Array.isArray(v)) return v.length > 0
+    return v != null && String(v).trim() !== ''
+  })
+}
 
 type TableToolbarPropsT<TFormValues extends FieldValues = any> = {
   actionButtons?: React.ReactNode
@@ -14,6 +22,8 @@ type TableToolbarPropsT<TFormValues extends FieldValues = any> = {
   loadSavedFilterValues: () => void
   filterContent: React.ReactNode
   filterTitle?: string
+  search?: string
+  filters?: Record<string, any>
 }
 
 const TableToolbar: FC<TableToolbarPropsT> = ({
@@ -25,9 +35,16 @@ const TableToolbar: FC<TableToolbarPropsT> = ({
   handleResetFilter,
   loadSavedFilterValues,
   filterContent,
-  filterTitle = 'Filter'
+  filterTitle = 'Bộ lọc',
+  search = '',
+  filters
 }) => {
   const [filterOpen, setFilterOpen] = useState(false)
+
+  const hasActiveSearch = useMemo(
+    () => (search && search.trim() !== '') || hasActiveFilters(filters),
+    [search, filters]
+  )
 
   // Filter handlers
   const handleFilterOpen = () => {
@@ -36,7 +53,6 @@ const TableToolbar: FC<TableToolbarPropsT> = ({
   }
 
   const handleFilterClose = () => {
-    handleResetFilter()
     setFilterOpen(false)
   }
 
@@ -57,6 +73,8 @@ const TableToolbar: FC<TableToolbarPropsT> = ({
         onClose={handleFilterClose}
         onSave={handleFilterSave}
         onReset={handleFilterReset}
+        textCancel='Hủy'
+        textSave='Tìm kiếm'
       >
         {filterContent}
       </FISDrawer>
@@ -69,7 +87,7 @@ const TableToolbar: FC<TableToolbarPropsT> = ({
               className='!w-[320px]'
               placeholder={searchPlaceholder}
               iconPrefix={<SearchIcon />}
-              value={field.value}
+              {...field}
               onChange={(e) => {
                 field.onChange(e.target.value)
                 handleSearchChange(e.target.value)
@@ -77,7 +95,15 @@ const TableToolbar: FC<TableToolbarPropsT> = ({
             />
           )}
         />
-        <FISIconButton variant='tertiary' icon={<FilterIcon />} onClick={handleFilterOpen} />
+        <div className='relative'>
+          <FISIconButton variant='tertiary' icon={<FilterIcon />} onClick={handleFilterOpen} />
+          {hasActiveSearch && (
+            <span
+              className='absolute top-[-5px] right-[-5px] w-3 h-3 bg-red-500 rounded-full'
+              aria-label='Đang tìm kiếm'
+            />
+          )}
+        </div>
       </div>
       {actionButtons}
     </div>

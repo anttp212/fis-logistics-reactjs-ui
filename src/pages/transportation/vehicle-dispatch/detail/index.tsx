@@ -1,87 +1,103 @@
-import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Modal } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { Modal, message } from 'antd'
 import { PageWrapper } from '@components'
-import { FISTable, FISTableCell, FISTableHeaderCell, FISButton, FISButtonGroup } from 'fis-component'
-import { ROUTES } from '@constants'
-import { BackIcon } from '@images'
-import ShipmentDetailModal from '../components/ShipmentDetailModal'
-import AssignDriverModal from '../components/AssignDriverModal'
+import { FISTable, FISTableCell, FISTableHeaderCell, FISButton, FISInputArea, FISBadge } from 'fis-component'
+import { ROUTES, buildVehicleDispatchEditPath } from '@constants'
 import {
   useGetVehicleDispatchDetailQuery,
-  useGetDriversQuery,
-  useAssignDriverMutation,
-  useUpdateShipmentDetailMutation,
-  useDeleteVehicleDispatchMutation
+  useCancelVehicleDispatchMutation
 } from '../vehicleDispatch.api'
-import type { ShipmentDetailI } from '../vehicleDispatch.api'
+import type { DispatchOrderContainerI } from '../vehicleDispatch.api'
+import {
+  useGetVehicleTypesQuery,
+  useGetRequestingUnitsQuery,
+  useGetLocationsQuery,
+  useGetContainerSizesQuery,
+} from '../vehicleDispatchMaster.api'
+import { useMemo, useState, type ReactNode } from 'react'
+
+const toIdNameMap = (items: { id: string; name: string }[] | undefined): Record<string, string> =>
+  Object.fromEntries((items ?? []).map((item) => [item.id, item.name]))
+
+/** Format ISO date string sang dd/mm/yyyy HH:mm */
+const formatDateTime = (isoStr?: string) => {
+  if (!isoStr) return '-'
+  const d = new Date(isoStr)
+  if (isNaN(d.getTime())) return '-'
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${day}/${month}/${year} ${hours}:${minutes}`
+}
+
+type BadgeStatus = 'caution' | 'info' | 'positive' | 'negative'
+const STATUS_BADGE: Record<string, { label: string; status: BadgeStatus }> = {
+  PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
+  IN_TRANSIT: { label: 'Đang vận chuyển', status: 'info' },
+  COMPLETED: { label: 'Hoàn thành', status: 'positive' },
+  INCIDENT: { label: 'Sự cố', status: 'negative' },
+  CANCELLED: { label: 'Huỷ', status: 'negative' }
+}
 
 const VehicleDispatchDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [shipmentModalOpen, setShipmentModalOpen] = useState(false)
-  const [assignDriverModalOpen, setAssignDriverModalOpen] = useState(false)
-  const [selectedShipment, setSelectedShipment] = useState<ShipmentDetailI | null>(null)
-  const [assignOrderKey, setAssignOrderKey] = useState<string>('')
 
   const { data: order, isLoading, error } = useGetVehicleDispatchDetailQuery(id!, { skip: !id })
-  const { data: drivers } = useGetDriversQuery()
-  const [assignDriver] = useAssignDriverMutation()
-  const [updateShipmentDetail] = useUpdateShipmentDetailMutation()
-  const [deleteOrder] = useDeleteVehicleDispatchMutation()
+  const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
+  const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
+  const { data: locations = [] } = useGetLocationsQuery()
+  const { data: containerSizes = [] } = useGetContainerSizesQuery()
+  const [cancelOrder, { isLoading: isCancelling }] = useCancelVehicleDispatchMutation()
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
+  const [cancellationReason, setCancellationReason] = useState('')
 
-  const driversList = drivers ?? []
+  const vehicleTypeLabels = useMemo(() => toIdNameMap(vehicleTypes), [vehicleTypes])
+  const requestingUnitLabels = useMemo(() => toIdNameMap(requestingUnits), [requestingUnits])
+  const locationLabels = useMemo(() => toIdNameMap(locations), [locations])
+  const sizeLabels = useMemo(
+    () => Object.fromEntries((containerSizes ?? []).map((s) => [s.id, s.name || s.code])),
+    [containerSizes]
+  )
 
-  const handleAssignDriverClick = (orderKey: string, shipment: ShipmentDetailI) => {
-    setAssignOrderKey(orderKey)
-    setSelectedShipment(shipment)
-    setAssignDriverModalOpen(true)
-  }
-
-  const handleAssignDriverConfirm = async (orderKey: string, shipmentKey: string, driverId: string) => {
-    await assignDriver({ orderKey, shipmentDetailKey: shipmentKey, driverId })
-    setAssignDriverModalOpen(false)
-    setSelectedShipment(null)
-    setAssignOrderKey('')
-  }
-
-  const handleSaveShipment = async (orderKey: string, shipmentKey: string, data: Partial<ShipmentDetailI>) => {
-    await updateShipmentDetail({ orderKey, shipmentKey, data })
-  }
-
-  const handleConfirmShipment = (_orderKey: string, _shipmentKey: string) => {
-    // TODO: Call API xác nhận shipment
-  }
+  console.log('order', order);
 
   const handleEdit = () => {
-    // TODO: Navigate to edit page or open edit modal
+    if (order) {
+      navigate(buildVehicleDispatchEditPath(order.id))
+    }
   }
 
-  const handleDelete = () => {
+  const handleCancelClick = () => {
     if (!order) return
-    Modal.confirm({
-      title: 'Xác nhận xóa',
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <div>
-          <p>Bạn có chắc chắn muốn xóa lệnh điều xe này không?</p>
-          <p className='mt-2 font-medium text-gray-900'>{order.billBooking}</p>
-          <p className='mt-1 text-sm text-gray-500'>Lô hàng: {order.lotId}</p>
-        </div>
-      ),
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        await deleteOrder(order.key)
-        navigate(ROUTES.transportationVehicleDispatch)
-      }
-    })
+    setCancellationReason('')
+    setCancelModalOpen(true)
   }
 
-  const handleBillBookingClick = () => {
-    setShipmentModalOpen(true)
+  const handleCancelModalClose = () => {
+    setCancelModalOpen(false)
+    setCancellationReason('')
+  }
+
+  const handleCancelConfirm = async () => {
+    if (!order) return
+    const reason = cancellationReason.trim()
+    if (!reason) {
+      message.error('Vui lòng nhập lý do hủy')
+      return
+    }
+    try {
+      await cancelOrder({ id: order.id, cancellationReason: reason }).unwrap()
+      message.success('Hủy phiếu yêu cầu thành công')
+      handleCancelModalClose()
+      navigate(ROUTES.transportationVehicleDispatch)
+    } catch (err: any) {
+      const errorMessage = err?.data?.message
+      message.error(errorMessage || 'Hủy phiếu yêu cầu thất bại. Vui lòng thử lại.')
+      throw err
+    }
   }
 
   const breadcrumbItems = [
@@ -91,97 +107,53 @@ const VehicleDispatchDetail = () => {
     { label: 'Chi tiết điều xe' }
   ]
 
-  const shipmentColumns = [
+  const containerColumns = [
     {
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.status} textAlign='left' />
+      key: 'index',
+      width: 50,
+      title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
+      render: (_: unknown, _row: DispatchOrderContainerI, index: number) => (
+        <FISTableCell content={String(index + 1)} textAlign='left' />
+      )
     },
     {
-      dataIndex: 'containerNo',
-      key: 'containerNo',
-      width: 120,
-      title: () => <FISTableHeaderCell label='Container No' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.containerNo} textAlign='left' />
+      dataIndex: 'containerNumber',
+      key: 'containerNumber',
+      width: 140,
+      title: () => <FISTableHeaderCell label='SỐ CONTAINER' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderContainerI) => (
+        <FISTableCell content={row.containerNumber ?? row.containerNo ?? '-'} textAlign='left' />
+      )
     },
     {
       dataIndex: 'size',
       key: 'size',
-      width: 80,
-      title: () => <FISTableHeaderCell label='Kích thước' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.size} textAlign='left' />
+      width: 100,
+      title: () => <FISTableHeaderCell label='KÍCH THƯỚC' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderContainerI) => (
+        <FISTableCell content={sizeLabels[row.size ?? row.containerSizeId ?? ''] ?? row.size ?? row.containerSizeId ?? '-'} textAlign='left' />
+      )
     },
     {
       dataIndex: 'weight',
       key: 'weight',
-      width: 100,
-      title: () => <FISTableHeaderCell label='Trọng lượng' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.weight} textAlign='left' />
-    },
-    {
-      dataIndex: 'assignedDriver',
-      key: 'assignedDriver',
-      width: 140,
-      title: () => <FISTableHeaderCell label='Chỉ định' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) =>
-        order ? (
-          <FISTableCell
-            content={
-              <button
-                type='button'
-                onClick={() => handleAssignDriverClick(order.key, row)}
-                className={`text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer ${
-                  row.assignedDriver ? 'text-green-600' : ''
-                }`}
-              >
-                {row.assignedDriver || 'Chỉ định tài xế'}
-              </button>
-            }
-            textAlign='left'
-          />
-        ) : null
-    },
-    {
-      dataIndex: 'yardCoordinates',
-      key: 'yardCoordinates',
-      width: 100,
-      title: () => <FISTableHeaderCell label='Tọa độ bãi' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => (
-        <FISTableCell content={row.yardCoordinates || '—'} textAlign='left' />
+      width: 120,
+      title: () => <FISTableHeaderCell label='TRỌNG LƯỢNG' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderContainerI) => (
+        <FISTableCell content={String(row.weight ?? row.containerWeight ?? '-')} textAlign='left' />
       )
     },
     {
-      dataIndex: 'dispatchNote',
-      key: 'dispatchNote',
-      width: 150,
-      title: () => <FISTableHeaderCell label='Ghi chú điều vận' hasRightDivider />,
-      render: (_: unknown, row: ShipmentDetailI) => <FISTableCell content={row.dispatchNote || '—'} textAlign='left' />
-    },
-    {
-      title: () => <FISTableHeaderCell label='Thao tác' />,
-      key: 'actions',
+      dataIndex: 'driver',
+      key: 'driver',
       width: 140,
-      render: (_: unknown, row: ShipmentDetailI) =>
-        order ? (
-          <FISTableCell
-            style={{ textAlign: 'center' }}
-            icon={
-              <FISButtonGroup
-                size='md'
-                options={[
-                  { label: 'Lưu', startIcon: null, onClick: () => handleSaveShipment(order.key, row.key, {}) },
-                  {
-                    label: 'Xác nhận',
-                    startIcon: null,
-                    onClick: () => handleConfirmShipment(order.key, row.key)
-                  }
-                ]}
-              />
-            }
-          />
-        ) : null
+      title: () => <FISTableHeaderCell label='TÀI XẾ' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderContainerI) =>
+         (
+          
+        <FISTableCell content={String(row.driverName + ' - ' + row.driverPhone + ' - ' + row.driverPlateNo)} textAlign='left' />
+
+        ) 
     }
   ]
 
@@ -193,23 +165,43 @@ const VehicleDispatchDetail = () => {
       hasBackButton
       onBackClick={() => navigate(ROUTES.transportationVehicleDispatch)}
       actionButtons={
-        <div className='flex gap-2'>
-          <FISButton variant='tertiary' onClick={handleEdit}>
-            Chỉnh sửa
-          </FISButton>
-          <FISButton variant='secondary-negative' onClick={handleDelete}>
-            Xóa
-          </FISButton>
-          <FISButton
-            variant='tertiary'
-            startIcon={<BackIcon />}
-            onClick={() => navigate(ROUTES.transportationVehicleDispatch)}
-          >
-            Quay lại
-          </FISButton>
-        </div>
+        order?.status === 'PENDING_CONFIRMATION' ? (
+          <div className='flex gap-2'>
+            <FISButton variant='tertiary' onClick={handleEdit}>
+              Chỉnh sửa
+            </FISButton>
+            <FISButton variant='secondary-negative' onClick={handleCancelClick}>
+              Hủy
+            </FISButton>
+          </div>
+        ) : null
       }
     >
+      <Modal
+        title='Xác nhận hủy'
+        open={cancelModalOpen}
+        onCancel={handleCancelModalClose}
+        onOk={handleCancelConfirm}
+        okText='Lưu'
+        cancelText='Đóng'
+        centered
+        width={900}
+        confirmLoading={isCancelling}
+      >
+        <div className='pt-2'>
+          <FISInputArea
+            textLabel='Lý do hủy'
+            placeholder='Nhập lý do hủy'
+            rows={4}
+            value={cancellationReason}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+              setCancellationReason(e?.target?.value ?? '')
+            }}
+            minLength={10}
+            maxLength={2000}
+          />
+        </div>
+      </Modal>
       <div className='flex flex-col gap-6'>
         {isLoading && (
           <div className='flex items-center justify-center py-12'>
@@ -225,84 +217,61 @@ const VehicleDispatchDetail = () => {
 
         {order && !isLoading && (
           <>
-            {/* Thông tin cơ bản */}
+            {/* 1. Thông tin chung */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Thông tin lệnh điều xe</h3>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>1. Thông tin chung</h3>
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>ID lô hàng</label>
-                  <p className='text-sm text-gray-900'>{order.lotId}</p>
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>Bill/Booking</label>
-                  <button
-                    type='button'
-                    onClick={handleBillBookingClick}
-                    className='text-blue-600 hover:text-blue-800 hover:underline font-medium text-left'
-                  >
-                    {order.billBooking}
-                  </button>
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>Chủ hàng</label>
-                  <p className='text-sm text-gray-900'>{order.owner}</p>
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>Số lượng</label>
-                  <p className='text-sm text-gray-900'>{order.quantity}</p>
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>Thời gian</label>
-                  <p className='text-sm text-gray-900'>{order.time}</p>
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>OPR</label>
-                  <p className='text-sm text-gray-900'>{order.opr}</p>
-                </div>
-                <div>
-                  <label className='block text-sm font-medium text-gray-500 mb-1'>Người tạo lệnh</label>
-                  <p className='text-sm text-gray-900'>{order.createdBy}</p>
-                </div>
+                <InfoItem label='Loại xe' value={vehicleTypeLabels[order.vehicleType ?? order.vehicleTypeId ?? ''] ?? order.vehicleType ?? order.vehicleTypeId} />
+                <InfoItem label='Đơn vị yêu cầu' value={requestingUnitLabels[order.requestUnit ?? order.requestingUnitId ?? ''] ?? order.requestUnit ?? order.requestingUnitId} />
+                <InfoItem label='Điểm đi' value={locationLabels[order.origin ?? order.departureLocationId ?? ''] ?? order.origin ?? order.departureLocationId} />
+                <InfoItem label='Điểm đến' value={locationLabels[order.destination ?? order.destinationLocationId ?? ''] ?? order.destination ?? order.destinationLocationId} />
+                <InfoItem label='Thời gian dự kiến nhận hàng (ở điểm đi)' value={formatDateTime(order.expectedPickupTime ?? order.estimatedPickupTime)} />
+                <InfoItem label='Thời gian dự kiến giao hàng (ở điểm đến)' value={formatDateTime(order.expectedDeliveryTime ?? order.estimatedDeliveryTime)} />
+                <InfoItem label='Nội dung' value={order.content} />
+                <InfoItem label='Tên người nhận' value={order.recipientName ?? '-'} />
+                <InfoItem label='Số điện thoại' value={order.recipientPhone ?? '-'} />
+                <InfoItem label='Trạng thái' value={<FISBadge label={STATUS_BADGE[order.status ?? '']?.label ?? order.status ?? '-'} size='sm' status={STATUS_BADGE[order.status ?? '']?.status ?? 'info'} />} />
               </div>
             </div>
 
-            {/* Chi tiết lô hàng */}
+            {/* 2. Thông tin chi tiết container */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Chi tiết lô hàng</h3>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>2. Thông tin chi tiết container</h3>
               <FISTable
-                dataSource={order.shipmentDetails || []}
-                columns={shipmentColumns}
+                dataSource={order.containers ?? []}
+                columns={containerColumns}
                 scroll={{ x: 'max-content' }}
                 pagination={false}
+                rowKey={(_, i) => String(i)}
               />
+            </div>
+
+            {/* 3. Ghi chú */}
+            <div className='bg-white rounded-lg border border-gray-200 p-6'>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>3. Ghi chú</h3>
+              <p className='text-sm text-gray-700 whitespace-pre-wrap'>{order.note ?? order.notes ?? '-'}</p>
             </div>
           </>
         )}
       </div>
 
-      <ShipmentDetailModal
-        open={shipmentModalOpen}
-        onClose={() => setShipmentModalOpen(false)}
-        order={order || null}
-        onSave={handleSaveShipment}
-        onConfirm={handleConfirmShipment}
-        onAssignDriver={handleAssignDriverClick}
-      />
-
-      <AssignDriverModal
-        open={assignDriverModalOpen}
-        onClose={() => {
-          setAssignDriverModalOpen(false)
-          setSelectedShipment(null)
-          setAssignOrderKey('')
-        }}
-        drivers={driversList}
-        shipment={selectedShipment}
-        orderKey={assignOrderKey}
-        onConfirm={handleAssignDriverConfirm}
-      />
     </PageWrapper>
   )
 }
+
+const InfoItem = ({
+  label,
+  value,
+  className = ''
+}: {
+  label: string
+  value?: ReactNode | null
+  className?: string
+}) => (
+  <div className={className}>
+    <label className='block text-sm font-medium text-gray-500 mb-1'>{label}</label>
+    <p className='text-sm text-gray-900'>{value ?? '-'}</p>
+  </div>
+)
 
 export default VehicleDispatchDetail

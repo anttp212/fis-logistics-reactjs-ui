@@ -1,10 +1,12 @@
 import { useTableToolbar } from '@hooks/useTableToolbar'
 
 const DEFAULT_FILTER_VALUES = {
-  search: '',
-  billBooking: '',
-  owner: '',
-  opr: ''
+  status: [] as string[],
+  vehicleTypeId: '',
+  dateFrom: '',
+  dateTo: '',
+  depotCode: '',
+  driverId: ''
 }
 
 const BREADCRUMB_ITEMS = [{ label: 'Trang chủ' }, { label: 'Quản lý vận chuyển' }, { label: 'Điều xe' }]

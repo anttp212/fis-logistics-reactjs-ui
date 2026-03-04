@@ -1,260 +1,255 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ROUTES, buildVehicleDispatchDetailPath } from '@constants'
-import { Modal } from 'antd'
-import { ExclamationCircleOutlined } from '@ant-design/icons'
+import { ROUTES, buildVehicleDispatchDetailPath, buildVehicleDispatchEditPath } from '@constants'
 import { PageWrapper, TableToolbar } from '@components'
-import { FISTable, FISTableCell, FISTableHeaderCell, FISIconButton, FISButtonGroup } from 'fis-component'
-import VehicleDispatchFilter from './components/VehicleDispatchFilter'
-import ShipmentDetailModal from './components/ShipmentDetailModal'
-import AssignDriverModal from './components/AssignDriverModal'
-import { useVehicleDispatch } from './useVehicleDispatch'
 import {
-  useGetVehicleDispatchListQuery,
-  useGetDriversQuery,
-  useAssignDriverMutation,
-  useUpdateShipmentDetailMutation,
-  useDeleteVehicleDispatchMutation
-} from './vehicleDispatch.api'
-import type { VehicleDispatchOrderI, ShipmentDetailI } from './vehicleDispatch.api'
+  FISBadge,
+  FISButton,
+  FISTable,
+  FISTableCell,
+  FISTableHeaderCell,
+  FISIconButton,
+  FISButtonGroup,
+  FISPagination
+} from 'fis-component'
+import { AddIcon } from '@images'
+import VehicleDispatchFilter from './components/VehicleDispatchFilter'
+import { useVehicleDispatch } from './useVehicleDispatch'
+import { useGetVehicleDispatchListQuery } from './vehicleDispatch.api'
+import type { DispatchOrderApiI, DispatchOrderContainerI } from './vehicleDispatch.api'
+import {
+  useGetVehicleTypesQuery,
+  useGetRequestingUnitsQuery,
+  useGetLocationsQuery
+} from './vehicleDispatchMaster.api'
 
-interface TableRowSelectionI {
-  selectedRowKeys?: React.Key[]
-  onChange?: (selectedRowKeys: React.Key[]) => void
-  renderCell?: (checked: boolean, record: VehicleDispatchOrderI) => React.ReactNode
-  columnTitle?: React.ReactNode
+/** Row đã flatten: 1 dòng = 1 container */
+interface FlattenedRowI extends DispatchOrderApiI {
+  _orderId: string
+  _orderIndex: number
+  _containerIndex: number
+  _container: DispatchOrderContainerI
 }
 
-interface CheckboxPropsI {
-  checked?: boolean
-  indeterminate?: boolean
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+const STATUS_LABELS: Record<string, string> = {
+  PENDING_CONFIRMATION: 'Chờ xác nhận',
+  IN_TRANSIT: 'Đang vận chuyển',
+  COMPLETED: 'Hoàn thành',
+  INCIDENT: 'Sự cố',
+  CANCELLED: 'Huỷ'
 }
 
-const Checkbox = ({ checked = false, indeterminate = false, onChange }: CheckboxPropsI) => (
-  <input
-    type='checkbox'
-    checked={checked}
-    ref={(input) => {
-      if (input) input.indeterminate = indeterminate
-    }}
-    onChange={onChange}
-    className='w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer'
-  />
-)
+type BadgeStatus = 'caution' | 'info' | 'positive' | 'negative'
+const STATUS_BADGE: Record<string, { label: string; status: BadgeStatus }> = {
+  PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
+  IN_TRANSIT: { label: 'Đang vận chuyển', status: 'info' },
+  COMPLETED: { label: 'Hoàn thành', status: 'positive' },
+  INCIDENT: { label: 'Sự cố', status: 'negative' },
+  CANCELLED: { label: 'Huỷ', status: 'negative' }
+}
+
+/** Tạo lookup id -> name từ mảng API */
+const toIdNameMap = (items: { id: string; name: string }[] | undefined): Record<string, string> =>
+  Object.fromEntries((items ?? []).map((item) => [item.id, item.name]))
+
+/** Format ISO date string sang dd/mm/yyyy HH:mm */
+const formatDateTime = (isoStr?: string) => {
+  if (!isoStr) return '-'
+  const d = new Date(isoStr)
+  if (isNaN(d.getTime())) return '-'
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${day}/${month}/${year} ${hours}:${minutes}`
+}
+
+/** Dòng thứ 2+ của cùng phiếu: chỉ hiển thị KÍCH THƯỚC, TRỌNG LƯỢNG, TÀI XẾ, action */
+const isSubsequentContainerRow = (row: FlattenedRowI) => row._containerIndex >= 1
+
+/** Flatten orders: mỗi container = 1 dòng, _orderIndex đánh từ 1 cho mỗi phiếu */
+const flattenOrdersToRows = (orders: DispatchOrderApiI[]): FlattenedRowI[] => {
+  const rows: FlattenedRowI[] = []
+  orders.forEach((order, orderIdx) => {
+    const orderIndex = orderIdx + 1
+      rows.push({
+        ...order,
+        _orderId: order.id,
+        _orderIndex: orderIndex,
+        _containerIndex: 0,
+        _container: {}
+      })
+  })
+  return rows
+}
 
 const VehicleDispatchPage = () => {
   const navigate = useNavigate()
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const vehicleDispatch = useVehicleDispatch()
-  const filterValues = vehicleDispatch.watch() as Record<string, string>
+  const filterValues = (vehicleDispatch as any).filters as Record<string, any>
 
-  const { data: listResponse } = useGetVehicleDispatchListQuery()
-  const { data: driversResponse } = useGetDriversQuery()
-  const [assignDriver] = useAssignDriverMutation()
-  const [updateShipmentDetail] = useUpdateShipmentDetailMutation()
-  const [deleteOrder] = useDeleteVehicleDispatchMutation()
+  const { data: listResponse } = useGetVehicleDispatchListQuery({
+    page,
+    size: pageSize,
+    keyword: vehicleDispatch.search || undefined,
+    status: Array.isArray(filterValues?.status)
+      ? (filterValues.status as string[]).filter((s) => s && s !== '')
+      : filterValues?.status
+        ? [filterValues.status]
+        : undefined,
+    vehicleTypeId: filterValues?.vehicleTypeId || undefined,
+    dateFrom: filterValues?.dateFrom || undefined,
+    dateTo: filterValues?.dateTo || undefined,
+    depotCode: filterValues?.depotCode || undefined,
+    driverId: filterValues?.driverId || undefined
+  })
 
-  const [shipmentModalOpen, setShipmentModalOpen] = useState(false)
-  const [assignDriverModalOpen, setAssignDriverModalOpen] = useState(false)
-  const [selectedOrder, setSelectedOrder] = useState<VehicleDispatchOrderI | null>(null)
-  const [selectedShipment, setSelectedShipment] = useState<ShipmentDetailI | null>(null)
-  const [assignOrderKey, setAssignOrderKey] = useState<string>('')
+  useEffect(() => {
+    setPage(1)
+  }, [
+    filterValues?.status,
+    filterValues?.vehicleTypeId,
+    filterValues?.dateFrom,
+    filterValues?.dateTo,
+    filterValues?.depotCode,
+    filterValues?.driverId,
+    vehicleDispatch.search
+  ])
+  const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
+  const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
+  const { data: locations = [] } = useGetLocationsQuery()
+  // const { data: drivers = [] } = useGetDriversQuery()
 
-  // API trả về trực tiếp: listResponse = { data: orders[], total }, driversResponse = drivers[]
-  const drivers: import('./vehicleDispatch.api').DriverI[] = driversResponse ?? []
+  const vehicleTypeLabels = useMemo(() => toIdNameMap(vehicleTypes), [vehicleTypes])
+  const requestingUnitLabels = useMemo(() => toIdNameMap(requestingUnits), [requestingUnits])
+  const locationLabels = useMemo(() => toIdNameMap(locations), [locations])
+  // const driverLabels = useMemo(() => toIdNameMap(drivers), [drivers])
 
-  const dataSource = useMemo(() => {
-    const orders: VehicleDispatchOrderI[] = listResponse?.data ?? []
-    let filtered = [...orders]
-    if (filterValues?.billBooking) {
-      filtered = filtered.filter((o) =>
-        o.billBooking.toLowerCase().includes(String(filterValues.billBooking).toLowerCase())
-      )
-    }
-    if (filterValues?.owner) {
-      filtered = filtered.filter((o) => o.owner.toLowerCase().includes(String(filterValues.owner).toLowerCase()))
-    }
-    if (filterValues?.opr) {
-      filtered = filtered.filter((o) => o.opr.toLowerCase().includes(String(filterValues.opr).toLowerCase()))
-    }
-    if (vehicleDispatch.search) {
-      const s = vehicleDispatch.search.toLowerCase()
-      filtered = filtered.filter(
-        (o) =>
-          o.billBooking.toLowerCase().includes(s) ||
-          o.owner.toLowerCase().includes(s) ||
-          o.lotId.toLowerCase().includes(s)
-      )
-    }
-    return filtered
-  }, [listResponse?.data, filterValues, vehicleDispatch.search])
+  const dataSource = useMemo(() => flattenOrdersToRows(listResponse?.data ?? []), [listResponse?.data])
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const isAllSelected = selectedRowKeys.length === dataSource.length && dataSource.length > 0
-  const isIndeterminate = selectedRowKeys.length > 0 && selectedRowKeys.length < dataSource.length
+  const pagination = listResponse?.pagination
+  const total = pagination?.totalElements ?? 0
 
-  const handleSelect = (key: React.Key) => {
-    setSelectedRowKeys((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]))
-  }
-  const toggleSelectAll = () => {
-    setSelectedRowKeys(isAllSelected ? [] : dataSource.map((o) => o.key))
+  const handleViewDetail = (record: FlattenedRowI) => {
+    navigate(buildVehicleDispatchDetailPath(record._orderId))
   }
 
-  const rowSelection: TableRowSelectionI = {
-    selectedRowKeys,
-    onChange: setSelectedRowKeys,
-    renderCell: (checked, record) => (
-      <FISTableCell icon={<Checkbox checked={checked} onChange={() => handleSelect(record.key)} />} hasBorder={false} />
-    ),
-    columnTitle: (
-      <FISTableHeaderCell
-        label=''
-        rightComponent={<Checkbox checked={isAllSelected} indeterminate={isIndeterminate} onChange={toggleSelectAll} />}
-        hasRightDivider={false}
-      />
-    )
+  const handleEdit = (record: FlattenedRowI) => {
+    navigate(buildVehicleDispatchEditPath(record._orderId))
   }
 
-  const handleViewDetail = (record: VehicleDispatchOrderI) => {
-    navigate(buildVehicleDispatchDetailPath(record.key))
-  }
-
-  const handleEdit = (record: VehicleDispatchOrderI) => {
-    navigate(buildVehicleDispatchDetailPath(record.key))
-  }
-
-  const handleDelete = (record: VehicleDispatchOrderI) => {
-    Modal.confirm({
-      title: 'Xác nhận xóa',
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <div>
-          <p>Bạn có chắc chắn muốn xóa lệnh điều xe này không?</p>
-          <p className='mt-2 font-medium text-gray-900'>{record.billBooking}</p>
-          <p className='mt-1 text-sm text-gray-500'>Lô hàng: {record.lotId}</p>
-        </div>
-      ),
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        await deleteOrder(record.key)
-      }
-    })
-  }
-
-  const handleBillBookingClick = (record: VehicleDispatchOrderI) => {
-    setSelectedOrder(record)
-    setShipmentModalOpen(true)
-  }
-
-  const handleAssignDriverClick = (orderKey: string, shipment: ShipmentDetailI) => {
-    setAssignOrderKey(orderKey)
-    setSelectedShipment(shipment)
-    setAssignDriverModalOpen(true)
-  }
-
-  const handleAssignDriverConfirm = async (orderKey: string, shipmentKey: string, driverId: string) => {
-    await assignDriver({ orderKey, shipmentDetailKey: shipmentKey, driverId })
-    const driver = drivers.find((d) => d.id === driverId)
-    if (driver) {
-      setSelectedOrder((prev) => {
-        if (!prev || prev.key !== orderKey) return prev
-        const updatedDetails = prev.shipmentDetails?.map((s) =>
-          s.key === shipmentKey
-            ? {
-                ...s,
-                assignedDriver: driver.name,
-                assignedDriverPhones: [driver.phone],
-                status: 'Đã chỉ định'
-              }
-            : s
-        )
-        return { ...prev, shipmentDetails: updatedDetails }
-      })
-    }
-  }
-
-  const handleSaveShipment = async (orderKey: string, shipmentKey: string, data: Partial<ShipmentDetailI>) => {
-    await updateShipmentDetail({ orderKey, shipmentKey, data })
-  }
-
-  const handleConfirmShipment = (_orderKey: string, _shipmentKey: string) => {
-    // TODO: Call API xác nhận shipment
-  }
+  // const handleAssignDriver = (record: FlattenedRowI) => {
+  //   // navigate(buildVehicleDispatchDetailPath(record._orderId))
+  // }
 
   const columns = [
     {
-      dataIndex: 'lotId',
-      key: 'lotId',
+      key: 'index',
+      width: 50,
+      title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+      
+          <FISTableCell content={String(row._orderIndex)} textAlign='left' />
+    },
+    {
+      dataIndex: 'status',
+      key: 'status',
+      width: 130,
+      title: () => <FISTableHeaderCell label='TRẠNG THÁI' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) => {
+        const statusKey = row.status ?? ''
+        const badgeConfig = STATUS_BADGE[statusKey]
+        if (badgeConfig) {
+          return (
+            <FISTableCell
+              content={<FISBadge label={badgeConfig.label} size='sm' status={badgeConfig.status} />}
+              textAlign='left'
+            />
+          )
+        }
+        return (
+          <FISTableCell content={STATUS_LABELS[statusKey] ?? statusKey ?? '-'} textAlign='left' />
+        )
+      }
+    },
+    {
+      dataIndex: 'vehicleType',
+      key: 'vehicleType',
       width: 120,
-      title: () => <FISTableHeaderCell label='ID lô hàng' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.lotId} textAlign='left' />
+      title: () => <FISTableHeaderCell label='LOẠI XE' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+          <FISTableCell content={vehicleTypeLabels[row.vehicleType ?? row.vehicleTypeId ?? ''] ?? row.vehicleType ?? row.vehicleTypeId ?? '-'} textAlign='left' />
     },
     {
-      dataIndex: 'billBooking',
-      key: 'billBooking',
-      width: 140,
-      title: () => <FISTableHeaderCell label='Bill/Booking' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell
-          content={
-            <button
-              type='button'
-              onClick={() => handleBillBookingClick(row)}
-              className='text-blue-600 hover:text-blue-800 hover:underline font-medium cursor-pointer text-left'
-            >
-              {row.billBooking}
-            </button>
-          }
-          textAlign='left'
-        />
-      )
+      dataIndex: 'origin',
+      key: 'origin',
+      width: 90,
+      title: () => <FISTableHeaderCell label='ĐIỂM ĐI' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+        
+          <FISTableCell content={locationLabels[row.origin ?? row.departureLocationId ?? ''] ?? row.origin ?? row.departureLocationId ?? '-'} textAlign='left' />
     },
     {
-      dataIndex: 'owner',
-      key: 'owner',
-      width: 180,
-      title: () => <FISTableHeaderCell label='CHỦ HÀNG' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.owner} textAlign='left' />
-    },
-    {
-      dataIndex: 'quantity',
-      key: 'quantity',
+      dataIndex: 'destination',
+      key: 'destination',
       width: 100,
+      title: () => <FISTableHeaderCell label='ĐIỂM ĐẾN' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+        
+          <FISTableCell content={locationLabels[row.destination ?? row.destinationLocationId ?? ''] ?? row.destination ?? row.destinationLocationId ?? '-'} textAlign='left' />
+    },
+    {
+      dataIndex: 'requestUnit',
+      key: 'requestUnit',
+      width: 110,
+      title: () => <FISTableHeaderCell label='ĐƠN VỊ YC' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+       
+          <FISTableCell content={requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ?? row.requestUnit ?? row.requestingUnitId ?? row.depotName ?? '-'} textAlign='left' />
+    },
+    {
+      dataIndex: 'containerCount',
+      key: 'containerCount',
+      width: 90,
       title: () => <FISTableHeaderCell label='SỐ LƯỢNG' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => (
-        <FISTableCell content={String(row.quantity)} textAlign='left' />
-      )
+      render: (_: unknown, row: FlattenedRowI) =>
+        isSubsequentContainerRow(row) ? (
+          <FISTableCell content='' textAlign='left' />
+        ) : (
+          <FISTableCell
+            content={String(row.containerCount ?? (row.containers?.length ?? 0))}
+            textAlign='left'
+          />
+        )
     },
     {
-      dataIndex: 'time',
-      key: 'time',
-      width: 150,
-      title: () => <FISTableHeaderCell label='THỜI GIAN' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.time} textAlign='left' />
+      dataIndex: 'expectedPickupTime',
+      key: 'expectedPickupTime',
+      width: 120,
+      title: () => <FISTableHeaderCell label='TG NHẬN' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+      
+          <FISTableCell content={formatDateTime(row.expectedPickupTime ?? row.estimatedPickupTime ?? row.dispatchDate)} textAlign='left' />
     },
     {
-      dataIndex: 'opr',
-      key: 'opr',
-      width: 100,
-      title: () => <FISTableHeaderCell label='OPR' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.opr} textAlign='left' />
-    },
-    {
-      dataIndex: 'createdBy',
-      key: 'createdBy',
-      width: 150,
-      title: () => <FISTableHeaderCell label='NGƯỜI TẠO LỆNH' hasRightDivider />,
-      render: (_: unknown, row: VehicleDispatchOrderI) => <FISTableCell content={row.createdBy} textAlign='left' />
+      dataIndex: 'expectedDeliveryTime',
+      key: 'expectedDeliveryTime',
+      width: 120,
+      title: () => <FISTableHeaderCell label='TG GIAO HÀNG' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) =>
+      
+          <FISTableCell content={formatDateTime(row.expectedDeliveryTime ?? row.estimatedDeliveryTime)} textAlign='left' />
     },
     {
       title: () => <FISTableHeaderCell label='THAO TÁC' />,
       key: 'actions',
       width: 140,
-      render: (_: unknown, record: VehicleDispatchOrderI) => (
+      render: (_: unknown, record: FlattenedRowI) => (
         <FISTableCell
-          style={{ textAlign: 'center' }}
+            textAlign='right'
           icon={
             <FISButtonGroup
               size='md'
@@ -286,47 +281,52 @@ const VehicleDispatchPage = () => {
                     />
                   )
                 },
-                {
-                  label: '',
-                  startIcon: (
-                    <FISIconButton
-                      size='xs'
-                      icon={
-                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                ...(record.status === 'PENDING_CONFIRMATION'
+                  ? [
+                      {
+                        label: '',
+                        startIcon: (
+                          <FISIconButton
+                            size='xs'
+                            icon={
+                              <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path
+                                  strokeLinecap='round'
+                                  strokeLinejoin='round'
+                                  strokeWidth={2}
+                                  d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                                />
+                              </svg>
+                            }
+                            variant='tertiary-invisible'
+                            color='blue'
+                            onClick={() => handleEdit(record)}
                           />
-                        </svg>
+                        )
                       }
-                      variant='tertiary-invisible'
-                      color='blue'
-                      onClick={() => handleEdit(record)}
-                    />
-                  )
-                },
-                {
-                  label: '',
-                  startIcon: (
-                    <FISIconButton
-                      size='xs'
-                      icon={
-                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-                          />
-                        </svg>
-                      }
-                      variant='secondary-invisible-negative'
-                      onClick={() => handleDelete(record)}
-                    />
-                  )
-                }
+                    ]
+                  : []),
+                // {
+                //   label: '',
+                //   startIcon: (
+                //     <FISIconButton
+                //       size='xs'
+                //       icon={
+                //         <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                //           <path
+                //             strokeLinecap='round'
+                //             strokeLinejoin='round'
+                //             strokeWidth={2}
+                //             d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+                //           />
+                //         </svg>
+                //       }
+                //       variant='tertiary-invisible'
+                //       color='blue'
+                //       onClick={() => handleAssignDriver(record)}
+                //     />
+                //   )
+                // }
               ]}
             />
           }
@@ -346,44 +346,38 @@ const VehicleDispatchPage = () => {
       <div className='flex gap-5 flex-col h-full'>
         <TableToolbar
           filterContent={<VehicleDispatchFilter control={vehicleDispatch.control} />}
+          actionButtons={
+            <FISButton startIcon={<AddIcon />} onClick={() => navigate(ROUTES.transportationVehicleDispatchCreate)}>
+              Thêm mới
+            </FISButton>
+          }
           {...vehicleDispatch}
-          searchPlaceholder='Tìm kiếm Bill/Booking, chủ hàng...'
+          searchPlaceholder='Điểm đi, điểm đến'
         />
 
-        <div className='flex-1 bg-white rounded-lg overflow-hidden p-4'>
+        {/* <div className='flex-1 min-h-0 bg-white rounded-lg overflow-hidden p-4 flex flex-col'> */}
           <FISTable
             dataSource={dataSource}
             columns={columns}
-            rowSelection={rowSelection}
-            scroll={{ x: 'max-content' }}
+            rowKey={(row) => `${row._orderId}-${row._containerIndex}`}
+            scroll={{  y: 'calc(100vh - 350px)'}}
+            pagination={false}
           />
-        </div>
+          <div >
+            <FISPagination
+              current={page}
+              pageSize={pageSize}
+              total={total}
+              onChange={(p) => setPage(p)}
+              onShowSizeChange={(_current, _size) => {
+                setPageSize(_current)
+                setPage(1)
+              }}
+              showSizeChanger
+            />
+          </div>
+        {/* </div> */}
       </div>
-
-      <ShipmentDetailModal
-        open={shipmentModalOpen}
-        onClose={() => {
-          setShipmentModalOpen(false)
-          setSelectedOrder(null)
-        }}
-        order={selectedOrder}
-        onSave={handleSaveShipment}
-        onConfirm={handleConfirmShipment}
-        onAssignDriver={handleAssignDriverClick}
-      />
-
-      <AssignDriverModal
-        open={assignDriverModalOpen}
-        onClose={() => {
-          setAssignDriverModalOpen(false)
-          setSelectedShipment(null)
-          setAssignOrderKey('')
-        }}
-        drivers={drivers}
-        shipment={selectedShipment}
-        orderKey={assignOrderKey}
-        onConfirm={handleAssignDriverConfirm}
-      />
     </PageWrapper>
   )
 }

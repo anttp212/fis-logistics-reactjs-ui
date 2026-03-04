@@ -684,6 +684,20 @@ export const routes: RouteObject[] = [
       },
       // Quản lý vận chuyển: path tương đối, sub-routes trước, redirect sau
       {
+        path: 'transportation/vehicle-dispatch/create',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-dispatch/create')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-dispatch/:id/edit',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-dispatch/edit')
+          return { Component: C.default }
+        }
+      },
+      {
         path: 'transportation/vehicle-dispatch/:id',
         lazy: async () => {
           const C = await import('../pages/transportation/vehicle-dispatch/detail')

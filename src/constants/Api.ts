@@ -1,6 +1,6 @@
 // API Configuration Defaults
 export const API_DEFAULTS = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://api.example.com',
+  baseUrl: import.meta.env.VITE_API_BASE_URL || 'https://logistics-be.t2g.io.vn',
   timeout: 30000, // 30 seconds
   tokenRefreshThreshold: 5 // 5 minutes before token expires to refresh
 } as const
@@ -36,12 +36,18 @@ export const API_ENDPOINTS = {
     inboundRegistration: '/portal/inbound/registration'
   },
   vehicleDispatch: {
-    list: '/vehicle-dispatch',
-    detail: '/vehicle-dispatch/:id',
-    create: '/vehicle-dispatch',
-    update: '/vehicle-dispatch/:id',
-    delete: '/vehicle-dispatch/:id',
-    assignDriver: '/vehicle-dispatch/:id/assign-driver'
+    list: '/api/v1/dispatch-orders',
+    detail: '/api/v1/dispatch-orders/:id',
+    create: '/api/v1/dispatch-orders',
+    update: '/api/v1/dispatch-orders/:id',
+    delete: '/api/v1/dispatch-orders/:id',
+    cancel: '/api/v1/dispatch-orders/:id/cancel',
+    assignDriver: '/vehicle-dispatch/:id/assign-driver',
+    vehicleTypes: '/api/v1/vehicle-types',
+    requestingUnits: '/api/v1/requesting-units',
+    locations: '/api/v1/locations',
+    drivers: '/api/v1/drivers',
+    containerSizes: '/api/v1/container-sizes'
   }
 } as const
 

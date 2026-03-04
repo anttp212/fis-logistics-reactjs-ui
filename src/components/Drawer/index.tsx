@@ -10,21 +10,24 @@ interface DrawerI {
   onSave?: () => void
   onReset?: () => void
   children?: React.ReactNode
+  textCancel?: string
+  textSave?: string
+  textReset?: string
 }
-const FISDrawer: FC<DrawerI> = ({ open, onClose, title, onReset, onSave, children }) => {
+const FISDrawer: FC<DrawerI> = ({ open, onClose, title, onReset, onSave, children, textCancel, textSave, textReset }) => {
   const { t } = useTranslation()
   return (
     <Drawer
       footer={
         <div className=' flex items-center justify-between'>
           <FISButton variant='primary-white' onClick={onReset}>
-            {t('common.actions.reset')}
+            {textReset || t('common.actions.reset')}
           </FISButton>
           <div className=' flex gap-2'>
             <FISButton variant='secondary' onClick={onClose}>
-              {t('common.actions.cancel')}
+              {textCancel || t('common.actions.cancel')}
             </FISButton>
-            <FISButton onClick={onSave}>{t('common.actions.save')}</FISButton>
+            <FISButton onClick={onSave}>{textSave || t('common.actions.save')}</FISButton>
           </div>
         </div>
       }

@@ -94,7 +94,6 @@ const DepartmentModal: FC<DepartmentModalPropsI> = ({
       footer={null}
       title={isEditMode ? 'Chỉnh sửa phòng ban' : 'Tạo mới phòng ban'}
       width={600}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4'>

@@ -106,7 +106,6 @@ const UserModal: FC<UserModalPropsI> = ({
       footer={null}
       title={isEditMode ? 'Chỉnh sửa tài khoản người dùng' : 'Tạo mới tài khoản người dùng'}
       width={600}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4'>

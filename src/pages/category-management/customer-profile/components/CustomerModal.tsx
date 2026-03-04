@@ -170,7 +170,6 @@ const CustomerModal: FC<CustomerModalPropsI> = ({ open, onClose, onSubmit, initi
       footer={null}
       title={isEditMode ? 'Chỉnh sửa hồ sơ khách hàng' : 'Khai báo hồ sơ khách hàng mới'}
       width={800}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4 max-h-[70vh] overflow-y-auto pr-2'>

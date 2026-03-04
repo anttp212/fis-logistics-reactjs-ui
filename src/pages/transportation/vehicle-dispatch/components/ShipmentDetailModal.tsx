@@ -124,7 +124,6 @@ const ShipmentDetailModal = ({
       onCancel={onClose}
       footer={null}
       width={1200}
-      destroyOnClose
     >
       <div className='mt-4'>
         <FISTable
