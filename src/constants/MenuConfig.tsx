@@ -340,7 +340,8 @@ export const MENU_ENTRIES: MenuEntryI[] = [
   //   labelKey: 'Tally & Billing',
   //   parentKey: 'transportation'
   // },
-  ,{
+  ,
+  {
     path: ROUTES.userManagement,
     permissionKey: 'user-management',
     labelKey: 'common.menu.userManagement',
