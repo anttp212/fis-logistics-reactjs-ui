@@ -24,7 +24,7 @@ const VehicleDispatchEditPage = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='overflow-y-auto mt-6 '
       title='Chỉnh sửa yêu cầu điều xe'
       breadcrumbItems={breadcrumbItems}
       onBackClick={() => navigate(ROUTES.transportationVehicleDispatch)}

@@ -21,10 +21,11 @@ const STATUS_OPTIONS = [
   {
     items: [
       { label: 'Chờ xác nhận', value: 'PENDING_CONFIRMATION' },
-      { label: 'Đang vận chuyển', value: 'IN_TRANSIT' },
+      { label: 'Nhận lệnh', value: 'IN_TRANSIT' },
       { label: 'Hoàn thành', value: 'COMPLETED' },
       { label: 'Sự cố', value: 'INCIDENT' },
-      { label: 'Huỷ', value: 'CANCELLED' }
+      { label: 'Huỷ', value: 'CANCELLED' },
+      { label: 'Từ chối', value: 'REJECTED' }
     ]
   }
 ]

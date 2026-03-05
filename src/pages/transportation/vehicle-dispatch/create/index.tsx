@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { Input, message } from 'antd'
+import { Input, message, Modal, Table } from 'antd'
 import { PageWrapper } from '@components'
 import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
 import { ROUTES } from '@constants'
@@ -55,6 +55,8 @@ const defaultContainer: ContainerItemI = {
 const VehicleDispatchCreatePage = () => {
   const navigate = useNavigate()
   const [createVehicleDispatch, { isLoading }] = useCreateVehicleDispatchMutation()
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const [errorItems, setErrorItems] = useState<string[]>([])
 
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
   const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
@@ -146,7 +148,17 @@ const VehicleDispatchCreatePage = () => {
     } catch (err: unknown) {
       const errorMessage =
         err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } })?.data?.message : null
-      message.error(errorMessage || 'Tạo yêu cầu điều xe thất bại. Vui lòng thử lại.')
+      const msg = errorMessage || 'Tạo yêu cầu điều xe thất bại. Vui lòng thử lại.'
+      const items = msg
+        .split(';')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      if (items.length > 1) {
+        setErrorItems(items)
+        setErrorModalOpen(true)
+      } else {
+        message.error(msg)
+      }
     }
   }
 
@@ -156,7 +168,7 @@ const VehicleDispatchCreatePage = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='overflow-y-auto mt-6 '
       title='Thêm mới yêu cầu điều xe'
       breadcrumbItems={breadcrumbItems}
       onBackClick={() => navigate(ROUTES.transportationVehicleDispatch)}
@@ -332,7 +344,7 @@ const VehicleDispatchCreatePage = () => {
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className='grid grid-cols-1 gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50/50 md:grid-cols-2 lg:grid-cols-5'
+                className='grid grid-cols-1 gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50/50 md:grid-cols-2 lg:grid-cols-4'
               >
                 <Controller
                   name={`containers.${index}.containerNumber`}
@@ -387,23 +399,25 @@ const VehicleDispatchCreatePage = () => {
                     />
                   )}
                 />
-                <Controller
-                  name={`containers.${index}.driver`}
-                  control={control}
-                  rules={{ required: 'Vui lòng chọn tài xế' }}
-                  render={({ field: f }) => (
-                    <FISSelect
-                      {...f}
-                      textLabel='Tài xế'
-                      placeholder='Chọn tài xế'
-                      options={driverOptions}
-                      negative={!!errors.containers?.[index]?.driver}
-                      message={errors.containers?.[index]?.driver?.message}
-                      required
+                <div className='flex gap-2 items-end'>
+                  <div className='flex-1 min-w-0'>
+                    <Controller
+                      name={`containers.${index}.driver`}
+                      control={control}
+                      rules={{ required: 'Vui lòng chọn tài xế' }}
+                      render={({ field: f }) => (
+                        <FISSelect
+                          {...f}
+                          textLabel='Tài xế'
+                          placeholder='Chọn tài xế'
+                          options={driverOptions}
+                          negative={!!errors.containers?.[index]?.driver}
+                          message={errors.containers?.[index]?.driver?.message}
+                          required
+                        />
+                      )}
                     />
-                  )}
-                />
-                <div className='flex items-end gap-2'>
+                  </div>
                   {fields.length > 1 && (
                     <FISIconButton
                       icon={<DeleteIcon />}
@@ -437,7 +451,7 @@ const VehicleDispatchCreatePage = () => {
           />
         </div>
 
-        <div className='flex justify-end gap-2'>
+        <div className='sticky bottom-0 mt-12 pr-3 py-4 bg-[#EFF3FD] border-t border-gray-200 flex justify-end gap-2'>
           <FISButton type='button' variant='secondary' onClick={() => navigate(ROUTES.transportationVehicleDispatch)}>
             Hủy
           </FISButton>
@@ -446,6 +460,30 @@ const VehicleDispatchCreatePage = () => {
           </FISButton>
         </div>
       </form>
+
+      <Modal
+        title='Lỗi tạo yêu cầu điều xe'
+        open={errorModalOpen}
+        onCancel={() => setErrorModalOpen(false)}
+        footer={[
+          <FISButton key='close' variant='secondary' onClick={() => setErrorModalOpen(false)}>
+            Đóng
+          </FISButton>
+        ]}
+        centered
+        width={600}
+      >
+        <Table
+          dataSource={errorItems.map((content, idx) => ({ key: idx, stt: idx + 1, content }))}
+          columns={[
+            { title: 'STT', dataIndex: 'stt', width: 60, align: 'center' as const },
+            { title: 'Nội dung lỗi', dataIndex: 'content' }
+          ]}
+          pagination={false}
+          size='small'
+          className='mt-4'
+        />
+      </Modal>
     </PageWrapper>
   )
 }

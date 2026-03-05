@@ -171,20 +171,6 @@ export const routes: RouteObject[] = [
           return { Component: HomeComponent.default }
         }
       },
-      {
-        path: 'report/gate-in-out',
-        lazy: async () => {
-          const C = await import('../pages/report/gate-in-out')
-          return { Component: C.default }
-        }
-      },
-      {
-        path: 'report/transportation',
-        lazy: async () => {
-          const C = await import('../pages/report/transportation')
-          return { Component: C.default }
-        }
-      },
       // Quản lý kho: path tương đối, sub-routes trước, redirect sau
       {
         path: 'warehouse/service-registration-portal',
@@ -757,6 +743,20 @@ export const routes: RouteObject[] = [
         path: 'transportation/tally-billing',
         lazy: async () => {
           const C = await import('../pages/transportation/tally-billing')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/report-gate-in-out',
+        lazy: async () => {
+          const C = await import('../pages/report/gate-in-out')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/report-transportation',
+        lazy: async () => {
+          const C = await import('../pages/report/transportation')
           return { Component: C.default }
         }
       },

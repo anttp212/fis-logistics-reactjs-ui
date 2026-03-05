@@ -8,6 +8,7 @@ import { userGroupApi } from '../pages/user-management/user-group/userGroup.api'
 import { departmentsApi } from '../pages/organization-structure/departments/departments.api'
 import { vehicleDispatchApi } from '../pages/transportation/vehicle-dispatch/vehicleDispatch.api'
 import { vehicleDispatchMasterApi } from '../pages/transportation/vehicle-dispatch/vehicleDispatchMaster.api'
+import { dashboardApi } from '../pages/home/dashboard.api'
 
 // Persist config
 const persistConfig = {
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   [userGroupApi.reducerPath]: userGroupApi.reducer,
   [departmentsApi.reducerPath]: departmentsApi.reducer,
   [vehicleDispatchApi.reducerPath]: vehicleDispatchApi.reducer,
-  [vehicleDispatchMasterApi.reducerPath]: vehicleDispatchMasterApi.reducer
+  [vehicleDispatchMasterApi.reducerPath]: vehicleDispatchMasterApi.reducer,
+  [dashboardApi.reducerPath]: dashboardApi.reducer
 })
 
 // Wrap the root reducer with persistReducer
@@ -45,7 +47,8 @@ const store = configureStore({
       userGroupApi.middleware,
       departmentsApi.middleware,
       vehicleDispatchApi.middleware,
-      vehicleDispatchMasterApi.middleware
+      vehicleDispatchMasterApi.middleware,
+      dashboardApi.middleware
     ) // Add RTK Query middleware
 })
 

@@ -99,7 +99,7 @@ const TableToolbar: FC<TableToolbarPropsT> = ({
           <FISIconButton variant='tertiary' icon={<FilterIcon />} onClick={handleFilterOpen} />
           {hasActiveSearch && (
             <span
-              className='absolute top-[-5px] right-[-5px] w-3 h-3 bg-red-500 rounded-full'
+              className='absolute top-[-5px] right-[-5px] w-3 h-3 bg-blue-500 rounded-full'
               aria-label='Đang tìm kiếm'
             />
           )}

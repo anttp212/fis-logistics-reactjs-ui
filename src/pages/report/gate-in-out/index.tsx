@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { PageWrapper } from '@components'
+import { useGetDashboardOverviewQuery } from '@pages/home/dashboard.api'
 import {
   FISButton,
   FISInputDate,
@@ -91,6 +92,50 @@ const DUMMY_DATA: GateInOutRecordI[] = [
     timeIn: '10:00',
     timeOut: '—',
     status: 'Đang trong khu vực'
+  },
+  {
+    key: '6',
+    stt: 6,
+    name: 'Nguyễn Văn F',
+    type: 'Ra',
+    vehicleType: 'Xe tải',
+    plateNumber: '59A-44444',
+    timeIn: '11:00',
+    timeOut: '12:00',
+    status: 'Đã ra'
+  },
+  {
+    key: '7',
+    stt: 7,
+    name: 'Nguyễn Văn F',
+    type: 'Ra',
+    vehicleType: 'Xe tải',
+    plateNumber: '59A-44444',
+    timeIn: '11:00',
+    timeOut: '12:00',
+    status: 'Đã ra'
+  },
+  {
+    key: '10',
+    stt: 10,
+    name: 'Nguyễn Văn F',
+    type: 'Ra',
+    vehicleType: 'Xe tải',
+    plateNumber: '59A-44444',
+    timeIn: '11:00',
+    timeOut: '12:00',
+    status: 'Đã ra'
+  },
+  {
+    key: '9',
+    stt: 9,
+    name: 'Nguyễn Văn F',
+    type: 'Ra',
+    vehicleType: 'Xe tải',
+    plateNumber: '59A-44444',
+    timeIn: '11:00',
+    timeOut: '12:00',
+    status: 'Đã ra'
   }
 ]
 
@@ -98,6 +143,7 @@ const GateInOutReport = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const { data: overview } = useGetDashboardOverviewQuery()
 
   const { control, watch, handleSubmit } = useForm({
     defaultValues: {
@@ -126,12 +172,12 @@ const GateInOutReport = () => {
     return data
   }, [filterValues])
 
-  const totalIn = useMemo(() => filteredData.filter((r) => r.type === 'Vào').length, [filteredData])
-  const totalOut = useMemo(() => filteredData.filter((r) => r.type === 'Ra').length, [filteredData])
-  const totalInside = useMemo(
-    () => filteredData.filter((r) => r.status === 'Đang trong khu vực').length,
-    [filteredData]
-  )
+  const s = overview?.security
+  const totalIn = s?.todayCheckIn ?? filteredData.filter((r) => r.type === 'Vào').length
+  const totalOut = s?.todayCheckOut ?? filteredData.filter((r) => r.type === 'Ra').length
+  const totalInside = s
+    ? Math.max(0, (s.todayCheckIn ?? 0) - (s.todayCheckOut ?? 0))
+    : filteredData.filter((r) => r.status === 'Đang trong khu vực').length
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize
@@ -202,11 +248,12 @@ const GateInOutReport = () => {
 
   const breadcrumbItems = [
     { label: 'Trang chủ', onClick: () => navigate(ROUTES.home) },
+    { label: 'Quản lý vận chuyển', onClick: () => navigate(ROUTES.transportation) },
     { label: 'Báo cáo Ra/Vào cổng' }
   ]
 
   return (
-    <PageWrapper className='p-5' title='Báo cáo Ra/Vào cổng' breadcrumbItems={breadcrumbItems}>
+    <PageWrapper className='py-5 ' title='Báo cáo Ra/Vào cổng' breadcrumbItems={breadcrumbItems}>
       <div className='flex flex-col gap-6'>
         {/* Filter */}
         <div className='bg-white rounded-lg border border-gray-200 p-4'>
@@ -290,21 +337,24 @@ const GateInOutReport = () => {
         </div>
 
         {/* Table */}
-        <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
-          <FISTable dataSource={paginatedData} columns={columns} scroll={{ x: 'max-content' }} pagination={false} />
-          <div className='p-4 mt-2 '>
-            <FISPagination
-              current={page}
-              pageSize={pageSize}
-              total={filteredData.length}
-              onChange={(p) => setPage(p)}
-              onShowSizeChange={(_current, size) => {
-                setPageSize(size || 10)
-                setPage(1)
-              }}
-              showSizeChanger
-            />
-          </div>
+        <FISTable
+          dataSource={paginatedData}
+          columns={columns}
+          scroll={{ y: 'calc(100vh - 530px)' }}
+          pagination={false}
+        />
+        <div>
+          <FISPagination
+            current={page}
+            pageSize={pageSize}
+            total={filteredData.length}
+            onChange={(p) => setPage(p)}
+            onShowSizeChange={(_current, size) => {
+              setPageSize(size || 10)
+              setPage(1)
+            }}
+            showSizeChanger
+          />
         </div>
       </div>
     </PageWrapper>

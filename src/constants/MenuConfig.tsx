@@ -33,7 +33,7 @@ export interface MenuEntryI {
 
 /** Danh sách phẳng tất cả menu (cho ma trận phân quyền và build tree) */
 export const MENU_ENTRIES: MenuEntryI[] = [
-  // { path: ROUTES.home, permissionKey: 'home', labelKey: 'common.menu.dashboard' },
+  { path: ROUTES.home, permissionKey: 'home', labelKey: 'common.menu.dashboard' },
   // {
   //   path: ROUTES.warehouse,
   //   permissionKey: 'warehouse',
@@ -275,18 +275,6 @@ export const MENU_ENTRIES: MenuEntryI[] = [
   //   parentKey: 'depot'
   // },
   {
-    path: ROUTES.reportGateInOut,
-    permissionKey: 'report.gate-in-out',
-    labelKey: 'Báo cáo Ra/Vào cổng',
-    parentKey: '__root'
-  },
-  {
-    path: ROUTES.reportTransportation,
-    permissionKey: 'report.transportation',
-    labelKey: 'Báo cáo Vận Tải',
-    parentKey: '__root'
-  },
-  {
     path: ROUTES.transportation,
     permissionKey: 'transportation',
     labelKey: 'common.menu.transportation',
@@ -296,6 +284,18 @@ export const MENU_ENTRIES: MenuEntryI[] = [
     path: ROUTES.transportationVehicleDispatch,
     permissionKey: 'transportation.vehicle-dispatch',
     labelKey: 'Điều xe',
+    parentKey: 'transportation'
+  },
+  {
+    path: ROUTES.reportGateInOut,
+    permissionKey: 'report.gate-in-out',
+    labelKey: 'Báo cáo Ra/Vào cổng',
+    parentKey: 'transportation'
+  },
+  {
+    path: ROUTES.reportTransportation,
+    permissionKey: 'report.transportation',
+    labelKey: 'Báo cáo Vận Tải',
     parentKey: 'transportation'
   }
   // {

@@ -18,7 +18,7 @@ import { useVehicleDispatch } from './useVehicleDispatch'
 import { useGetVehicleDispatchListQuery } from './vehicleDispatch.api'
 import type { DispatchOrderApiI, DispatchOrderContainerI } from './vehicleDispatch.api'
 import { useGetVehicleTypesQuery, useGetRequestingUnitsQuery, useGetLocationsQuery } from './vehicleDispatchMaster.api'
-
+import { Tooltip } from 'antd'
 /** Row đã flatten: 1 dòng = 1 container */
 interface FlattenedRowI extends DispatchOrderApiI {
   _orderId: string
@@ -29,19 +29,21 @@ interface FlattenedRowI extends DispatchOrderApiI {
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING_CONFIRMATION: 'Chờ xác nhận',
-  IN_TRANSIT: 'Đang vận chuyển',
+  IN_TRANSIT: 'Nhận lệnh',
   COMPLETED: 'Hoàn thành',
   INCIDENT: 'Sự cố',
-  CANCELLED: 'Huỷ'
+  CANCELLED: 'Huỷ',
+  REJECTED: 'Từ chối'
 }
 
 type BadgeStatusT = 'caution' | 'info' | 'positive' | 'negative'
 const STATUS_BADGE: Record<string, { label: string; status: BadgeStatusT }> = {
   PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
-  IN_TRANSIT: { label: 'Đang vận chuyển', status: 'info' },
+  IN_TRANSIT: { label: 'Nhận lệnh', status: 'info' },
   COMPLETED: { label: 'Hoàn thành', status: 'positive' },
   INCIDENT: { label: 'Sự cố', status: 'negative' },
-  CANCELLED: { label: 'Huỷ', status: 'negative' }
+  CANCELLED: { label: 'Huỷ', status: 'negative' },
+  REJECTED: { label: 'Từ chối', status: 'negative' }
 }
 
 /** Tạo lookup id -> name từ mảng API */
@@ -64,11 +66,11 @@ const formatDateTime = (isoStr?: string) => {
 /** Dòng thứ 2+ của cùng phiếu: chỉ hiển thị KÍCH THƯỚC, TRỌNG LƯỢNG, TÀI XẾ, action */
 const isSubsequentContainerRow = (row: FlattenedRowI) => row._containerIndex >= 1
 
-/** Flatten orders: mỗi container = 1 dòng, _orderIndex đánh từ 1 cho mỗi phiếu */
-const flattenOrdersToRows = (orders: DispatchOrderApiI[]): FlattenedRowI[] => {
+/** Flatten orders: mỗi container = 1 dòng, _orderIndex tính theo page (page 2 thì 11, 12, 13...) */
+const flattenOrdersToRows = (orders: DispatchOrderApiI[], page: number, pageSize: number): FlattenedRowI[] => {
   const rows: FlattenedRowI[] = []
   orders.forEach((order, orderIdx) => {
-    const orderIndex = orderIdx + 1
+    const orderIndex = (page - 1) * pageSize + orderIdx + 1
     rows.push({
       ...order,
       _orderId: order.id,
@@ -87,7 +89,11 @@ const VehicleDispatchPage = () => {
   const vehicleDispatch = useVehicleDispatch()
   const filterValues = (vehicleDispatch as any).filters as Record<string, any>
 
-  const { data: listResponse } = useGetVehicleDispatchListQuery({
+  const {
+    data: listResponse,
+    isLoading: isListLoading,
+    isFetching: isListFetching
+  } = useGetVehicleDispatchListQuery({
     page,
     size: pageSize,
     keyword: vehicleDispatch.search || undefined,
@@ -124,7 +130,10 @@ const VehicleDispatchPage = () => {
   const locationLabels = useMemo(() => toIdNameMap(locations), [locations])
   // const driverLabels = useMemo(() => toIdNameMap(drivers), [drivers])
 
-  const dataSource = useMemo(() => flattenOrdersToRows(listResponse?.data ?? []), [listResponse?.data])
+  const dataSource = useMemo(
+    () => flattenOrdersToRows(listResponse?.data ?? [], page, pageSize),
+    [listResponse?.data, page, pageSize]
+  )
 
   const pagination = listResponse?.pagination
   const total = pagination?.totalElements ?? 0
@@ -149,9 +158,27 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => <FISTableCell content={String(row._orderIndex)} textAlign='left' />
     },
     {
+      dataIndex: 'dispatchCode',
+      key: 'dispatchCode',
+      width: 120,
+      title: () => <FISTableHeaderCell label='MÃ ĐIỀU XE' hasRightDivider />,
+      render: (_: unknown, row: FlattenedRowI) => (
+        <FISTableCell
+          content={
+            <Tooltip placement='topLeft' title={row.dispatchCode ?? '-'}>
+              {' '}
+              {row.dispatchCode ?? '-'}{' '}
+            </Tooltip>
+          }
+          textAlign='left'
+        />
+      )
+    },
+    {
       dataIndex: 'status',
       key: 'status',
-      width: 130,
+      width: 140,
+      className: 'align-middle',
       title: () => <FISTableHeaderCell label='TRẠNG THÁI' hasRightDivider />,
       render: (_: unknown, row: FlattenedRowI) => {
         const statusKey = row.status ?? ''
@@ -189,7 +216,20 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            locationLabels[row.origin ?? row.departureLocationId ?? ''] ?? row.origin ?? row.departureLocationId ?? '-'
+            <Tooltip
+              placement='topLeft'
+              title={
+                locationLabels[row.origin ?? row.departureLocationId ?? ''] ??
+                row.origin ??
+                row.departureLocationId ??
+                '-'
+              }
+            >
+              {locationLabels[row.origin ?? row.departureLocationId ?? ''] ??
+                row.origin ??
+                row.departureLocationId ??
+                '-'}
+            </Tooltip>
           }
           textAlign='left'
         />
@@ -203,10 +243,20 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            locationLabels[row.destination ?? row.destinationLocationId ?? ''] ??
-            row.destination ??
-            row.destinationLocationId ??
-            '-'
+            <Tooltip
+              placement='topLeft'
+              title={
+                locationLabels[row.destination ?? row.destinationLocationId ?? ''] ??
+                row.destination ??
+                row.destinationLocationId ??
+                '-'
+              }
+            >
+              {locationLabels[row.destination ?? row.destinationLocationId ?? ''] ??
+                row.destination ??
+                row.destinationLocationId ??
+                '-'}
+            </Tooltip>
           }
           textAlign='left'
         />
@@ -220,11 +270,23 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ??
-            row.requestUnit ??
-            row.requestingUnitId ??
-            row.depotName ??
-            '-'
+            <Tooltip
+              placement='topLeft'
+              title={
+                requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ??
+                row.requestUnit ??
+                row.requestingUnitId ??
+                row.depotName ??
+                '-'
+              }
+            >
+              {' '}
+              {requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ??
+                row.requestUnit ??
+                row.requestingUnitId ??
+                row.depotName ??
+                '-'}
+            </Tooltip>
           }
           textAlign='left'
         />
@@ -270,6 +332,7 @@ const VehicleDispatchPage = () => {
       title: () => <FISTableHeaderCell label='THAO TÁC' />,
       key: 'actions',
       width: 140,
+      className: 'none-border-right',
       render: (_: unknown, record: FlattenedRowI) => (
         <FISTableCell
           textAlign='right'
@@ -365,7 +428,7 @@ const VehicleDispatchPage = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Điều xe' breadcrumbItems={breadcrumbItems}>
+    <PageWrapper className='py-5' title='Điều xe' breadcrumbItems={breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         <TableToolbar
           filterContent={<VehicleDispatchFilter control={vehicleDispatch.control} />}
@@ -375,12 +438,13 @@ const VehicleDispatchPage = () => {
             </FISButton>
           }
           {...vehicleDispatch}
-          searchPlaceholder='Điểm đi, điểm đến'
+          searchPlaceholder='Điểm đi, điểm đến, mã điều xe'
         />
 
         {/* <div className='flex-1 min-h-0 bg-white rounded-lg overflow-hidden p-4 flex flex-col'> */}
         <FISTable
           dataSource={dataSource}
+          loading={isListLoading || isListFetching}
           columns={columns}
           rowKey={(row) => `${row._orderId}-${row._containerIndex}`}
           scroll={{ y: 'calc(100vh - 350px)' }}

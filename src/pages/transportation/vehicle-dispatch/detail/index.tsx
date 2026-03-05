@@ -32,10 +32,11 @@ const formatDateTime = (isoStr?: string) => {
 type BadgeStatusT = 'caution' | 'info' | 'positive' | 'negative'
 const STATUS_BADGE: Record<string, { label: string; status: BadgeStatusT }> = {
   PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
-  IN_TRANSIT: { label: 'Đang vận chuyển', status: 'info' },
+  IN_TRANSIT: { label: 'Nhận lệnh', status: 'info' },
   COMPLETED: { label: 'Hoàn thành', status: 'positive' },
   INCIDENT: { label: 'Sự cố', status: 'negative' },
-  CANCELLED: { label: 'Huỷ', status: 'negative' }
+  CANCELLED: { label: 'Huỷ', status: 'negative' },
+  REJECTED: { label: 'Từ chối', status: 'negative' }
 }
 
 const VehicleDispatchDetail = () => {
@@ -157,7 +158,7 @@ const VehicleDispatchDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='overflow-y-auto mt-6 pb-6'
       title='Chi tiết điều xe'
       breadcrumbItems={breadcrumbItems}
       hasBackButton
@@ -202,13 +203,13 @@ const VehicleDispatchDetail = () => {
       </Modal>
       <div className='flex flex-col gap-6'>
         {isLoading && (
-          <div className='flex items-center justify-center py-12'>
+          <div className=' flex items-center justify-center py-12'>
             <div className='text-gray-500'>Đang tải thông tin...</div>
           </div>
         )}
 
         {error && (
-          <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
+          <div className=' bg-red-50 border border-red-200 rounded-lg p-4'>
             <p className='text-sm text-red-800'>Không tìm thấy thông tin lệnh điều xe</p>
           </div>
         )}
@@ -219,6 +220,7 @@ const VehicleDispatchDetail = () => {
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
               <h3 className='text-lg font-semibold text-gray-900 mb-4'>1. Thông tin chung</h3>
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+                <InfoItem label='Mã điều xe' value={order.dispatchCode ?? '-'} />
                 <InfoItem
                   label='Loại xe'
                   value={

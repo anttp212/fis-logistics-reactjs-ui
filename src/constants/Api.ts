@@ -35,6 +35,9 @@ export const API_ENDPOINTS = {
   portal: {
     inboundRegistration: '/portal/inbound/registration'
   },
+  dashboard: {
+    overview: '/api/v1/api/dashboard/overview'
+  },
   vehicleDispatch: {
     list: '/api/v1/dispatch-orders',
     detail: '/api/v1/dispatch-orders/:id',

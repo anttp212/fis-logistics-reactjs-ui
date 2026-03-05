@@ -1,8 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { Input, message } from 'antd'
+import { Input, message, Modal, Table } from 'antd'
 import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
-import { AddIcon, DeleteIcon } from '@images'
+import { DeleteIcon } from '@images'
 import { useGetVehicleDispatchDetailQuery, useUpdateVehicleDispatchMutation } from '../vehicleDispatch.api'
 import {
   useGetVehicleTypesQuery,
@@ -57,6 +57,8 @@ interface VehicleDispatchEditFormPropsI {
 
 const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispatchEditFormPropsI) => {
   const [updateVehicleDispatch, { isLoading }] = useUpdateVehicleDispatchMutation()
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const [errorItems, setErrorItems] = useState<string[]>([])
   const { data: order, isLoading: isLoadingDetail } = useGetVehicleDispatchDetailQuery(orderId, {
     skip: !orderId
   })
@@ -176,7 +178,17 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
     } catch (err: unknown) {
       const errorMessage =
         err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } })?.data?.message : null
-      message.error(errorMessage || 'Cập nhật thất bại. Vui lòng thử lại.')
+      const msg = errorMessage || 'Cập nhật thất bại. Vui lòng thử lại.'
+      const items = msg
+        .split(';')
+        .map((s) => s.trim())
+        .filter(Boolean)
+      if (items.length > 1) {
+        setErrorItems(items)
+        setErrorModalOpen(true)
+      } else {
+        message.error(msg)
+      }
     }
   }
 
@@ -212,6 +224,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 options={vehicleTypeOptions}
                 negative={!!errors.vehicleType}
                 message={errors.vehicleType?.message}
+                disabled={true}
               />
             )}
           />
@@ -360,7 +373,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className='grid grid-cols-1 gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50/50 md:grid-cols-2 lg:grid-cols-5'
+              className='grid grid-cols-1 gap-4 p-4 rounded-lg border border-gray-100 bg-gray-50/50 md:grid-cols-2 lg:grid-cols-4'
             >
               <Controller
                 name={`containers.${index}.containerNumber`}
@@ -415,23 +428,26 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                   />
                 )}
               />
-              <Controller
-                name={`containers.${index}.driver`}
-                control={control}
-                rules={{ required: 'Vui lòng chọn tài xế' }}
-                render={({ field: f }) => (
-                  <FISSelect
-                    {...f}
-                    textLabel='Tài xế'
-                    required
-                    placeholder='Chọn tài xế'
-                    negative={!!errors.containers?.[index]?.driver}
-                    message={errors.containers?.[index]?.driver?.message}
-                    options={driverOptions}
+              <div className='flex gap-2 items-end'>
+                <div className='flex-1 min-w-0'>
+                  <Controller
+                    name={`containers.${index}.driver`}
+                    control={control}
+                    rules={{ required: 'Vui lòng chọn tài xế' }}
+                    render={({ field: f }) => (
+                      <FISSelect
+                        {...f}
+                        textLabel='Tài xế'
+                        required
+                        placeholder='Chọn tài xế'
+                        negative={!!errors.containers?.[index]?.driver}
+                        message={errors.containers?.[index]?.driver?.message}
+                        options={driverOptions}
+                        disabled={true}
+                      />
+                    )}
                   />
-                )}
-              />
-              <div className='flex items-end gap-2'>
+                </div>
                 {fields.length > 1 && (
                   <FISIconButton
                     icon={<DeleteIcon />}
@@ -443,7 +459,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
               </div>
             </div>
           ))}
-          <FISButton type='button' variant='secondary' startIcon={<AddIcon />} onClick={handleAddContainer}>
+          <FISButton type='button' variant='secondary' onClick={handleAddContainer}>
             Thêm container
           </FISButton>
         </div>
@@ -465,7 +481,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
         />
       </div>
 
-      <div className='flex justify-end gap-2'>
+      <div className='sticky bottom-0 mt-12 pr-3 py-4 bg-[#EFF3FD] border-t border-gray-200 flex justify-end gap-2'>
         <FISButton type='button' variant='secondary' onClick={onCancel}>
           Hủy
         </FISButton>
@@ -473,6 +489,30 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
           {isLoading ? 'Đang xử lý...' : 'Cập nhật'}
         </FISButton>
       </div>
+
+      <Modal
+        title='Lỗi cập nhật yêu cầu điều xe'
+        open={errorModalOpen}
+        onCancel={() => setErrorModalOpen(false)}
+        footer={[
+          <FISButton key='close' variant='secondary' onClick={() => setErrorModalOpen(false)}>
+            Đóng
+          </FISButton>
+        ]}
+        centered
+        width={600}
+      >
+        <Table
+          dataSource={errorItems.map((content, idx) => ({ key: idx, stt: idx + 1, content }))}
+          columns={[
+            { title: 'STT', dataIndex: 'stt', width: 60, align: 'center' as const },
+            { title: 'Nội dung lỗi', dataIndex: 'content' }
+          ]}
+          pagination={false}
+          size='small'
+          className='mt-4'
+        />
+      </Modal>
     </form>
   )
 }
