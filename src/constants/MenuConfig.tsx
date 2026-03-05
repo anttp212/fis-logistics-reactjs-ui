@@ -340,36 +340,36 @@ export const MENU_ENTRIES: MenuEntryI[] = [
   //   labelKey: 'Tally & Billing',
   //   parentKey: 'transportation'
   // },
-  // {
-  //   path: ROUTES.userManagement,
-  //   permissionKey: 'user-management',
-  //   labelKey: 'common.menu.userManagement',
-  //   parentKey: '__root'
-  // },
-  // {
-  //   path: ROUTES.userManagementUsers,
-  //   permissionKey: 'user-management.users',
-  //   labelKey: 'common.menu.userManagementUsers',
-  //   parentKey: 'user-management'
-  // },
-  // {
-  //   path: ROUTES.userManagementRolesPermissions,
-  //   permissionKey: 'user-management.roles-permissions',
-  //   labelKey: 'common.menu.userManagementRolesPermissions',
-  //   parentKey: 'user-management'
-  // },
-  // {
-  //   path: ROUTES.userManagementAuthSecurity,
-  //   permissionKey: 'user-management.auth-security',
-  //   labelKey: 'common.menu.userManagementAuthSecurity',
-  //   parentKey: 'user-management'
-  // },
-  // {
-  //   path: ROUTES.userManagementProfile,
-  //   permissionKey: 'user-management.profile',
-  //   labelKey: 'common.menu.userManagementProfile',
-  //   parentKey: 'user-management'
-  // },
+  ,{
+    path: ROUTES.userManagement,
+    permissionKey: 'user-management',
+    labelKey: 'common.menu.userManagement',
+    parentKey: '__root'
+  },
+  {
+    path: ROUTES.userManagementUsers,
+    permissionKey: 'user-management.users',
+    labelKey: 'common.menu.userManagementUsers',
+    parentKey: 'user-management'
+  },
+  {
+    path: ROUTES.userManagementRolesPermissions,
+    permissionKey: 'user-management.roles-permissions',
+    labelKey: 'common.menu.userManagementRolesPermissions',
+    parentKey: 'user-management'
+  },
+  {
+    path: ROUTES.userManagementAuthSecurity,
+    permissionKey: 'user-management.auth-security',
+    labelKey: 'common.menu.userManagementAuthSecurity',
+    parentKey: 'user-management'
+  },
+  {
+    path: ROUTES.userManagementProfile,
+    permissionKey: 'user-management.profile',
+    labelKey: 'common.menu.userManagementProfile',
+    parentKey: 'user-management'
+  },
   // {
   //   path: ROUTES.organizationStructure,
   //   permissionKey: 'organization-structure',

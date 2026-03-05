@@ -66,7 +66,7 @@ const Home = () => {
       ['T7', totalToday + 4],
       ['CN', totalToday]
     ]
-  }, [])
+  }, [overview.security.todayCheckIn, overview.security.todayCheckOut])
 
   /* ================= BAR CHART ================= */
   const ordersBarData = useMemo(() => {
@@ -77,7 +77,7 @@ const Home = () => {
       ['Hoàn thành', overview.orders.completed],
       ['Huỷ', overview.orders.cancelled]
     ]
-  }, [])
+  }, [overview.orders.pending, overview.orders.inProgress, overview.orders.completed, overview.orders.cancelled])
 
   /* ================= DONUT ================= */
   const driversDonutData = useMemo(() => {
@@ -87,7 +87,7 @@ const Home = () => {
       ['Bận', overview.drivers.busy],
       ['Offline', overview.drivers.offline]
     ]
-  }, [])
+  }, [overview.drivers.available, overview.drivers.busy, overview.drivers.offline])
 
   return (
     <div className='space-y-6 pb-6 h-full overflow-y-auto'>
