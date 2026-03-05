@@ -297,7 +297,7 @@ export const MENU_ENTRIES: MenuEntryI[] = [
     permissionKey: 'report.transportation',
     labelKey: 'Báo cáo Vận Tải',
     parentKey: 'transportation'
-  }
+  },
   // {
   //   path: ROUTES.transportationVehicleApproval,
   //   permissionKey: 'transportation.vehicle-approval',
@@ -340,7 +340,6 @@ export const MENU_ENTRIES: MenuEntryI[] = [
   //   labelKey: 'Tally & Billing',
   //   parentKey: 'transportation'
   // },
-  ,
   {
     path: ROUTES.userManagement,
     permissionKey: 'user-management',
@@ -370,7 +369,7 @@ export const MENU_ENTRIES: MenuEntryI[] = [
     permissionKey: 'user-management.profile',
     labelKey: 'common.menu.userManagementProfile',
     parentKey: 'user-management'
-  },
+  }
   // {
   //   path: ROUTES.organizationStructure,
   //   permissionKey: 'organization-structure',
