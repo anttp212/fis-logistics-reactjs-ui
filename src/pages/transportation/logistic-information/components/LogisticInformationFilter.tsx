@@ -27,7 +27,9 @@ const LogisticInformationFilter = ({ control }: LogisticInformationFilterPropsI)
         <Controller
           name='customerType'
           control={control}
-          render={({ field }) => <FISSelect {...field} textLabel='Loại' placeholder='Chọn loại' options={FILTER_TYPE_OPTIONS} />}
+          render={({ field }) => (
+            <FISSelect {...field} textLabel='Loại' placeholder='Chọn loại' options={FILTER_TYPE_OPTIONS} />
+          )}
         />
       </Col>
       <Col span={24}>

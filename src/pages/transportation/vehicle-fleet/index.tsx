@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTableToolbar } from '@hooks/useTableToolbar'
-import {
-  ROUTES,
-  buildTransportationVehicleFleetDetailPath,
-  buildTransportationVehicleFleetEditPath
-} from '@constants'
+import { ROUTES, buildTransportationVehicleFleetDetailPath, buildTransportationVehicleFleetEditPath } from '@constants'
 import { PageWrapper, TableToolbar } from '@components'
 import { AddIcon } from '@images'
 import {
@@ -84,13 +80,17 @@ const VehicleFleetPage = () => {
       key: 'index',
       width: 60,
       title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
-      render: (_: unknown, row: FleetItemI & { _index: number }) => <FISTableCell content={String(row._index)} textAlign='left' />
+      render: (_: unknown, row: FleetItemI & { _index: number }) => (
+        <FISTableCell content={String(row._index)} textAlign='left' />
+      )
     },
     {
       key: 'logistics',
       width: 180,
       title: () => <FISTableHeaderCell label='LOGISTICS' hasRightDivider />,
-      render: (_: unknown, row: FleetItemI) => <FISTableCell content={getLogisticsLabel(row.logisticsId)} textAlign='left' />
+      render: (_: unknown, row: FleetItemI) => (
+        <FISTableCell content={getLogisticsLabel(row.logisticsId)} textAlign='left' />
+      )
     },
     {
       key: 'status',
@@ -98,16 +98,20 @@ const VehicleFleetPage = () => {
       title: () => <FISTableHeaderCell label='TRẠNG THÁI' hasRightDivider />,
       render: (_: unknown, row: FleetItemI) => {
         const badge = STATUS_BADGE[row.status]
-        return badge
-          ? <FISTableCell content={<FISBadge label={badge.label} size='sm' status={badge.status} />} textAlign='left' />
-          : <FISTableCell content={STATUS_LABELS[row.status] ?? '-'} textAlign='left' />
+        return badge ? (
+          <FISTableCell content={<FISBadge label={badge.label} size='sm' status={badge.status} />} textAlign='left' />
+        ) : (
+          <FISTableCell content={STATUS_LABELS[row.status] ?? '-'} textAlign='left' />
+        )
       }
     },
     {
       key: 'vehicleType',
       width: 140,
       title: () => <FISTableHeaderCell label='LOẠI' hasRightDivider />,
-      render: (_: unknown, row: FleetItemI) => <FISTableCell content={VEHICLE_TYPE_LABELS[row.vehicleType]} textAlign='left' />
+      render: (_: unknown, row: FleetItemI) => (
+        <FISTableCell content={VEHICLE_TYPE_LABELS[row.vehicleType]} textAlign='left' />
+      )
     },
     {
       key: 'plateNumber',
@@ -136,7 +140,9 @@ const VehicleFleetPage = () => {
       key: 'inspectionExpiry',
       width: 140,
       title: () => <FISTableHeaderCell label='HẠN ĐĂNG KIỂM' hasRightDivider />,
-      render: (_: unknown, row: FleetItemI) => <FISTableCell content={formatDate(row.inspectionExpiry)} textAlign='left' />
+      render: (_: unknown, row: FleetItemI) => (
+        <FISTableCell content={formatDate(row.inspectionExpiry)} textAlign='left' />
+      )
     },
     {
       key: 'actions',
@@ -154,7 +160,12 @@ const VehicleFleetPage = () => {
                   label: '',
                   startIcon: (
                     <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                      />
                       <path
                         strokeLinecap='round'
                         strokeLinejoin='round'
@@ -208,13 +219,23 @@ const VehicleFleetPage = () => {
           filters={tableToolbar.filters}
           searchPlaceholder='Tìm theo tên, biển số'
           actionButtons={
-            <FISButton type='button' startIcon={<AddIcon />} onClick={() => navigate(ROUTES.transportationVehicleFleetCreate)}>
+            <FISButton
+              type='button'
+              startIcon={<AddIcon />}
+              onClick={() => navigate(ROUTES.transportationVehicleFleetCreate)}
+            >
               Thêm mới
             </FISButton>
           }
         />
 
-        <FISTable dataSource={dataSource} columns={columns} rowKey='id' scroll={{ y: 'calc(100vh - 320px)' }} pagination={false} />
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowKey='id'
+          scroll={{ y: 'calc(100vh - 320px)' }}
+          pagination={false}
+        />
 
         <div>
           <FISPagination

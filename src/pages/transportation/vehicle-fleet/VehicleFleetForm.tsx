@@ -144,7 +144,9 @@ const VehicleFleetForm = ({
         <Controller
           name='note'
           control={control}
-          render={({ field }) => <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />}
+          render={({ field }) => (
+            <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />
+          )}
         />
       </div>
 

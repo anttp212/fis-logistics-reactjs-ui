@@ -87,7 +87,6 @@ export const gateInOutApi = createApi({
     >({
       query: (params) => {
         const p = params || {}
-        console.log('p', p);
         const searchParams = new URLSearchParams()
         if (p.dateFrom) searchParams.set('fromDate', p.dateFrom)
         if (p.dateTo) searchParams.set('toDate', p.dateTo)
@@ -97,8 +96,6 @@ export const gateInOutApi = createApi({
         if (p.size != null) searchParams.set('size', String(p.size))
         const query = searchParams.toString()
 
-        console.log('query', query);
-        
         return {
           url: `${API_ENDPOINTS.security.registrations}${query ? `?${query}` : ''}`,
           method: 'GET'
@@ -148,14 +145,20 @@ export const gateInOutApi = createApi({
       },
       transformResponse: (response: { code?: string; data?: SecurityStatsResponseI }) => {
         const d = response?.data
-        return d ?? { dailyStats: [], totalCheckIn: 0, totalCheckOut: 0, totalIncidents: 0, totalRegistrations: 0, totalPending: 0 }
+        return (
+          d ?? {
+            dailyStats: [],
+            totalCheckIn: 0,
+            totalCheckOut: 0,
+            totalIncidents: 0,
+            totalRegistrations: 0,
+            totalPending: 0
+          }
+        )
       }
     })
   })
 })
 
-export const {
-  useGetSecurityRegistrationsQuery,
-  useExportSecurityRegistrationsMutation,
-  useGetSecurityStatsQuery
-} = gateInOutApi
+export const { useGetSecurityRegistrationsQuery, useExportSecurityRegistrationsMutation, useGetSecurityStatsQuery } =
+  gateInOutApi

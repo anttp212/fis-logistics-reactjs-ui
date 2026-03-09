@@ -112,7 +112,9 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
           <Controller
             name='gender'
             control={control}
-            render={({ field }) => <FISSelect {...field} textLabel='Giới tính' placeholder='Chọn giới tính' options={GENDER_OPTIONS} />}
+            render={({ field }) => (
+              <FISSelect {...field} textLabel='Giới tính' placeholder='Chọn giới tính' options={GENDER_OPTIONS} />
+            )}
           />
           <Controller
             name='status'
@@ -141,7 +143,9 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
         <Controller
           name='note'
           control={control}
-          render={({ field }) => <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />}
+          render={({ field }) => (
+            <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />
+          )}
         />
       </div>
 

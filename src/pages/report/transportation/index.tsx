@@ -119,14 +119,13 @@ const TransportationReport = () => {
             size: pageSize
           }
         : {
-          page,
-          size: pageSize
-        },
+            page,
+            size: pageSize
+          },
     [appliedParams, page, pageSize]
   )
 
-  const { data: listResponse, isLoading, isFetching } = useGetTransportReportQuery(queryParams, {
-  })
+  const { data: listResponse, isLoading, isFetching } = useGetTransportReportQuery(queryParams, {})
 
   const [exportExcel, { isLoading: isExporting }] = useExportTransportReportMutation()
 
@@ -166,10 +165,8 @@ const TransportationReport = () => {
 
   const dataSource = useMemo(() => {
     const offset = (page - 1) * pageSize
-  
-    return (listResponse?.data ?? []).map((o, i) =>
-      mapOrderToRecord(o, offset + i + 1)
-    )
+
+    return (listResponse?.data ?? []).map((o, i) => mapOrderToRecord(o, offset + i + 1))
   }, [listResponse?.data, page, pageSize])
 
   const columns = [

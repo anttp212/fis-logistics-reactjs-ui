@@ -137,14 +137,13 @@ const GateInOutReport = () => {
             size: pageSize
           }
         : {
-          page,
-          size: pageSize
-        },
+            page,
+            size: pageSize
+          },
     [appliedParams, page, pageSize]
   )
 
-  const { data: listResponse, isLoading, isFetching } = useGetSecurityRegistrationsQuery(queryParams, {
-  })
+  const { data: listResponse, isLoading, isFetching } = useGetSecurityRegistrationsQuery(queryParams, {})
 
   const [exportExcel, { isLoading: isExporting }] = useExportSecurityRegistrationsMutation()
 
@@ -183,7 +182,7 @@ const GateInOutReport = () => {
     const start = (page - 1) * pageSize
     return (listResponse?.data ?? []).map((r, i) => mapRegistrationToRecord(r, start + i + 1))
   }, [listResponse?.data, page, pageSize])
-  
+
   const columns = [
     {
       dataIndex: 'stt',

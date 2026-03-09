@@ -21,7 +21,12 @@ const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
           name='status'
           control={control}
           render={({ field }) => (
-            <FISSelect {...field} textLabel='Trạng thái' placeholder='Chọn trạng thái' options={STATUS_SELECT_OPTIONS} />
+            <FISSelect
+              {...field}
+              textLabel='Trạng thái'
+              placeholder='Chọn trạng thái'
+              options={STATUS_SELECT_OPTIONS}
+            />
           )}
         />
       </Col>
@@ -30,7 +35,12 @@ const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
           name='logisticsId'
           control={control}
           render={({ field }) => (
-            <FISSelect {...field} textLabel='Logistics' placeholder='Chọn logistics' options={FILTER_LOGISTICS_OPTIONS} />
+            <FISSelect
+              {...field}
+              textLabel='Logistics'
+              placeholder='Chọn logistics'
+              options={FILTER_LOGISTICS_OPTIONS}
+            />
           )}
         />
       </Col>

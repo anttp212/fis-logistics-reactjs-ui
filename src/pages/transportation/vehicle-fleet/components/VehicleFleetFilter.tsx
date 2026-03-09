@@ -27,7 +27,12 @@ const VehicleFleetFilter = ({ control }: VehicleFleetFilterPropsI) => {
           name='status'
           control={control}
           render={({ field }) => (
-            <FISSelect {...field} textLabel='Trạng thái' placeholder='Chọn trạng thái' options={FILTER_STATUS_OPTIONS} />
+            <FISSelect
+              {...field}
+              textLabel='Trạng thái'
+              placeholder='Chọn trạng thái'
+              options={FILTER_STATUS_OPTIONS}
+            />
           )}
         />
       </Col>
@@ -36,7 +41,12 @@ const VehicleFleetFilter = ({ control }: VehicleFleetFilterPropsI) => {
           name='logisticsId'
           control={control}
           render={({ field }) => (
-            <FISSelect {...field} textLabel='Logistics' placeholder='Chọn logistics' options={FILTER_LOGISTICS_OPTIONS} />
+            <FISSelect
+              {...field}
+              textLabel='Logistics'
+              placeholder='Chọn logistics'
+              options={FILTER_LOGISTICS_OPTIONS}
+            />
           )}
         />
       </Col>

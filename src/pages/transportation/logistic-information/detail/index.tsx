@@ -1,10 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FISButton } from 'fis-component'
-import {
-  ROUTES,
-  buildTransportationLogisticInformationEditPath
-} from '@constants'
+import { ROUTES, buildTransportationLogisticInformationEditPath } from '@constants'
 import { PageWrapper } from '@components'
 import {
   CUSTOMER_TYPE_LABELS,
@@ -46,11 +43,16 @@ const LogisticInformationDetailPage = () => {
         <div className='rounded-lg border border-gray-200 bg-white p-6'>
           <div className='flex justify-between items-start gap-4 mb-6'>
             <div>
-              <h3 className='text-lg font-semibold text-slate-800'>{item ? getLogisticDisplayName(item) : 'Khong tim thay logistic'}</h3>
+              <h3 className='text-lg font-semibold text-slate-800'>
+                {item ? getLogisticDisplayName(item) : 'Khong tim thay logistic'}
+              </h3>
               <p className='text-sm text-slate-500 mt-1'>{item ? item.customerCode || '-' : ''}</p>
             </div>
             {item && (
-              <FISButton variant='primary' onClick={() => navigate(buildTransportationLogisticInformationEditPath(item.id))}>
+              <FISButton
+                variant='primary'
+                onClick={() => navigate(buildTransportationLogisticInformationEditPath(item.id))}
+              >
                 Chinh sua
               </FISButton>
             )}

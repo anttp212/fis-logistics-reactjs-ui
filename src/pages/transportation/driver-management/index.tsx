@@ -18,14 +18,7 @@ import {
   FISTableCell,
   FISTableHeaderCell
 } from 'fis-component'
-import {
-  MOCK_DRIVER_DATA,
-  STATUS_BADGE,
-  STATUS_LABELS,
-  formatDate,
-  getLogisticsLabel,
-  type DriverItemI
-} from './data'
+import { MOCK_DRIVER_DATA, STATUS_BADGE, STATUS_LABELS, formatDate, getLogisticsLabel, type DriverItemI } from './data'
 import DriverManagementFilter from './components/DriverManagementFilter'
 
 interface DriverFilterValuesI {
@@ -79,7 +72,9 @@ const DriverManagementPage = () => {
       key: 'index',
       width: 60,
       title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
-      render: (_: unknown, row: DriverItemI & { _index: number }) => <FISTableCell content={String(row._index)} textAlign='left' />
+      render: (_: unknown, row: DriverItemI & { _index: number }) => (
+        <FISTableCell content={String(row._index)} textAlign='left' />
+      )
     },
     {
       key: 'fullName',
@@ -91,7 +86,9 @@ const DriverManagementPage = () => {
       key: 'logistics',
       width: 180,
       title: () => <FISTableHeaderCell label='LOGISTICS' hasRightDivider />,
-      render: (_: unknown, row: DriverItemI) => <FISTableCell content={getLogisticsLabel(row.logisticsId)} textAlign='left' />
+      render: (_: unknown, row: DriverItemI) => (
+        <FISTableCell content={getLogisticsLabel(row.logisticsId)} textAlign='left' />
+      )
     },
     {
       key: 'phone',
@@ -105,9 +102,11 @@ const DriverManagementPage = () => {
       title: () => <FISTableHeaderCell label='TRẠNG THÁI' hasRightDivider />,
       render: (_: unknown, row: DriverItemI) => {
         const badge = STATUS_BADGE[row.status]
-        return badge
-          ? <FISTableCell content={<FISBadge label={badge.label} size='sm' status={badge.status} />} textAlign='left' />
-          : <FISTableCell content={STATUS_LABELS[row.status] ?? '-'} textAlign='left' />
+        return badge ? (
+          <FISTableCell content={<FISBadge label={badge.label} size='sm' status={badge.status} />} textAlign='left' />
+        ) : (
+          <FISTableCell content={STATUS_LABELS[row.status] ?? '-'} textAlign='left' />
+        )
       }
     },
     {
@@ -132,7 +131,12 @@ const DriverManagementPage = () => {
                   label: '',
                   startIcon: (
                     <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                      />
                       <path
                         strokeLinecap='round'
                         strokeLinejoin='round'
@@ -200,13 +204,23 @@ const DriverManagementPage = () => {
           filters={tableToolbar.filters}
           searchPlaceholder='Tìm theo tên, số điện thoại'
           actionButtons={
-            <FISButton type='button' startIcon={<AddIcon />} onClick={() => navigate(ROUTES.transportationDriverManagementCreate)}>
+            <FISButton
+              type='button'
+              startIcon={<AddIcon />}
+              onClick={() => navigate(ROUTES.transportationDriverManagementCreate)}
+            >
               Thêm mới
             </FISButton>
           }
         />
 
-        <FISTable dataSource={dataSource} columns={columns} rowKey='id' scroll={{ y: 'calc(100vh - 320px)' }} pagination={false} />
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowKey='id'
+          scroll={{ y: 'calc(100vh - 320px)' }}
+          pagination={false}
+        />
 
         <div>
           <FISPagination

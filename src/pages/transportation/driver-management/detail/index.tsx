@@ -44,10 +44,16 @@ const DriverManagementDetailPage = () => {
           </div>
           {item && (
             <div className='flex gap-2'>
-              <FISButton variant='secondary' onClick={() => navigate(buildTransportationDriverManagementAssignVehiclePath(item.id))}>
+              <FISButton
+                variant='secondary'
+                onClick={() => navigate(buildTransportationDriverManagementAssignVehiclePath(item.id))}
+              >
                 Chỉ định xe
               </FISButton>
-              <FISButton variant='primary' onClick={() => navigate(buildTransportationDriverManagementEditPath(item.id))}>
+              <FISButton
+                variant='primary'
+                onClick={() => navigate(buildTransportationDriverManagementEditPath(item.id))}
+              >
                 Chỉnh sửa
               </FISButton>
             </div>

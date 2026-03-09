@@ -89,9 +89,7 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
               <Controller
                 name='taxCode'
                 control={control}
-                render={({ field }) => (
-                    <FISInputText {...field} textLabel='Mã số thuế' placeholder='Nhập mã số thuế' />
-                )}
+                render={({ field }) => <FISInputText {...field} textLabel='Mã số thuế' placeholder='Nhập mã số thuế' />}
               />
             </>
           ) : (
@@ -114,9 +112,7 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
               <Controller
                 name='identityNumber'
                 control={control}
-                render={({ field }) => (
-                  <FISInputText {...field} textLabel='CCCD/CMND' placeholder='Nhập CCCD/CMND' />
-                )}
+                render={({ field }) => <FISInputText {...field} textLabel='CCCD/CMND' placeholder='Nhập CCCD/CMND' />}
               />
             </>
           )}
@@ -151,7 +147,9 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
           <Controller
             name='phone'
             control={control}
-            render={({ field }) => <FISInputText {...field} textLabel='Số điện thoại' placeholder='Nhập số điện thoại' />}
+            render={({ field }) => (
+              <FISInputText {...field} textLabel='Số điện thoại' placeholder='Nhập số điện thoại' />
+            )}
           />
         </div>
       </div>
@@ -163,7 +161,9 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
         <Controller
           name='note'
           control={control}
-            render={({ field }) => <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />}
+          render={({ field }) => (
+            <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />
+          )}
         />
       </div>
 

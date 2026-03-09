@@ -53,7 +53,12 @@ const DriverAssignVehiclePage = () => {
           name='vehicleId'
           control={control}
           render={({ field }) => (
-            <FISSelect {...field} textLabel='Chọn xe' placeholder='Chọn xe để chỉ định' options={VEHICLE_ASSIGN_OPTIONS} />
+            <FISSelect
+              {...field}
+              textLabel='Chọn xe'
+              placeholder='Chọn xe để chỉ định'
+              options={VEHICLE_ASSIGN_OPTIONS}
+            />
           )}
         />
 

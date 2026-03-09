@@ -6,8 +6,8 @@ import { FISButton, FISInputDate } from 'fis-component'
 import { useGetSecurityStatsQuery } from '@pages/report/gate-in-out/gateInOut.api'
 import { useGetCoordinatorReportQuery, useGetDashboardOverviewQuery } from './dashboard.api'
 
-type SecurityStatsParams = { fromDate?: string; toDate?: string }
-type HomeFilterValues = { fromDate: Date | null; toDate: Date | null }
+type SecurityStatsParamsT = { fromDate?: string; toDate?: string }
+type HomeFilterValuesT = { fromDate: Date | null; toDate: Date | null }
 
 const formatDateForApi = (d: Date, boundary: 'start' | 'end') => {
   const date = new Date(d)
@@ -35,7 +35,8 @@ const lineOptions = {
   legend: { position: 'top' },
   colors: ['#10B981', '#4F46E5', '#fc5555'],
   chartArea: {
-    width: '90%', height: '70%',
+    width: '90%',
+    height: '70%',
     top: 20,
     bottom: 20,
     left: 40,
@@ -66,17 +67,17 @@ const barOptions = {
 const defaultFromTo = getDefaultFromTo()
 
 const Home = () => {
-  const [appliedParams, setAppliedParams] = useState<SecurityStatsParams | null>({
+  const [appliedParams, setAppliedParams] = useState<SecurityStatsParamsT | null>({
     fromDate: formatDateForApi(defaultFromTo.from as Date, 'start'),
     toDate: formatDateForApi(defaultFromTo.to as Date, 'end')
   })
 
-  const [appliedParamsCoordinator , setAppliedParamsCoordinator] = useState<SecurityStatsParams | null>({
+  const [appliedParamsCoordinator, setAppliedParamsCoordinator] = useState<SecurityStatsParamsT | null>({
     fromDate: formatDateForApi(defaultFromTo.from as Date, 'start'),
     toDate: formatDateForApi(defaultFromTo.to as Date, 'end')
   })
 
-  const { control, handleSubmit, setValue, watch } = useForm<HomeFilterValues>({
+  const { control, handleSubmit, setValue, watch } = useForm<HomeFilterValuesT>({
     defaultValues: {
       fromDate: defaultFromTo.from as Date,
       toDate: defaultFromTo.to as Date
@@ -86,12 +87,10 @@ const Home = () => {
   const selectedFromDate = watch('fromDate')
   const selectedFromDateMin = selectedFromDate ? dayjs(selectedFromDate) : undefined
 
-  const { data: securityStats } = useGetSecurityStatsQuery(appliedParams ?? undefined, {
-  })
+  const { data: securityStats } = useGetSecurityStatsQuery(appliedParams ?? undefined, {})
   const { data: coordinatorReport } = useGetCoordinatorReportQuery(appliedParamsCoordinator ?? undefined)
 
   const { data: overview } = useGetDashboardOverviewQuery()
-
 
   const handleFilter = handleSubmit((values) => {
     setAppliedParams({
@@ -145,7 +144,7 @@ const Home = () => {
     }
 
     stats.forEach((day) => {
-      ; (['container', 'internalVehicle', 'transportVehicle'] as const).forEach((k) => {
+      ;(['container', 'internalVehicle', 'transportVehicle'] as const).forEach((k) => {
         const s = (day as any)[k]
         if (!s) return
         sum[k].cancelled += s.cancelled ?? 0
@@ -159,16 +158,7 @@ const Home = () => {
     })
 
     return [
-      [
-        'Loại xe',
-        'Chờ xác nhận',
-        'Đang thực hiện',
-        'Đang vận chuyển',
-        'Hoàn thành',
-        'Huỷ',
-        'Từ chối',
-        'Sự cố'
-      ],
+      ['Loại xe', 'Chờ xác nhận', 'Đang thực hiện', 'Đang vận chuyển', 'Hoàn thành', 'Huỷ', 'Từ chối', 'Sự cố'],
       [
         'Container',
         sum.container.pendingConfirmation,
@@ -230,7 +220,13 @@ const Home = () => {
               control={control}
               name='toDate'
               render={({ field }) => (
-                <FISInputDate textLabel='Đến ngày' placeholder='Chọn ngày' value={field.value} onChange={field.onChange} minDate={selectedFromDateMin} />
+                <FISInputDate
+                  textLabel='Đến ngày'
+                  placeholder='Chọn ngày'
+                  value={field.value}
+                  onChange={field.onChange}
+                  minDate={selectedFromDateMin}
+                />
               )}
             />
             <FISButton variant='primary' onClick={handleFilter}>
@@ -242,7 +238,10 @@ const Home = () => {
           <KpiCard title='Tổng Đăng Ký' value={securityStats?.totalRegistrations ?? 0} />
           <KpiCard title='Đã vào' value={securityStats?.totalCheckIn ?? 0} />
           <KpiCard title='Đã ra' value={securityStats?.totalCheckOut ?? 0} />
-          <KpiCard title='Chưa vào cổng' value={(securityStats?.totalRegistrations ?? 0) - (securityStats?.totalCheckIn ?? 0)} />
+          <KpiCard
+            title='Chưa vào cổng'
+            value={(securityStats?.totalRegistrations ?? 0) - (securityStats?.totalCheckIn ?? 0)}
+          />
           {/* <KpiCard title='Còn lại' value={((securityStats?.totalRegistrations ?? 0) - (securityStats?.totalCheckIn ?? 0) - (securityStats?.totalCheckOut ?? 0))} /> */}
         </div>
         <Chart chartType='LineChart' width='100%' height='350px' data={lineData} options={lineOptions} />
@@ -272,7 +271,13 @@ const Home = () => {
               control={control}
               name='toDate'
               render={({ field }) => (
-                <FISInputDate textLabel='Đến ngày' value={field.value} placeholder='Chọn ngày' onChange={field.onChange} minDate={selectedFromDateMin} />
+                <FISInputDate
+                  textLabel='Đến ngày'
+                  value={field.value}
+                  placeholder='Chọn ngày'
+                  onChange={field.onChange}
+                  minDate={selectedFromDateMin}
+                />
               )}
             />
             <FISButton variant='primary' onClick={handleFilterCoordinator}>
@@ -281,9 +286,8 @@ const Home = () => {
           </div>
         </div>
         {/* ORDERS */}
-        <div className="grid grid-cols-1 md:grid-cols-[70%_30%] ">
+        <div className='grid grid-cols-1 md:grid-cols-[70%_30%] '>
           <div className='p-6 justify-end items-end'>
-
             <Chart chartType='ColumnChart' width='100%' height='320px' data={ordersBarData} options={barOptions} />
           </div>
 
@@ -299,8 +303,6 @@ const Home = () => {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   )

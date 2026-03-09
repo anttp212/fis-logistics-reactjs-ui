@@ -29,13 +29,15 @@ const LogisticInformationPage = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const tableToolbar = useTableToolbar<{ phone: string; customerType: string; taxCode: string }, LogisticFilterValuesI>({
-    defaultFilterValues: {
-      phone: '',
-      customerType: '',
-      taxCode: ''
+  const tableToolbar = useTableToolbar<{ phone: string; customerType: string; taxCode: string }, LogisticFilterValuesI>(
+    {
+      defaultFilterValues: {
+        phone: '',
+        customerType: '',
+        taxCode: ''
+      }
     }
-  })
+  )
   const search = tableToolbar.search
   const phone = tableToolbar.filters?.phone || ''
   const customerType = tableToolbar.filters?.customerType || ''
@@ -191,13 +193,23 @@ const LogisticInformationPage = () => {
           filters={tableToolbar.filters}
           searchPlaceholder='Tìm theo tên'
           actionButtons={
-            <FISButton type='button' startIcon={<AddIcon />} onClick={() => navigate(ROUTES.transportationLogisticInformationCreate)}>
+            <FISButton
+              type='button'
+              startIcon={<AddIcon />}
+              onClick={() => navigate(ROUTES.transportationLogisticInformationCreate)}
+            >
               Thêm mới
             </FISButton>
           }
         />
 
-        <FISTable dataSource={dataSource} columns={columns} rowKey='id' scroll={{ y: 'calc(100vh - 320px)' }} pagination={false} />
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowKey='id'
+          scroll={{ y: 'calc(100vh - 320px)' }}
+          pagination={false}
+        />
 
         <div>
           <FISPagination
