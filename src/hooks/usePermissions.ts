@@ -59,6 +59,21 @@ export function usePermissions() {
       list = buildPermissionsFromEntries(entries, { view: true, search: true })
     }
 
+    // Đảm bảo tất cả keys từ MENU_ENTRIES có trong list (kể cả mục mới thêm) - cho role dùng entries
+    if (roleLower !== 'admin' && roleName !== 'Admin' && roleName !== 'Tài xế' && roleName !== 'Bảo vệ') {
+      const existingKeys = new Set(list.map((p) => p.menuKey))
+      const missingKeys = getAllPermissionKeys().filter((k) => !existingKeys.has(k))
+      if (missingKeys.length > 0) {
+        list = [
+          ...list,
+          ...buildPermissionsFromEntries(
+            missingKeys.map((permissionKey) => ({ permissionKey })),
+            { view: true, search: true }
+          )
+        ]
+      }
+    }
+
     const byKey = list.reduce(
       (acc, p) => {
         acc[p.menuKey] = p

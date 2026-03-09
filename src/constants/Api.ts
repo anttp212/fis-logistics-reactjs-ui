@@ -8,8 +8,8 @@ export const API_DEFAULTS = {
 // API Endpoints
 export const API_ENDPOINTS = {
   auth: {
-    login: '/auth/login',
-    logout: '/auth/logout',
+    login: 'api/v1/auth/login',
+    logout: 'api/v1/auth/logout',
     register: '/auth/register',
     forgotPassword: '/auth/forgot-password',
     resetPassword: '/auth/reset-password',
@@ -38,8 +38,17 @@ export const API_ENDPOINTS = {
   dashboard: {
     overview: '/api/v1/api/dashboard/overview'
   },
+  coordinator: {
+    reports: '/api/v1/api/coordinator/reports'
+  },
+  security: {
+    registrations: '/api/v1/api/security/registrations',
+    registrationsExportExcel: '/api/v1/api/security/registrations/export-excel',
+    stats: '/api/v1/api/security/stats'
+  },
   vehicleDispatch: {
     list: '/api/v1/dispatch-orders',
+    exportExcel: '/api/v1/dispatch-orders/export-excel',
     detail: '/api/v1/dispatch-orders/:id',
     create: '/api/v1/dispatch-orders',
     update: '/api/v1/dispatch-orders/:id',
@@ -72,5 +81,6 @@ export const API_TAGS = {
   currentUser: 'CurrentUser',
   userGroup: 'UserGroup',
   department: 'Department',
-  vehicleDispatch: 'VehicleDispatch'
+  vehicleDispatch: 'VehicleDispatch',
+  security: 'Security'
 } as const

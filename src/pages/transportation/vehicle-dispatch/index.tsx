@@ -17,33 +17,15 @@ import VehicleDispatchFilter from './components/VehicleDispatchFilter'
 import { useVehicleDispatch } from './useVehicleDispatch'
 import { useGetVehicleDispatchListQuery } from './vehicleDispatch.api'
 import type { DispatchOrderApiI, DispatchOrderContainerI } from './vehicleDispatch.api'
-import { useGetVehicleTypesQuery, useGetRequestingUnitsQuery, useGetLocationsQuery } from './vehicleDispatchMaster.api'
+import { useGetVehicleTypesQuery, useGetRequestingUnitsQuery } from './vehicleDispatchMaster.api'
 import { Tooltip } from 'antd'
+import { STATUS_BADGE, STATUS_LABELS } from './constants/status'
 /** Row đã flatten: 1 dòng = 1 container */
 interface FlattenedRowI extends DispatchOrderApiI {
   _orderId: string
   _orderIndex: number
   _containerIndex: number
   _container: DispatchOrderContainerI
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  PENDING_CONFIRMATION: 'Chờ xác nhận',
-  IN_TRANSIT: 'Nhận lệnh',
-  COMPLETED: 'Hoàn thành',
-  INCIDENT: 'Sự cố',
-  CANCELLED: 'Huỷ',
-  REJECTED: 'Từ chối'
-}
-
-type BadgeStatusT = 'caution' | 'info' | 'positive' | 'negative'
-const STATUS_BADGE: Record<string, { label: string; status: BadgeStatusT }> = {
-  PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
-  IN_TRANSIT: { label: 'Nhận lệnh', status: 'info' },
-  COMPLETED: { label: 'Hoàn thành', status: 'positive' },
-  INCIDENT: { label: 'Sự cố', status: 'negative' },
-  CANCELLED: { label: 'Huỷ', status: 'negative' },
-  REJECTED: { label: 'Từ chối', status: 'negative' }
 }
 
 /** Tạo lookup id -> name từ mảng API */
@@ -122,12 +104,10 @@ const VehicleDispatchPage = () => {
   ])
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
   const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
-  const { data: locations = [] } = useGetLocationsQuery()
   // const { data: drivers = [] } = useGetDriversQuery()
 
   const vehicleTypeLabels = useMemo(() => toIdNameMap(vehicleTypes), [vehicleTypes])
   const requestingUnitLabels = useMemo(() => toIdNameMap(requestingUnits), [requestingUnits])
-  const locationLabels = useMemo(() => toIdNameMap(locations), [locations])
   // const driverLabels = useMemo(() => toIdNameMap(drivers), [drivers])
 
   const dataSource = useMemo(
@@ -216,19 +196,8 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            <Tooltip
-              placement='topLeft'
-              title={
-                locationLabels[row.origin ?? row.departureLocationId ?? ''] ??
-                row.origin ??
-                row.departureLocationId ??
-                '-'
-              }
-            >
-              {locationLabels[row.origin ?? row.departureLocationId ?? ''] ??
-                row.origin ??
-                row.departureLocationId ??
-                '-'}
+            <Tooltip placement='topLeft' title={row.departureLocationName ?? '-'}>
+              {row.departureLocationName ?? '-'}
             </Tooltip>
           }
           textAlign='left'
@@ -243,19 +212,8 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            <Tooltip
-              placement='topLeft'
-              title={
-                locationLabels[row.destination ?? row.destinationLocationId ?? ''] ??
-                row.destination ??
-                row.destinationLocationId ??
-                '-'
-              }
-            >
-              {locationLabels[row.destination ?? row.destinationLocationId ?? ''] ??
-                row.destination ??
-                row.destinationLocationId ??
-                '-'}
+            <Tooltip placement='topLeft' title={row.destinationLocationName ?? '-'}>
+              {row.destinationLocationName ?? '-'}
             </Tooltip>
           }
           textAlign='left'
@@ -340,33 +298,7 @@ const VehicleDispatchPage = () => {
             <FISButtonGroup
               size='md'
               options={[
-                {
-                  label: '',
-                  startIcon: (
-                    <FISIconButton
-                      size='xs'
-                      icon={
-                        <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-                          />
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
-                          />
-                        </svg>
-                      }
-                      variant='tertiary-invisible'
-                      color='blue'
-                      onClick={() => handleViewDetail(record)}
-                    />
-                  )
-                },
+               
                 ...(record.status === 'PENDING_CONFIRMATION'
                   ? [
                       {
@@ -391,7 +323,34 @@ const VehicleDispatchPage = () => {
                         )
                       }
                     ]
-                  : [])
+                  : []),
+                  {
+                    label: '',
+                    startIcon: (
+                      <FISIconButton
+                        size='xs'
+                        icon={
+                          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
+                            />
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
+                            />
+                          </svg>
+                        }
+                        variant='tertiary-invisible'
+                        color='blue'
+                        onClick={() => handleViewDetail(record)}
+                      />
+                    )
+                  }
                 // {
                 //   label: '',
                 //   startIcon: (
@@ -431,7 +390,7 @@ const VehicleDispatchPage = () => {
     <PageWrapper className='py-5' title='Điều xe' breadcrumbItems={breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         <TableToolbar
-          filterContent={<VehicleDispatchFilter control={vehicleDispatch.control} />}
+          filterContent={<VehicleDispatchFilter control={vehicleDispatch.control} setValue={vehicleDispatch.setValue} />}
           actionButtons={
             <FISButton startIcon={<AddIcon />} onClick={() => navigate(ROUTES.transportationVehicleDispatchCreate)}>
               Thêm mới

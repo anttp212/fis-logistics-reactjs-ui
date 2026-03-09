@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import dayjs from 'dayjs'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { Input, message, Modal, Table } from 'antd'
 import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
@@ -7,7 +8,6 @@ import { useGetVehicleDispatchDetailQuery, useUpdateVehicleDispatchMutation } fr
 import {
   useGetVehicleTypesQuery,
   useGetRequestingUnitsQuery,
-  useGetLocationsQuery,
   useGetDriversQuery,
   useGetContainerSizesQuery
 } from '../vehicleDispatchMaster.api'
@@ -65,13 +65,11 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
 
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
   const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
-  const { data: locations = [] } = useGetLocationsQuery()
   const { data: drivers = [] } = useGetDriversQuery()
   const { data: containerSizes = [] } = useGetContainerSizesQuery()
 
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
   const requestingUnitOptions = useMemo(() => toSelectOptions(requestingUnits), [requestingUnits])
-  const locationOptions = useMemo(() => toSelectOptions(locations), [locations])
   const driverOptions = useMemo(
     () =>
       toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
@@ -86,7 +84,9 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
     control,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue,
+    watch
   } = useForm<FormValuesI>({
     defaultValues: {
       vehicleType: '',
@@ -125,8 +125,8 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
       reset({
         vehicleType: order.vehicleType ?? order.vehicleTypeId ?? '',
         requestUnit: order.requestUnit ?? order.requestingUnitId ?? '',
-        origin: order.origin ?? order.departureLocationId ?? '',
-        destination: order.destination ?? order.destinationLocationId ?? '',
+        origin: order.departureLocationName ?? '',
+        destination: order.destinationLocationName ?? '',
         recipientName: order.recipientName ?? '',
         recipientPhone: order.recipientPhone ?? '',
         expectedPickupTime: fromIsoDateTime(order.expectedPickupTime ?? order.estimatedPickupTime),
@@ -149,6 +149,8 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
   /** Chuyển sang ISO: nếu đã có 'T' (full ISO) thì giữ nguyên, else thêm T00:00:00.000Z */
   const toIsoDateTime = (dateStr: string) =>
     dateStr ? (dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00.000Z`) : ''
+  const selectedPickupTime = watch('expectedPickupTime')
+  const selectedPickupTimeMin = selectedPickupTime ? dayjs(parseDateValue(selectedPickupTime) ?? undefined) : undefined
 
   const onSubmit = async (data: FormValuesI) => {
     try {
@@ -157,8 +159,8 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
         body: {
           vehicleTypeId: data.vehicleType,
           requestingUnitId: data.requestUnit,
-          departureLocationId: data.origin,
-          destinationLocationId: data.destination,
+          departureLocationName: data.origin,
+          destinationLocationName: data.destination,
           estimatedPickupTime: toIsoDateTime(data.expectedPickupTime),
           estimatedDeliveryTime: toIsoDateTime(data.expectedDeliveryTime),
           recipientName: data.recipientName || undefined,
@@ -246,13 +248,13 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
           <Controller
             name='origin'
             control={control}
-            rules={{ required: 'Vui lòng chọn điểm đi' }}
+            rules={{ required: 'Vui lòng nhập điểm đi' }}
             render={({ field }) => (
-              <FISSelect
+              <FISInputText
                 {...field}
+                required
                 textLabel='Điểm đi'
-                placeholder='Chọn điểm đi'
-                options={locationOptions}
+                placeholder='Nhập điểm đi'
                 negative={!!errors.origin}
                 message={errors.origin?.message}
               />
@@ -261,13 +263,13 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
           <Controller
             name='destination'
             control={control}
-            rules={{ required: 'Vui lòng chọn điểm đến' }}
+            rules={{ required: 'Vui lòng nhập điểm đến' }}
             render={({ field }) => (
-              <FISSelect
+              <FISInputText
                 {...field}
+                required
                 textLabel='Điểm đến'
-                placeholder='Chọn điểm đến'
-                options={locationOptions}
+                placeholder='Nhập điểm đến'
                 negative={!!errors.destination}
                 message={errors.destination?.message}
               />
@@ -316,9 +318,12 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
             render={({ field }) => (
               <FISInputDate
                 textLabel='Thời gian dự kiến nhận hàng (ở điểm đi)'
-                placeholder='dd/mm/yyyy'
+                placeholder='Chọn ngày'
                 value={parseDateValue(field.value)}
-                onChange={(date) => field.onChange(date ? date.toISOString() : '')}
+                onChange={(date) => {
+                  field.onChange(date ? date.toISOString() : '')
+                  setValue('expectedDeliveryTime', '')
+                }}
                 picker='date'
                 format='DD/MM/YYYY HH:mm'
                 negative={!!errors.expectedPickupTime}
@@ -335,9 +340,10 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
             render={({ field }) => (
               <FISInputDate
                 textLabel='Thời gian dự kiến giao hàng (ở điểm đến)'
-                placeholder='dd/mm/yyyy'
+                placeholder='Chọn ngày'
                 value={parseDateValue(field.value)}
                 onChange={(date) => field.onChange(date ? date.toISOString() : '')}
+                minDate={selectedPickupTimeMin}
                 picker='date'
                 format='DD/MM/YYYY HH:mm'
                 negative={!!errors.expectedDeliveryTime}
@@ -379,7 +385,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 name={`containers.${index}.containerNumber`}
                 control={control}
                 rules={{
-                  required: 'Số container là bắt buộc',
+                  // required: 'Số container là bắt buộc',
                   pattern: {
                     value: /^[A-Z]{4}[0-9]{7}$/,
                     message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
@@ -387,7 +393,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 }}
                 render={({ field: f }) => (
                   <FISInputText
-                    required
+                    // required
                     {...f}
                     textLabel='Số container'
                     placeholder='Nhập số container'
@@ -415,10 +421,10 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
               <Controller
                 name={`containers.${index}.weight`}
                 control={control}
-                rules={{ required: 'Trọng lượng là bắt buộc' }}
+                // rules={{ required: 'Trọng lượng là bắt buộc' }}
                 render={({ field: f }) => (
                   <FISInputText
-                    required
+                    // required
                     {...f}
                     type='number'
                     textLabel='Trọng lượng'

@@ -8,10 +8,10 @@ import type { DispatchOrderContainerI } from '../vehicleDispatch.api'
 import {
   useGetVehicleTypesQuery,
   useGetRequestingUnitsQuery,
-  useGetLocationsQuery,
   useGetContainerSizesQuery
 } from '../vehicleDispatchMaster.api'
 import { useMemo, useState, type ReactNode } from 'react'
+import { STATUS_BADGE } from '../constants/status'
 
 const toIdNameMap = (items: { id: string; name: string }[] | undefined): Record<string, string> =>
   Object.fromEntries((items ?? []).map((item) => [item.id, item.name]))
@@ -29,16 +29,6 @@ const formatDateTime = (isoStr?: string) => {
   return `${day}/${month}/${year} ${hours}:${minutes}`
 }
 
-type BadgeStatusT = 'caution' | 'info' | 'positive' | 'negative'
-const STATUS_BADGE: Record<string, { label: string; status: BadgeStatusT }> = {
-  PENDING_CONFIRMATION: { label: 'Chờ xác nhận', status: 'caution' },
-  IN_TRANSIT: { label: 'Nhận lệnh', status: 'info' },
-  COMPLETED: { label: 'Hoàn thành', status: 'positive' },
-  INCIDENT: { label: 'Sự cố', status: 'negative' },
-  CANCELLED: { label: 'Huỷ', status: 'negative' },
-  REJECTED: { label: 'Từ chối', status: 'negative' }
-}
-
 const VehicleDispatchDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -46,7 +36,6 @@ const VehicleDispatchDetail = () => {
   const { data: order, isLoading, error } = useGetVehicleDispatchDetailQuery(id!, { skip: !id })
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
   const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
-  const { data: locations = [] } = useGetLocationsQuery()
   const { data: containerSizes = [] } = useGetContainerSizesQuery()
   const [cancelOrder, { isLoading: isCancelling }] = useCancelVehicleDispatchMutation()
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
@@ -54,7 +43,6 @@ const VehicleDispatchDetail = () => {
 
   const vehicleTypeLabels = useMemo(() => toIdNameMap(vehicleTypes), [vehicleTypes])
   const requestingUnitLabels = useMemo(() => toIdNameMap(requestingUnits), [requestingUnits])
-  const locationLabels = useMemo(() => toIdNameMap(locations), [locations])
   const sizeLabels = useMemo(
     () => Object.fromEntries((containerSizes ?? []).map((s) => [s.id, s.name || s.code])),
     [containerSizes]
@@ -237,22 +225,8 @@ const VehicleDispatchDetail = () => {
                     order.requestingUnitId
                   }
                 />
-                <InfoItem
-                  label='Điểm đi'
-                  value={
-                    locationLabels[order.origin ?? order.departureLocationId ?? ''] ??
-                    order.origin ??
-                    order.departureLocationId
-                  }
-                />
-                <InfoItem
-                  label='Điểm đến'
-                  value={
-                    locationLabels[order.destination ?? order.destinationLocationId ?? ''] ??
-                    order.destination ??
-                    order.destinationLocationId
-                  }
-                />
+                <InfoItem label='Điểm đi' value={order.departureLocationName ?? '-'} />
+                <InfoItem label='Điểm đến' value={order.destinationLocationName ?? '-'} />
                 <InfoItem
                   label='Thời gian dự kiến nhận hàng (ở điểm đi)'
                   value={formatDateTime(order.expectedPickupTime ?? order.estimatedPickupTime)}

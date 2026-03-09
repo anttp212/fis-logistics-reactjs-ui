@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react'
+import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { PageWrapper } from '@components'
+import { DownloadOutlined, ReloadOutlined } from '@ant-design/icons'
 import {
   FISButton,
   FISInputDate,
@@ -13,6 +15,15 @@ import {
   FISPagination
 } from 'fis-component'
 import { ROUTES } from '@constants'
+import {
+  useGetTransportReportQuery,
+  useExportTransportReportMutation
+} from '@pages/transportation/vehicle-dispatch/vehicleDispatch.api'
+import type {
+  DispatchOrderApiI,
+  DispatchOrderContainerI
+} from '@pages/transportation/vehicle-dispatch/vehicleDispatch.api'
+import { STATUS_LABELS, STATUS_OPTIONS } from '@pages/transportation/vehicle-dispatch/constants/status'
 
 interface TransportationRecordI {
   key: string
@@ -28,218 +39,138 @@ interface TransportationRecordI {
   endTime: string
 }
 
-const TRANG_THAI_OPTIONS = [
-  {
-    items: [
-      { label: 'Tất cả', value: '' },
-      { label: 'Nhận lệnh', value: 'dang' },
-      { label: 'Đã hoàn tất', value: 'hoan_tat' },
-      { label: 'Sự cố/Delay', value: 'su_co' }
-    ]
-  }
-]
+const formatDateTime = (iso?: string) => {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return '—'
+  const h = String(d.getHours()).padStart(2, '0')
+  const m = String(d.getMinutes()).padStart(2, '0')
+  return `${h}:${m}`
+}
 
-const DUMMY_DATA: TransportationRecordI[] = [
-  {
-    key: '1',
-    stt: 1,
-    orderCode: 'LD-2024-001',
-    driverName: 'Nguyễn Văn A',
-    vehicleType: 'Container',
-    plateNumber: '51C-12345',
-    containerCode: 'TEMU1234567',
-    goods: 'Gạo xuất khẩu',
-    status: 'Đã hoàn tất',
-    startTime: '08:00',
-    endTime: '12:30'
-  },
-  {
-    key: '2',
-    stt: 2,
-    orderCode: 'LD-2024-002',
-    driverName: 'Trần Văn B',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-67890',
-    containerCode: 'MSCU9876543',
-    goods: 'Thép xây dựng',
-    status: 'Nhận lệnh',
-    startTime: '09:15',
-    endTime: '—'
-  },
-  {
-    key: '3',
-    stt: 3,
-    orderCode: 'LD-2024-003',
-    driverName: 'Lê Thị C',
-    vehicleType: 'Container',
-    plateNumber: '30B-11111',
-    containerCode: 'HLBU4567890',
-    goods: 'Dệt may',
-    status: 'Sự cố/Delay',
-    startTime: '07:00',
-    endTime: '—'
-  },
-  {
-    key: '4',
-    stt: 4,
-    orderCode: 'LD-2024-004',
-    driverName: 'Phạm Văn D',
-    vehicleType: 'Xe đầu kéo',
-    plateNumber: '51C-22222',
-    containerCode: 'OOLU1112223',
-    goods: 'Điện tử',
-    status: 'Đã hoàn tất',
-    startTime: '06:30',
-    endTime: '10:45'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
-  },
-  {
-    key: '5',
-    stt: 5,
-    orderCode: 'LD-2024-005',
-    driverName: 'Hoàng Văn E',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    containerCode: 'CMAU7778889',
-    goods: 'Xăng dầu',
-    status: 'Nhận lệnh',
-    startTime: '10:00',
-    endTime: '—'
+const mapOrderToRecord = (order: DispatchOrderApiI, stt: number): TransportationRecordI => {
+  const c0 = order.containers?.[0] as DispatchOrderContainerI | undefined
+  return {
+    key: order.id,
+    stt,
+    orderCode: order.dispatchCode ?? '—',
+    driverName: c0?.driverName ?? order.driverName ?? '—',
+    vehicleType: order.vehicleTypeName ?? order.vehicleType ?? '—',
+    plateNumber: c0?.driverPlateNo ?? order.vehiclePlateNo ?? '—',
+    containerCode: c0?.containerNo ?? '—',
+    goods: order.content ?? order.notes ?? '—',
+    status: STATUS_LABELS[order.status ?? ''] ?? order.statusText ?? order.status ?? '—',
+    startTime: formatDateTime(order.estimatedPickupTime ?? order.expectedPickupTime),
+    endTime: formatDateTime(order.estimatedDeliveryTime ?? order.expectedDeliveryTime)
   }
-]
+}
+
+type TransportReportApiParamsT = {
+  dateFrom?: string
+  dateTo?: string
+  status?: string
+  keyword?: string
+  page?: number
+  size?: number
+}
+
+type TransportReportFilterValuesT = {
+  dateFrom: Date | null
+  dateTo: Date | null
+  status: string[]
+  search: string
+}
+
+const toBoundaryIsoString = (date: Date, boundary: 'start' | 'end') => {
+  const nextDate = new Date(date)
+  if (boundary === 'start') {
+    nextDate.setHours(0, 0, 0, 0)
+  } else {
+    nextDate.setHours(23, 59, 59, 999)
+  }
+  return nextDate.toISOString()
+}
 
 const TransportationReport = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [appliedParams, setAppliedParams] = useState<TransportReportApiParamsT | null>(null)
 
-  const { control, watch, handleSubmit } = useForm({
-    defaultValues: {
-      fromDate: null as Date | null,
-      toDate: null as Date | null,
-      status: '',
-      search: ''
-    }
+  const defaultFilterValues = {
+    dateFrom: null as Date | null,
+    dateTo: null as Date | null,
+    status: [] as string[],
+    search: ''
+  }
+
+  const { control, handleSubmit, reset, setValue, watch } = useForm<TransportReportFilterValuesT>({
+    defaultValues: defaultFilterValues
+  })
+  const selectedFromDate = watch('dateFrom')
+  const selectedFromDateMin = selectedFromDate ? dayjs(selectedFromDate) : undefined
+
+  const queryParams = useMemo(
+    () =>
+      appliedParams
+        ? {
+            ...appliedParams,
+            page,
+            size: pageSize
+          }
+        : {
+          page,
+          size: pageSize
+        },
+    [appliedParams, page, pageSize]
+  )
+
+  const { data: listResponse, isLoading, isFetching } = useGetTransportReportQuery(queryParams, {
   })
 
-  const filterValues = watch()
+  const [exportExcel, { isLoading: isExporting }] = useExportTransportReportMutation()
 
-  const handleFilter = handleSubmit(() => {
+  const handleExportExcel = async () => {
+    try {
+      const blob = await exportExcel(appliedParams ?? undefined).unwrap()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `bao-cao-van-tai-${new Date().toISOString().slice(0, 10)}.xlsx`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // Error handled by RTK Query
+    }
+  }
+
+  const handleFilter = handleSubmit((values) => {
+    const statusVal = Array.isArray(values.status)
+      ? values.status?.filter(Boolean).join(',') || undefined
+      : values.status || undefined
+    const params: TransportReportApiParamsT = {
+      dateFrom: values.dateFrom ? toBoundaryIsoString(values.dateFrom, 'start') : undefined,
+      dateTo: values.dateTo ? toBoundaryIsoString(values.dateTo, 'end') : undefined,
+      status: statusVal,
+      keyword: values.search || undefined
+    }
+    setAppliedParams(params)
     setPage(1)
   })
 
-  const filteredData = useMemo(() => {
-    let data = [...DUMMY_DATA]
-    if (filterValues.search) {
-      const s = String(filterValues.search).toLowerCase()
-      data = data.filter(
-        (r) =>
-          r.orderCode.toLowerCase().includes(s) ||
-          r.containerCode.toLowerCase().includes(s) ||
-          r.driverName.toLowerCase().includes(s)
-      )
-    }
-    if (filterValues.status) {
-      const statusMap: Record<string, string> = {
-        dang: 'Nhận lệnh',
-        hoan_tat: 'Đã hoàn tất',
-        su_co: 'Sự cố/Delay'
-      }
-      const target = statusMap[filterValues.status]
-      if (target) data = data.filter((r) => r.status === target)
-    }
-    return data
-  }, [filterValues])
+  const handleResetFilter = () => {
+    reset(defaultFilterValues)
+    setAppliedParams({})
+    setPage(1)
+  }
 
-  const totalTransfer = filteredData.length
-  const totalInTransit = useMemo(() => filteredData.filter((r) => r.status === 'Nhận lệnh').length, [filteredData])
-  const totalCompleted = useMemo(() => filteredData.filter((r) => r.status === 'Đã hoàn tất').length, [filteredData])
-  const totalIncident = useMemo(() => filteredData.filter((r) => r.status === 'Sự cố/Delay').length, [filteredData])
-
-  const paginatedData = useMemo(() => {
-    const start = (page - 1) * pageSize
-    return filteredData.slice(start, start + pageSize).map((r, i) => ({
-      ...r,
-      stt: start + i + 1
-    }))
-  }, [filteredData, page, pageSize])
+  const dataSource = useMemo(() => {
+    const offset = (page - 1) * pageSize
+  
+    return (listResponse?.data ?? []).map((o, i) =>
+      mapOrderToRecord(o, offset + i + 1)
+    )
+  }, [listResponse?.data, page, pageSize])
 
   const columns = [
     {
@@ -260,56 +191,50 @@ const TransportationReport = () => {
       dataIndex: 'driverName',
       key: 'driverName',
       width: 130,
-      title: () => <FISTableHeaderCell label='Tên tài xế' hasRightDivider />,
+      title: () => <FISTableHeaderCell label='TÊN TÀI XẾ' hasRightDivider />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.driverName} textAlign='left' />
     },
     {
       dataIndex: 'vehicleType',
       key: 'vehicleType',
       width: 100,
-      title: () => <FISTableHeaderCell label='Loại xe' hasRightDivider />,
+      title: () => <FISTableHeaderCell label='LOẠI XE' hasRightDivider />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.vehicleType} textAlign='left' />
     },
     {
       dataIndex: 'plateNumber',
       key: 'plateNumber',
       width: 110,
-      title: () => <FISTableHeaderCell label='Biển số' hasRightDivider />,
+      title: () => <FISTableHeaderCell label='BIỂN SỐ' hasRightDivider />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.plateNumber} textAlign='left' />
     },
     {
       dataIndex: 'containerCode',
       key: 'containerCode',
       width: 130,
-      title: () => <FISTableHeaderCell label='Mã container' hasRightDivider />,
+      title: () => <FISTableHeaderCell label='MÃ CONTAINER' hasRightDivider />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.containerCode} textAlign='left' />
-    },
-    {
-      dataIndex: 'goods',
-      key: 'goods',
-      width: 130,
-      title: () => <FISTableHeaderCell label='Hàng hóa' hasRightDivider />,
-      render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.goods} textAlign='left' />
     },
     {
       dataIndex: 'status',
       key: 'status',
       width: 140,
-      title: () => <FISTableHeaderCell label='Trạng thái' hasRightDivider />,
+      title: () => <FISTableHeaderCell label='TRẠNG THÁI' hasRightDivider />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.status} textAlign='left' />
     },
     {
       dataIndex: 'startTime',
       key: 'startTime',
       width: 100,
-      title: () => <FISTableHeaderCell label='Bắt đầu' hasRightDivider />,
+      title: () => <FISTableHeaderCell label='BẮT ĐẦU' hasRightDivider />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.startTime} textAlign='left' />
     },
     {
       dataIndex: 'endTime',
       key: 'endTime',
       width: 100,
-      title: () => <FISTableHeaderCell label='Kết thúc' />,
+      className: 'none-border-right',
+      title: () => <FISTableHeaderCell label='KẾT THÚC' />,
       render: (_: unknown, row: TransportationRecordI) => <FISTableCell content={row.endTime} textAlign='left' />
     }
   ]
@@ -328,14 +253,17 @@ const TransportationReport = () => {
           <div className='flex flex-nowrap items-end gap-4 overflow-x-auto'>
             <div className='flex-shrink-0'>
               <Controller
-                name='fromDate'
+                name='dateFrom'
                 control={control}
                 render={({ field }) => (
                   <FISInputDate
                     textLabel='Từ ngày'
-                    placeholder='dd/mm/yyyy'
+                    placeholder='Chọn ngày'
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value)
+                      setValue('dateTo', null)
+                    }}
                     picker='date'
                     format='DD/MM/YYYY'
                   />
@@ -344,14 +272,15 @@ const TransportationReport = () => {
             </div>
             <div className='flex-shrink-0'>
               <Controller
-                name='toDate'
+                name='dateTo'
                 control={control}
                 render={({ field }) => (
                   <FISInputDate
                     textLabel='Đến ngày'
-                    placeholder='dd/mm/yyyy'
+                    placeholder='Chọn ngày'
                     value={field.value}
                     onChange={field.onChange}
+                    minDate={selectedFromDateMin}
                     picker='date'
                     format='DD/MM/YYYY'
                   />
@@ -364,11 +293,15 @@ const TransportationReport = () => {
                 control={control}
                 render={({ field }) => (
                   <FISSelect
+                    {...field}
                     textLabel='Trạng thái'
                     placeholder='Chọn trạng thái'
-                    options={TRANG_THAI_OPTIONS}
-                    value={field.value}
-                    onChange={field.onChange}
+                    options={STATUS_OPTIONS}
+                    removeSelectedText='Xóa lựa chọn'
+                    multiDisplayText={(count) => `${count} lựa chọn`}
+                    selectedGroupLabel='Đã chọn'
+                    multi
+                    hideChip={true}
                   />
                 )}
               />
@@ -387,41 +320,40 @@ const TransportationReport = () => {
                 Lọc dữ liệu
               </FISButton>
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Tổng chuyến</p>
-            <p className='text-2xl font-semibold text-gray-900'>{totalTransfer}</p>
-          </div>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Nhận lệnh</p>
-            <p className='text-2xl font-semibold text-blue-600'>{totalInTransit}</p>
-          </div>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Đã hoàn tất</p>
-            <p className='text-2xl font-semibold text-green-600'>{totalCompleted}</p>
-          </div>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Sự cố/Delay</p>
-            <p className='text-2xl font-semibold text-red-600'>{totalIncident}</p>
+            <div className='flex-shrink-0'>
+              <FISButton variant='secondary' onClick={handleResetFilter}>
+                <ReloadOutlined />
+                <span className='sr-only'>Reset bộ lọc</span>
+              </FISButton>
+            </div>
+            <div className='flex-shrink-0'>
+              <FISButton
+                variant='secondary'
+                startIcon={<DownloadOutlined />}
+                onClick={handleExportExcel}
+                disabled={isExporting}
+              >
+                Xuất Excel
+              </FISButton>
+            </div>
           </div>
         </div>
 
         {/* Table */}
         <FISTable
-          dataSource={paginatedData}
-          scroll={{ y: 'calc(100vh - 530px)' }}
+          key={`${page}-${pageSize}-${listResponse?.pagination?.page ?? page}`}
+          dataSource={dataSource}
           columns={columns}
+          rowKey={(row) => `${row.key}-${row.stt}`}
+          loading={isLoading || isFetching}
+          scroll={{ y: 'calc(100vh - 430px)' }}
           pagination={false}
         />
         <div className='mt-2'>
           <FISPagination
             current={page}
             pageSize={pageSize}
-            total={filteredData.length}
+            total={listResponse?.pagination?.totalElements ?? 0}
             onChange={(p) => setPage(p)}
             onShowSizeChange={(_current, size) => {
               setPageSize(size || 10)

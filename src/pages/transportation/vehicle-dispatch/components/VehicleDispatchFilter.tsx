@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
+import dayjs from 'dayjs'
 import { Col, Row } from 'antd'
-import { Controller, Control } from 'react-hook-form'
+import { Controller, Control, useWatch, type UseFormSetValue } from 'react-hook-form'
 import { FISInputDate, FISSelect } from 'fis-component'
 import { useGetVehicleTypesQuery, useGetDriversQuery } from '../vehicleDispatchMaster.api'
+import { STATUS_OPTIONS } from '../constants/status'
 
 const toSelectOptions = (items: { id: string; name: string }[] | undefined, allLabel = 'Tất cả') => [
   { items: [{ label: allLabel, value: '' }, ...(items ?? []).map((item) => ({ label: item.name, value: item.id }))] }
@@ -17,24 +19,22 @@ const parseDateValue = (val: string): Date | null => {
   return new Date(parts[0], parts[1] - 1, parts[2])
 }
 
-const STATUS_OPTIONS = [
-  {
-    items: [
-      { label: 'Chờ xác nhận', value: 'PENDING_CONFIRMATION' },
-      { label: 'Nhận lệnh', value: 'IN_TRANSIT' },
-      { label: 'Hoàn thành', value: 'COMPLETED' },
-      { label: 'Sự cố', value: 'INCIDENT' },
-      { label: 'Huỷ', value: 'CANCELLED' },
-      { label: 'Từ chối', value: 'REJECTED' }
-    ]
+const toBoundaryIsoString = (date: Date, boundary: 'start' | 'end') => {
+  const nextDate = new Date(date)
+  if (boundary === 'start') {
+    nextDate.setHours(0, 0, 0, 0)
+  } else {
+    nextDate.setHours(23, 59, 59, 999)
   }
-]
+  return nextDate.toISOString()
+}
 
 interface VehicleDispatchFilterPropsI {
   control: Control<any>
+  setValue: UseFormSetValue<any>
 }
 
-const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
+const VehicleDispatchFilter = ({ control, setValue }: VehicleDispatchFilterPropsI) => {
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
   const { data: drivers = [] } = useGetDriversQuery()
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
@@ -43,6 +43,8 @@ const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
       toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
     [drivers]
   )
+  const dateFrom = useWatch({ control, name: 'dateFrom' }) as string
+  const dateFromMin = dateFrom ? dayjs(parseDateValue(dateFrom) ?? undefined) : undefined
   return (
     <Row gutter={[12, 12]}>
       <Col span={24}>
@@ -79,9 +81,12 @@ const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
           render={({ field }) => (
             <FISInputDate
               textLabel='Từ ngày điều xe'
-              placeholder='dd/mm/yyyy'
+              placeholder='Chọn ngày'
               value={parseDateValue(field.value)}
-              onChange={(date) => field.onChange(date ? date.toISOString() : '')}
+              onChange={(date) => {
+                field.onChange(date ? toBoundaryIsoString(date, 'start') : '')
+                setValue('dateTo', '')
+              }}
               picker='date'
               format='DD/MM/YYYY'
             />
@@ -95,9 +100,10 @@ const VehicleDispatchFilter = ({ control }: VehicleDispatchFilterPropsI) => {
           render={({ field }) => (
             <FISInputDate
               textLabel='Đến ngày điều xe'
-              placeholder='dd/mm/yyyy'
+              placeholder='Chọn ngày'
               value={parseDateValue(field.value)}
-              onChange={(date) => field.onChange(date ? date.toISOString() : '')}
+              onChange={(date) => field.onChange(date ? toBoundaryIsoString(date, 'end') : '')}
+              minDate={dateFromMin}
               picker='date'
               format='DD/MM/YYYY'
             />

@@ -8,6 +8,8 @@ export interface UserInfoI {
   email: string
   avatar?: string
   role?: string
+  username?: string
+  fullName?: string
 }
 
 export interface LoginRequestI {

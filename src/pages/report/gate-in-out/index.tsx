@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react'
+import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
+import { DownloadOutlined, ReloadOutlined } from '@ant-design/icons'
 import { PageWrapper } from '@components'
-import { useGetDashboardOverviewQuery } from '@pages/home/dashboard.api'
 import {
   FISButton,
   FISInputDate,
-  FISInputText,
   FISTable,
   FISTableCell,
   FISTableHeaderCell,
@@ -14,179 +14,176 @@ import {
   FISPagination
 } from 'fis-component'
 import { ROUTES } from '@constants'
+import { useGetSecurityRegistrationsQuery, useExportSecurityRegistrationsMutation } from './gateInOut.api'
+import type { SecurityRegistrationI } from './gateInOut.api'
 
 interface GateInOutRecordI {
   key: string
   stt: number
-  name: string
   type: string
+  driverName: string
   vehicleType: string
-  plateNumber: string
+  plateNo: string
   timeIn: string
   timeOut: string
   status: string
+}
+
+const VEHICLE_TYPE_LABELS: Record<string, string> = {
+  CONTAINER: 'Container',
+  MOTORBIKE: 'Xe máy',
+  TRUCK: 'Xe tải',
+  TRAILER: 'Xe đầu kéo',
+  CAR: 'Xe ô tô'
+}
+
+const formatDateTime = (iso?: string) => {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return '—'
+  const h = String(d.getHours()).padStart(2, '0')
+  const m = String(d.getMinutes()).padStart(2, '0')
+  return `${h}:${m}`
 }
 
 const LOAI_HINH_OPTIONS = [
   {
     items: [
       { label: 'Tất cả', value: '' },
-      { label: 'Vào cổng', value: 'vao' },
-      { label: 'Ra cổng', value: 'ra' }
+      { label: 'Vào cổng', value: 'CHECKIN' },
+      { label: 'Ra cổng', value: 'CHECKOUT' }
     ]
   }
 ]
 
-const DUMMY_DATA: GateInOutRecordI[] = [
+const VEHICLE_TYPE_OPTIONS = [
   {
-    key: '1',
-    stt: 1,
-    name: 'Nguyễn Văn A',
-    type: 'Vào',
-    vehicleType: 'Container',
-    plateNumber: '51C-12345',
-    timeIn: '08:00',
-    timeOut: '—',
-    status: 'Đang trong khu vực'
-  },
-  {
-    key: '2',
-    stt: 2,
-    name: 'Trần Văn B',
-    type: 'Ra',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-67890',
-    timeIn: '07:30',
-    timeOut: '09:15',
-    status: 'Đã ra'
-  },
-  {
-    key: '3',
-    stt: 3,
-    name: 'Lê Thị C',
-    type: 'Vào',
-    vehicleType: 'Container',
-    plateNumber: '30B-11111',
-    timeIn: '09:00',
-    timeOut: '—',
-    status: 'Đang trong khu vực'
-  },
-  {
-    key: '4',
-    stt: 4,
-    name: 'Phạm Văn D',
-    type: 'Ra',
-    vehicleType: 'Xe đầu kéo',
-    plateNumber: '51C-22222',
-    timeIn: '06:45',
-    timeOut: '08:30',
-    status: 'Đã ra'
-  },
-  {
-    key: '5',
-    stt: 5,
-    name: 'Hoàng Văn E',
-    type: 'Vào',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-33333',
-    timeIn: '10:00',
-    timeOut: '—',
-    status: 'Đang trong khu vực'
-  },
-  {
-    key: '6',
-    stt: 6,
-    name: 'Nguyễn Văn F',
-    type: 'Ra',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-44444',
-    timeIn: '11:00',
-    timeOut: '12:00',
-    status: 'Đã ra'
-  },
-  {
-    key: '7',
-    stt: 7,
-    name: 'Nguyễn Văn F',
-    type: 'Ra',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-44444',
-    timeIn: '11:00',
-    timeOut: '12:00',
-    status: 'Đã ra'
-  },
-  {
-    key: '10',
-    stt: 10,
-    name: 'Nguyễn Văn F',
-    type: 'Ra',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-44444',
-    timeIn: '11:00',
-    timeOut: '12:00',
-    status: 'Đã ra'
-  },
-  {
-    key: '9',
-    stt: 9,
-    name: 'Nguyễn Văn F',
-    type: 'Ra',
-    vehicleType: 'Xe tải',
-    plateNumber: '59A-44444',
-    timeIn: '11:00',
-    timeOut: '12:00',
-    status: 'Đã ra'
+    items: [
+      { label: 'Tất cả', value: '' },
+      { label: 'Container', value: 'CONTAINER' },
+      { label: 'Xe máy', value: 'MOTORBIKE' },
+      { label: 'Xe tải', value: 'TRUCK' },
+      { label: 'Xe ô tô', value: 'CAR' }
+    ]
   }
 ]
+
+const mapRegistrationToRecord = (r: SecurityRegistrationI, stt: number): GateInOutRecordI => {
+  const isCheckedOut = r.status === 'CHECKED_OUT'
+  return {
+    key: r.id,
+    stt,
+    driverName: r.driverName,
+    type: isCheckedOut ? 'Ra' : 'Vào',
+    vehicleType: VEHICLE_TYPE_LABELS[r.vehicleType] ?? r.vehicleType,
+    plateNo: r.plateNo,
+    timeIn: formatDateTime(r.estimatedArrival ?? r.createdAt),
+    timeOut: isCheckedOut ? formatDateTime(r.updatedAt) : '—',
+    status: isCheckedOut ? 'Đã ra' : 'Đang trong khu vực'
+  }
+}
+
+type GateInOutApiParamsT = {
+  dateFrom?: string
+  dateTo?: string
+  status?: 'CHECKIN' | 'CHECKOUT'
+  vehicleType?: string
+  page?: number
+  size?: number
+}
+
+type GateInOutFilterValuesT = {
+  fromDate: Date | null
+  toDate: Date | null
+  status: string
+  vehicleType: string
+}
+
+const toBoundaryIsoString = (date: Date, boundary: 'start' | 'end') => {
+  const nextDate = new Date(date)
+  if (boundary === 'start') {
+    nextDate.setHours(0, 0, 0, 0)
+  } else {
+    nextDate.setHours(23, 59, 59, 999)
+  }
+  return nextDate.toISOString()
+}
 
 const GateInOutReport = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const { data: overview } = useGetDashboardOverviewQuery()
+  const [appliedParams, setAppliedParams] = useState<GateInOutApiParamsT | null>(null)
 
-  const { control, watch, handleSubmit } = useForm({
-    defaultValues: {
-      fromDate: null as Date | null,
-      toDate: null as Date | null,
-      loaiHinh: '',
-      search: ''
-    }
+  const defaultFilterValues = {
+    fromDate: null as Date | null,
+    toDate: null as Date | null,
+    status: '',
+    vehicleType: ''
+  }
+
+  const { control, handleSubmit, reset, setValue, watch } = useForm<GateInOutFilterValuesT>({
+    defaultValues: defaultFilterValues
+  })
+  const selectedFromDate = watch('fromDate')
+  const selectedFromDateMin = selectedFromDate ? dayjs(selectedFromDate) : undefined
+
+  const queryParams = useMemo(
+    () =>
+      appliedParams
+        ? {
+            ...appliedParams,
+            page,
+            size: pageSize
+          }
+        : {
+          page,
+          size: pageSize
+        },
+    [appliedParams, page, pageSize]
+  )
+
+  const { data: listResponse, isLoading, isFetching } = useGetSecurityRegistrationsQuery(queryParams, {
   })
 
-  const filterValues = watch()
+  const [exportExcel, { isLoading: isExporting }] = useExportSecurityRegistrationsMutation()
 
-  const handleFilter = handleSubmit(() => {
+  const handleExportExcel = async () => {
+    try {
+      const blob = await exportExcel(appliedParams ?? undefined).unwrap()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `bao-cao-ra-vao-cong-${new Date().toISOString().slice(0, 10)}.xlsx`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // Error handled by RTK Query
+    }
+  }
+
+  const handleFilter = handleSubmit((values) => {
+    const params: GateInOutApiParamsT = {
+      dateFrom: values.fromDate ? toBoundaryIsoString(values.fromDate, 'start') : undefined,
+      dateTo: values.toDate ? toBoundaryIsoString(values.toDate, 'end') : undefined,
+      status: (values.status as 'CHECKIN' | 'CHECKOUT') || undefined,
+      vehicleType: values.vehicleType || undefined
+    }
+    setAppliedParams(params)
     setPage(1)
   })
 
-  const filteredData = useMemo(() => {
-    let data = [...DUMMY_DATA]
-    if (filterValues.search) {
-      const s = String(filterValues.search).toLowerCase()
-      data = data.filter((r) => r.name.toLowerCase().includes(s) || r.plateNumber.toLowerCase().includes(s))
-    }
-    if (filterValues.loaiHinh) {
-      data = data.filter((r) => (filterValues.loaiHinh === 'vao' ? r.type === 'Vào' : r.type === 'Ra'))
-    }
-    return data
-  }, [filterValues])
+  const handleResetFilter = () => {
+    reset(defaultFilterValues)
+    setAppliedParams({})
+    setPage(1)
+  }
 
-  const s = overview?.security
-  const totalIn = s?.todayCheckIn ?? filteredData.filter((r) => r.type === 'Vào').length
-  const totalOut = s?.todayCheckOut ?? filteredData.filter((r) => r.type === 'Ra').length
-  const totalInside = s
-    ? Math.max(0, (s.todayCheckIn ?? 0) - (s.todayCheckOut ?? 0))
-    : filteredData.filter((r) => r.status === 'Đang trong khu vực').length
-
-  const paginatedData = useMemo(() => {
+  const dataSource = useMemo(() => {
     const start = (page - 1) * pageSize
-    return filteredData.slice(start, start + pageSize).map((r, i) => ({
-      ...r,
-      stt: start + i + 1
-    }))
-  }, [filteredData, page, pageSize])
-
+    return (listResponse?.data ?? []).map((r, i) => mapRegistrationToRecord(r, start + i + 1))
+  }, [listResponse?.data, page, pageSize])
+  
   const columns = [
     {
       dataIndex: 'stt',
@@ -199,8 +196,8 @@ const GateInOutReport = () => {
       dataIndex: 'name',
       key: 'name',
       width: 150,
-      title: () => <FISTableHeaderCell label='TÊN ĐỐI TƯỢNG' hasRightDivider />,
-      render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.name} textAlign='left' />
+      title: () => <FISTableHeaderCell label='TÊN' hasRightDivider />,
+      render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.driverName} textAlign='left' />
     },
     {
       dataIndex: 'type',
@@ -221,7 +218,7 @@ const GateInOutReport = () => {
       key: 'plateNumber',
       width: 120,
       title: () => <FISTableHeaderCell label='BIỂN SỐ' hasRightDivider />,
-      render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.plateNumber} textAlign='left' />
+      render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.plateNo} textAlign='left' />
     },
     {
       dataIndex: 'timeIn',
@@ -241,6 +238,7 @@ const GateInOutReport = () => {
       dataIndex: 'status',
       key: 'status',
       width: 150,
+      className: 'none-border-right',
       title: () => <FISTableHeaderCell label='TRẠNG THÁI' />,
       render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.status} textAlign='left' />
     }
@@ -265,9 +263,12 @@ const GateInOutReport = () => {
                 render={({ field }) => (
                   <FISInputDate
                     textLabel='Từ ngày'
-                    placeholder='dd/mm/yyyy'
+                    placeholder='Chọn ngày'
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(value) => {
+                      field.onChange(value)
+                      setValue('toDate', null)
+                    }}
                     picker='date'
                     format='DD/MM/YYYY'
                   />
@@ -281,9 +282,10 @@ const GateInOutReport = () => {
                 render={({ field }) => (
                   <FISInputDate
                     textLabel='Đến ngày'
-                    placeholder='dd/mm/yyyy'
+                    placeholder='Chọn ngày'
                     value={field.value}
                     onChange={field.onChange}
+                    minDate={selectedFromDateMin}
                     picker='date'
                     format='DD/MM/YYYY'
                   />
@@ -292,7 +294,7 @@ const GateInOutReport = () => {
             </div>
             <div className='flex-shrink-0'>
               <Controller
-                name='loaiHinh'
+                name='status'
                 control={control}
                 render={({ field }) => (
                   <FISSelect
@@ -307,9 +309,17 @@ const GateInOutReport = () => {
             </div>
             <div className='flex-shrink-0 min-w-[200px]'>
               <Controller
-                name='search'
+                name='vehicleType'
                 control={control}
-                render={({ field }) => <FISInputText {...field} textLabel='Tìm kiếm' placeholder='Tên, biển số xe' />}
+                render={({ field }) => (
+                  <FISSelect
+                    textLabel='Loại xe'
+                    placeholder='Chọn loại xe'
+                    options={VEHICLE_TYPE_OPTIONS}
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </div>
             <div className='flex-shrink-0'>
@@ -317,40 +327,42 @@ const GateInOutReport = () => {
                 Lọc dữ liệu
               </FISButton>
             </div>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Tổng lượt vào</p>
-            <p className='text-2xl font-semibold text-blue-600'>{totalIn}</p>
-          </div>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Tổng lượt ra</p>
-            <p className='text-2xl font-semibold text-green-600'>{totalOut}</p>
-          </div>
-          <div className='bg-white rounded-lg border border-gray-200 p-4'>
-            <p className='text-sm text-gray-500'>Đang ở trong khu vực</p>
-            <p className='text-2xl font-semibold text-amber-600'>{totalInside}</p>
+            <div className='flex-shrink-0'>
+              <FISButton variant='secondary' onClick={handleResetFilter}>
+                <ReloadOutlined />
+                <span className='sr-only'>Reset bộ lọc</span>
+              </FISButton>
+            </div>
+            <div className='flex-shrink-0'>
+              <FISButton
+                variant='secondary'
+                startIcon={<DownloadOutlined />}
+                onClick={handleExportExcel}
+                disabled={isExporting}
+              >
+                Xuất Excel
+              </FISButton>
+            </div>
           </div>
         </div>
 
         {/* Table */}
         <FISTable
-          dataSource={paginatedData}
+          dataSource={dataSource}
           columns={columns}
-          scroll={{ y: 'calc(100vh - 530px)' }}
+          loading={isLoading || isFetching}
+          scroll={{ y: 'calc(100vh - 430px)' }}
           pagination={false}
+          rowKey={(row) => `${row.key}-${row.stt}`}
         />
         <div>
           <FISPagination
             current={page}
             pageSize={pageSize}
-            total={filteredData.length}
+            total={listResponse?.pagination?.totalElements ?? 0}
             onChange={(p) => setPage(p)}
-            onShowSizeChange={(_current, size) => {
-              setPageSize(size || 10)
+            onShowSizeChange={(_current, _size) => {
+              setPageSize(_current || 10)
               setPage(1)
             }}
             showSizeChanger

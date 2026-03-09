@@ -9,10 +9,12 @@ import type { ApiResponseI } from '@app-types/api-response'
 
 /** Container item - hỗ trợ cả format cũ và mới từ API */
 export interface DispatchOrderContainerI {
+  id?: string
   containerNumber?: string
   containerNo?: string
   size?: string
   containerSizeId?: string
+  containerSizeName?: string
   weight?: string
   containerWeight?: number
   driver?: string
@@ -20,6 +22,8 @@ export interface DispatchOrderContainerI {
   driverName?: string
   driverPhone?: string
   driverPlateNo?: string
+  departureLocationName?: string
+  destinationLocationName?: string
 }
 
 /** Item từ API GET /api/v1/dispatch-orders - hỗ trợ cả format cũ và mới */
@@ -27,10 +31,13 @@ export interface DispatchOrderApiI {
   id: string
   dispatchCode?: string
   status?: string
+  statusText?: string
   vehicleType?: string
   vehicleTypeId?: string
+  vehicleTypeName?: string
   requestUnit?: string
   requestingUnitId?: string
+  requestingUnitName?: string
   origin?: string
   departureLocationId?: string
   destination?: string
@@ -53,6 +60,10 @@ export interface DispatchOrderApiI {
   dispatchDate?: string
   dispatcherNotes?: string
   content?: string
+  departureLocationName?: string
+  destinationLocationName?: string
+  driverName?: string
+  vehiclePlateNo?: string
 }
 
 export interface DispatchOrderPaginationI {
@@ -114,6 +125,8 @@ export interface VehicleDispatchDetailI {
   requestingUnitName?: string
   recipientName?: string
   recipientPhone?: string
+  departureLocationName?: string
+  destinationLocationName?: string
 }
 
 /** @deprecated Dùng VehicleDispatchDetailI */
@@ -159,8 +172,10 @@ export interface GetDispatchOrderListParamsI {
 export interface CreateVehicleDispatchRequestI {
   vehicleTypeId: string
   requestingUnitId: string
-  departureLocationId: string
-  destinationLocationId: string
+  departureLocationId?: string
+  destinationLocationId?: string
+  departureLocationName: string
+  destinationLocationName: string
   estimatedPickupTime: string
   estimatedDeliveryTime: string
   recipientName?: string
@@ -218,6 +233,60 @@ export const vehicleDispatchApi = createApi({
         }
       }),
       providesTags: [API_TAGS.vehicleDispatch]
+    }),
+
+    getTransportReport: builder.query<
+      { data: DispatchOrderApiI[]; pagination: DispatchOrderPaginationI },
+      Record<string, unknown> | void
+    >({
+      query: (params) => {
+        const p = params || {}
+        const searchParams = new URLSearchParams()
+        searchParams.set('type', 'TRANSPORT_REPORT')
+        if (p.dateFrom) searchParams.set('dateFrom', String(p.dateFrom))
+        if (p.dateTo) searchParams.set('dateTo', String(p.dateTo))
+        if (p.status) searchParams.set('status', String(p.status))
+        if (p.keyword) searchParams.set('keyword', String(p.keyword))
+        if (p.page != null) searchParams.set('page', String(p.page))
+        if (p.size != null) searchParams.set('size', String(p.size))
+        const query = searchParams.toString()
+        return {
+          url: `${API_ENDPOINTS.vehicleDispatch.list}?${query}`,
+          method: 'GET'
+        }
+      },
+      transformResponse: (response: DispatchOrderListResponseI) => ({
+        data: response.data ?? [],
+        pagination: response.pagination ?? {
+          page: 1,
+          size: 10,
+          totalElements: 0,
+          totalPages: 0,
+          first: true,
+          last: true,
+          hasNext: false,
+          hasPrevious: false
+        }
+      }),
+      providesTags: [API_TAGS.vehicleDispatch]
+    }),
+
+    exportTransportReport: builder.mutation<Blob, Record<string, unknown> | void>({
+      query: (params) => {
+        const p = params || {}
+        const searchParams = new URLSearchParams()
+        searchParams.set('type', 'TRANSPORT_REPORT')
+        if (p.dateFrom) searchParams.set('dateFrom', String(p.dateFrom))
+        if (p.dateTo) searchParams.set('dateTo', String(p.dateTo))
+        if (p.status) searchParams.set('status', String(p.status))
+        if (p.keyword) searchParams.set('keyword', String(p.keyword))
+        const query = searchParams.toString()
+        return {
+          url: `${API_ENDPOINTS.vehicleDispatch.exportExcel}?${query}`,
+          method: 'GET',
+          responseHandler: (response) => response.blob()
+        }
+      }
     }),
 
     getVehicleDispatchDetail: builder.query<VehicleDispatchDetailI, string>({
@@ -302,6 +371,8 @@ export const vehicleDispatchApi = createApi({
 
 export const {
   useGetVehicleDispatchListQuery,
+  useGetTransportReportQuery,
+  useExportTransportReportMutation,
   useGetVehicleDispatchDetailQuery,
   useGetDriversQuery,
   useAssignDriverMutation,

@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { baseQuery } from '@utils/baseQuery'
-// import { API_ENDPOINTS } from '@constants/Api'
+import { API_ENDPOINTS } from '@constants/Api'
 
 // ============================================
 // TYPES
@@ -35,6 +35,32 @@ export interface DashboardOverviewI {
   orders: DashboardOrdersI
   drivers: DashboardDriversI
   security: DashboardSecurityI
+}
+
+export interface CoordinatorStatusCountsI {
+  cancelled: number
+  completed: number
+  inProgress: number
+  inTransit: number
+  incident: number
+  pendingConfirmation: number
+  rejected: number
+}
+
+export interface CoordinatorDailyStatI {
+  date: string
+  container: CoordinatorStatusCountsI
+  internalVehicle: CoordinatorStatusCountsI
+  transportVehicle: CoordinatorStatusCountsI
+}
+
+export interface CoordinatorReportResponseI {
+  stats: CoordinatorDailyStatI[]
+}
+
+export interface GetCoordinatorReportParamsI {
+  fromDate?: string
+  toDate?: string
 }
 
 const DUMP_OVERVIEW: DashboardOverviewI = {
@@ -84,8 +110,26 @@ export const dashboardApi = createApi({
         return { data: DUMP_OVERVIEW }
       },
       providesTags: ['Dashboard']
+    }),
+    getCoordinatorReport: builder.query<CoordinatorReportResponseI, GetCoordinatorReportParamsI | void>({
+      query: (params) => {
+        const p = params || {}
+        const searchParams = new URLSearchParams()
+        if (p.fromDate) searchParams.set('from', p.fromDate)
+        if (p.toDate) searchParams.set('to', p.toDate)
+        const query = searchParams.toString()
+
+        return {
+          url: `${API_ENDPOINTS.coordinator.reports}${query ? `?${query}` : ''}`,
+          method: 'GET'
+        }
+      },
+      transformResponse: (response: { data?: CoordinatorReportResponseI } | CoordinatorReportResponseI) => {
+        const data = (response as any)?.data ?? response
+        return data ?? { stats: [] }
+      }
     })
   })
 })
 
-export const { useGetDashboardOverviewQuery } = dashboardApi
+export const { useGetDashboardOverviewQuery, useGetCoordinatorReportQuery } = dashboardApi

@@ -304,7 +304,7 @@ const InboundRegistrationForm: React.FC = () => {
               render={({ field }) => (
                 <FISInputDate
                   textLabel='Thời gian dự kiến bắt đầu'
-                  placeholder='dd/mm/yyyy'
+                  placeholder='Chọn ngày'
                   value={field.value ? new Date(field.value) : null}
                   onChange={(date) => field.onChange(date ? date.toISOString().split('T')[0] : '')}
                   picker='date'
