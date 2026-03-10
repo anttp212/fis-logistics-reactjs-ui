@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { DownloadOutlined, ReloadOutlined } from '@ant-design/icons'
@@ -16,6 +15,7 @@ import {
 import { ROUTES } from '@constants'
 import { useGetSecurityRegistrationsQuery, useExportSecurityRegistrationsMutation } from './gateInOut.api'
 import type { SecurityRegistrationI } from './gateInOut.api'
+import dayjs from '@utils/dayjs'
 
 interface GateInOutRecordI {
   key: string

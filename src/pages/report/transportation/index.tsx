@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react'
-import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller } from 'react-hook-form'
 import { PageWrapper } from '@components'
@@ -24,6 +23,7 @@ import type {
   DispatchOrderContainerI
 } from '@pages/transportation/vehicle-dispatch/vehicleDispatch.api'
 import { STATUS_LABELS, STATUS_OPTIONS } from '@pages/transportation/vehicle-dispatch/constants/status'
+import dayjs from '@utils/dayjs'
 
 interface TransportationRecordI {
   key: string
@@ -248,6 +248,15 @@ const TransportationReport = () => {
         {/* Filter */}
         <div className='bg-white rounded-lg border border-gray-200 p-4'>
           <div className='flex flex-nowrap items-end gap-4 overflow-x-auto'>
+            <div className='flex-shrink-0 min-w-[200px]'>
+              <Controller
+                name='search'
+                control={control}
+                render={({ field }) => (
+                  <FISInputText {...field} textLabel='Tìm kiếm' placeholder='Nhập mã lệnh, tên tài xế' />
+                )}
+              />
+            </div>
             <div className='flex-shrink-0'>
               <Controller
                 name='dateFrom'
@@ -303,15 +312,7 @@ const TransportationReport = () => {
                 )}
               />
             </div>
-            <div className='flex-shrink-0 min-w-[200px]'>
-              <Controller
-                name='search'
-                control={control}
-                render={({ field }) => (
-                  <FISInputText {...field} textLabel='Tìm kiếm' placeholder='Mã lệnh, cont, tài xế' />
-                )}
-              />
-            </div>
+
             <div className='flex-shrink-0'>
               <FISButton variant='primary' onClick={handleFilter}>
                 Lọc dữ liệu
@@ -352,8 +353,8 @@ const TransportationReport = () => {
             pageSize={pageSize}
             total={listResponse?.pagination?.totalElements ?? 0}
             onChange={(p) => setPage(p)}
-            onShowSizeChange={(_current, size) => {
-              setPageSize(size || 10)
+            onShowSizeChange={(_current, _size) => {
+              setPageSize(_current || 10)
               setPage(1)
             }}
             showSizeChanger

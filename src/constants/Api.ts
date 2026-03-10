@@ -47,10 +47,10 @@ export const API_ENDPOINTS = {
     stats: '/api/v1/api/security/stats'
   },
   logisticInformation: {
-    list: '/api/v1/logistic-information',
-    detail: '/api/v1/logistic-information/:id',
-    create: '/api/v1/logistic-information',
-    update: '/api/v1/logistic-information/:id'
+    list: '/api/v1/logistics-customers',
+    detail: '/api/v1/logistics-customers/:id',
+    create: '/api/v1/logistics-customers',
+    update: '/api/v1/logistics-customers/:id'
   },
   vehicleFleet: {
     list: '/api/v1/vehicles',

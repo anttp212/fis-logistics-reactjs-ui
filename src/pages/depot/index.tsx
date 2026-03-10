@@ -21,7 +21,7 @@ const Depot = () => {
   const depot = useDepot()
   return (
     <DepotContext.Provider value={depot}>
-      <PageWrapper className='p-5' title='Quản lý bãi depot' breadcrumbItems={depot.breadcrumbItems}>
+      <PageWrapper className='py-5' title='Quản lý bãi depot' breadcrumbItems={depot.breadcrumbItems}>
         <div className='flex gap-5 flex-col h-full'>
           <TableToolbar
             filterContent={<DepotFilter control={depot.control} />}

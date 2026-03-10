@@ -1,11 +1,11 @@
 import { Col, Row } from 'antd'
 import { Controller, type Control } from 'react-hook-form'
 import { FISSelect } from 'fis-component'
-import { LOGISTICS_OPTIONS, STATUS_SELECT_OPTIONS } from '../data'
+import { STATUS_SELECT_OPTIONS } from '../data'
 
 const FILTER_LOGISTICS_OPTIONS = [
   {
-    items: [{ label: 'Tất cả', value: '' }, ...LOGISTICS_OPTIONS[0].items]
+    items: [{ label: 'Tất cả', value: '' }]
   }
 ]
 

@@ -10,12 +10,11 @@ import type { UpdateLogisticRequestT } from '../logisticInformation.api'
 const toUpdateBody = (values: LogisticFormValuesI): UpdateLogisticRequestT => ({
   customerType: values.customerType,
   paymentType: values.paymentType || 'PREPAID',
-  customerCode: values.customerCode || undefined,
   taxCode: values.taxCode || undefined,
-  organizationName: values.organizationName || undefined,
+  companyName: values.companyName || undefined,
   shortName: values.shortName || undefined,
   fullName: values.fullName || undefined,
-  identityNumber: values.identityNumber || undefined,
+  idCardNumber: values.idCardNumber || undefined,
   address: values.address || undefined,
   email: values.email || undefined,
   phone: values.phone || undefined,
@@ -31,7 +30,7 @@ const LogisticInformationEditPage = () => {
   const breadcrumbItems = [
     { label: 'Trang chu', onClick: () => navigate(ROUTES.home) },
     { label: 'Quản lý vận chuyển', onClick: () => navigate(ROUTES.transportation) },
-    { label: 'Quản lý thông tin logistic', onClick: () => navigate(ROUTES.transportationLogisticInformation) },
+    { label: 'Quản lý thông tin Logistic', onClick: () => navigate(ROUTES.transportationLogisticInformation) },
     { label: 'Chỉnh sửa logistic' }
   ]
 

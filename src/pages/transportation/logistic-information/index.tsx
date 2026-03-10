@@ -47,7 +47,7 @@ const LogisticInformationPage = () => {
     () => ({
       page,
       size: pageSize,
-      search: search.trim() || undefined,
+      keyword: search.trim() || undefined,
       phone: phone.trim() || undefined,
       customerType: customerType.trim() || undefined,
       taxCode: taxCode.trim() || undefined
@@ -174,11 +174,11 @@ const LogisticInformationPage = () => {
   const breadcrumbItems = [
     { label: 'Trang chu', onClick: () => navigate(ROUTES.home) },
     { label: 'Quản lý vận chuyển', onClick: () => navigate(ROUTES.transportation) },
-    { label: 'Quản lý thông tin logistic' }
+    { label: 'Quản lý thông tin Logistic' }
   ]
 
   return (
-    <PageWrapper className='py-5' title='Quản lý thông tin logistic' breadcrumbItems={breadcrumbItems}>
+    <PageWrapper className='py-5' title='Quản lý thông tin Logistic' breadcrumbItems={breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         <TableToolbar
           control={tableToolbar.control}
@@ -220,8 +220,8 @@ const LogisticInformationPage = () => {
             pageSize={pageSize}
             total={total}
             onChange={(p) => setPage(p)}
-            onShowSizeChange={(_current, size) => {
-              setPageSize(size || 10)
+            onShowSizeChange={(_current, _size) => {
+              setPageSize(_current || 10)
               setPage(1)
             }}
             showSizeChanger

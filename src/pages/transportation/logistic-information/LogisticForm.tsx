@@ -1,7 +1,7 @@
 import { Controller, useForm } from 'react-hook-form'
 import { FISButton, FISRadioGroup, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
 import type { LogisticFormValuesI } from './data'
-import { CUSTOMER_TYPE_OPTIONS, PAYMENT_OPTIONS } from './data'
+import { CUSTOMER_TYPE_OPTIONS, CustomerTypeE, PAYMENT_OPTIONS } from './data'
 
 interface LogisticFormPropsI {
   defaultValues: LogisticFormValuesI
@@ -46,18 +46,11 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
               />
             )}
           />
-          <Controller
-            name='customerCode'
-            control={control}
-            render={({ field }) => (
-              <FISInputText {...field} textLabel='Mã khách hàng' placeholder='Nhập mã khách hàng' />
-            )}
-          />
 
-          {customerType === 'ENTERPRISE' ? (
+          {customerType === CustomerTypeE.BUSINESS ? (
             <>
               <Controller
-                name='organizationName'
+                name='companyName'
                 control={control}
                 rules={{ required: 'Vui lòng nhập tên đơn vị' }}
                 render={({ field }) => (
@@ -66,8 +59,8 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
                     required
                     textLabel='Tên đơn vị'
                     placeholder='Nhập tên đơn vị'
-                    negative={!!errors.organizationName}
-                    message={errors.organizationName?.message}
+                    negative={!!errors.companyName}
+                    message={errors.companyName?.message}
                   />
                 )}
               />
@@ -110,7 +103,7 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
                 )}
               />
               <Controller
-                name='identityNumber'
+                name='idCardNumber'
                 control={control}
                 render={({ field }) => <FISInputText {...field} textLabel='CCCD/CMND' placeholder='Nhập CCCD/CMND' />}
               />
@@ -141,8 +134,20 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
           <Controller
             name='phone'
             control={control}
+            rules={{
+              pattern: {
+                value: /^$|^(\+84|0)[0-9]{9,10}$/,
+                message: 'Số điện thoại không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
+              }
+            }}
             render={({ field }) => (
-              <FISInputText {...field} textLabel='Số điện thoại' placeholder='Nhập số điện thoại' />
+              <FISInputText
+                {...field}
+                textLabel='Số điện thoại'
+                placeholder='Nhập số điện thoại'
+                negative={!!errors.phone}
+                message={errors.phone?.message}
+              />
             )}
           />
         </div>

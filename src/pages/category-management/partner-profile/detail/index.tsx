@@ -337,7 +337,7 @@ const PartnerDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='py-5'
       title='Chi tiết hồ sơ đối tác'
       breadcrumbItems={breadcrumbItems}
       hasBackButton

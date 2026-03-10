@@ -18,7 +18,7 @@ import {
   FISTableCell,
   FISTableHeaderCell
 } from 'fis-component'
-import { STATUS_BADGE, STATUS_LABELS, formatDate, getLogisticsLabel, type DriverItemI } from './data'
+import { STATUS_BADGE, STATUS_LABELS, formatDate, type DriverItemI } from './data'
 import DriverManagementFilter from './components/DriverManagementFilter'
 import { useGetDriverListQuery } from './driverManagement.api'
 
@@ -86,9 +86,7 @@ const DriverManagementPage = () => {
       key: 'logistics',
       width: 180,
       title: () => <FISTableHeaderCell label='LOGISTICS' hasRightDivider />,
-      render: (_: unknown, row: DriverItemI) => (
-        <FISTableCell content={getLogisticsLabel(row.logisticsId)} textAlign='left' />
-      )
+      render: (_: unknown, _row: DriverItemI) => <FISTableCell content={''} textAlign='left' />
     },
     {
       key: 'phone',

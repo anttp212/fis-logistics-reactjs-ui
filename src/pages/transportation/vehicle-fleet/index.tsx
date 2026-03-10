@@ -13,14 +13,7 @@ import {
   FISTableCell,
   FISTableHeaderCell
 } from 'fis-component'
-import {
-  STATUS_BADGE,
-  STATUS_LABELS,
-  VEHICLE_TYPE_LABELS,
-  formatDate,
-  getLogisticsLabel,
-  type FleetItemI
-} from './data'
+import { STATUS_BADGE, STATUS_LABELS, VEHICLE_TYPE_LABELS, formatDate, type FleetItemI } from './data'
 import VehicleFleetFilter from './components/VehicleFleetFilter'
 import { useGetVehicleFleetListQuery } from './vehicleFleet.api'
 
@@ -82,9 +75,7 @@ const VehicleFleetPage = () => {
       key: 'logistics',
       width: 180,
       title: () => <FISTableHeaderCell label='LOGISTICS' hasRightDivider />,
-      render: (_: unknown, row: FleetItemI) => (
-        <FISTableCell content={getLogisticsLabel(row.logisticsId)} textAlign='left' />
-      )
+      render: (_: unknown, _row: FleetItemI) => <FISTableCell content={'-'} textAlign='left' />
     },
     {
       key: 'status',

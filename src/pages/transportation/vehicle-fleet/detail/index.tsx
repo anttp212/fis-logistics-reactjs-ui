@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { FISButton } from 'fis-component'
 import { PageWrapper } from '@components'
 import { ROUTES, buildTransportationVehicleFleetEditPath } from '@constants'
-import { STATUS_LABELS, VEHICLE_TYPE_LABELS, formatDate, getLogisticsLabel, MOCK_FLEET_DATA } from '../data'
+import { STATUS_LABELS, VEHICLE_TYPE_LABELS, formatDate, MOCK_FLEET_DATA } from '../data'
 
 const DetailItem = ({ label, value }: { label: string; value?: string }) => (
   <div className='space-y-1'>
@@ -36,7 +36,7 @@ const VehicleFleetDetailPage = () => {
         <div className='flex justify-between items-start gap-4 mb-6'>
           <div>
             <h3 className='text-lg font-semibold text-slate-800'>{item?.plateNumber || 'Không tìm thấy xe'}</h3>
-            <p className='text-sm text-slate-500 mt-1'>{item ? getLogisticsLabel(item.logisticsId) : ''}</p>
+            <p className='text-sm text-slate-500 mt-1'>{item ? '' : ''}</p>
           </div>
           {item && (
             <FISButton variant='primary' onClick={() => navigate(buildTransportationVehicleFleetEditPath(item.id))}>
@@ -46,7 +46,7 @@ const VehicleFleetDetailPage = () => {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <DetailItem label='Logistics' value={item ? getLogisticsLabel(item.logisticsId) : '-'} />
+          <DetailItem label='Logistics' value={item ? '-' : '-'} />
           <DetailItem label='Trạng thái' value={item ? STATUS_LABELS[item.status] : '-'} />
           <DetailItem label='Loại xe' value={item ? VEHICLE_TYPE_LABELS[item.vehicleType] : '-'} />
           <DetailItem label='Biển số' value={item?.plateNumber} />

@@ -301,7 +301,7 @@ export const MENU_ENTRIES: MenuEntryI[] = [
   {
     path: ROUTES.transportationLogisticInformation,
     permissionKey: 'transportation.logistic-information',
-    labelKey: 'Quản lý thông tin logistic',
+    labelKey: 'Quản lý thông tin Logistic',
     parentKey: 'transportation'
   },
   {

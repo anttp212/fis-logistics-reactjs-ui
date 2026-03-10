@@ -124,7 +124,7 @@ const DepartmentDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='py-5'
       title='Chi tiết phòng ban'
       breadcrumbItems={breadcrumbItems}
       hasBackButton

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
-import dayjs from 'dayjs'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { Input, message, Modal, Table } from 'antd'
 import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
@@ -12,7 +11,7 @@ import {
   useGetDriversQuery,
   useGetContainerSizesQuery
 } from '../vehicleDispatchMaster.api'
-
+import dayjs from '@utils/dayjs'
 const { TextArea } = Input
 
 /** Chuyển mảng API sang format FISSelect options */
@@ -152,6 +151,28 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
     dateStr ? (dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00.000Z`) : ''
   const selectedPickupTime = watch('expectedPickupTime')
   const selectedPickupTimeMin = selectedPickupTime ? dayjs(parseDateValue(selectedPickupTime) ?? undefined) : undefined
+
+  const disabledTime = (date: dayjs.Dayjs | null) => {
+    if (!date || !selectedPickupTimeMin) return {}
+
+    const pickup = selectedPickupTimeMin
+
+    // nếu không phải cùng ngày thì không cần disable
+    if (!date.isSame(pickup, 'day')) return {}
+
+    return {
+      disabledHours: () => Array.from({ length: pickup.hour() }, (_, i) => i),
+
+      disabledMinutes: (selectedHour: number) => {
+        if (selectedHour === pickup.hour()) {
+          return Array.from({ length: pickup.minute() }, (_, i) => i)
+        }
+        return []
+      },
+
+      disabledSeconds: () => []
+    }
+  }
 
   const onSubmit = async (data: FormValuesI) => {
     try {
@@ -298,7 +319,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
               required: 'Vui lòng nhập số điện thoại người nhận',
               pattern: {
                 value: /^$|^(\+84|0)[0-9]{9,10}$/,
-                message: 'Số điện thoại người nhận không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
+                message: 'Số điện thoại không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
               }
             }}
             render={({ field }) => (
@@ -350,6 +371,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 negative={!!errors.expectedDeliveryTime}
                 message={errors.expectedDeliveryTime?.message}
                 showTime
+                disabledTime={disabledTime}
                 required
               />
             )}

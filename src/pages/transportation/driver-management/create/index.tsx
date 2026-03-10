@@ -9,7 +9,7 @@ import type { CreateDriverRequestI } from '../driverManagement.api'
 
 const toCreateBody = (values: DriverFormValuesI): CreateDriverRequestI => ({
   logisticsId: values.logisticsId,
-  identityNumber: values.identityNumber,
+  idCardNumber: values.idCardNumber,
   fullName: values.fullName,
   phone: values.phone,
   email: values.email || undefined,

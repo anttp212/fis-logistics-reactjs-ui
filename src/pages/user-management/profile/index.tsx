@@ -90,7 +90,7 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <PageWrapper className='p-5' title='Hồ sơ cá nhân' breadcrumbItems={breadcrumbItems}>
+      <PageWrapper className='py-5' title='Hồ sơ cá nhân' breadcrumbItems={breadcrumbItems}>
         <div className='flex items-center justify-center py-12'>
           <div className='text-gray-500'>Không tìm thấy thông tin người dùng</div>
         </div>
@@ -99,7 +99,7 @@ const Profile = () => {
   }
 
   return (
-    <PageWrapper className='p-5' title='Hồ sơ cá nhân' breadcrumbItems={breadcrumbItems}>
+    <PageWrapper className='py-5' title='Hồ sơ cá nhân' breadcrumbItems={breadcrumbItems}>
       <div className='flex flex-col gap-6'>
         {/* Profile Header */}
         <div className='bg-white rounded-lg border border-gray-200 p-6'>

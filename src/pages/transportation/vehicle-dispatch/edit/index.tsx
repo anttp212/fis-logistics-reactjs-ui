@@ -16,7 +16,7 @@ const VehicleDispatchEditPage = () => {
 
   if (!id) {
     return (
-      <PageWrapper className='p-5' title='Chỉnh sửa điều xe' breadcrumbItems={breadcrumbItems}>
+      <PageWrapper className='py-5' title='Chỉnh sửa điều xe' breadcrumbItems={breadcrumbItems}>
         <div className='text-gray-500'>Không tìm thấy yêu cầu điều xe.</div>
       </PageWrapper>
     )

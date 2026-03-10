@@ -44,7 +44,7 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
             )}
           />
           <Controller
-            name='identityNumber'
+            name='idCardNumber'
             control={control}
             rules={{ required: 'Vui lòng nhập CCCD/CMND' }}
             render={({ field }) => (
@@ -53,8 +53,8 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
                 required
                 textLabel='CCCD/CMND'
                 placeholder='Nhập CCCD/CMND'
-                negative={!!errors.identityNumber}
-                message={errors.identityNumber?.message}
+                negative={!!errors.idCardNumber}
+                message={errors.idCardNumber?.message}
               />
             )}
           />

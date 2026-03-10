@@ -21,7 +21,7 @@ const Transportation = () => {
   const transportation = useTransportation()
   return (
     <TransportationContext.Provider value={transportation}>
-      <PageWrapper className='p-5' title='Quản lý vận chuyển' breadcrumbItems={transportation.breadcrumbItems}>
+      <PageWrapper className='py-5' title='Quản lý vận chuyển' breadcrumbItems={transportation.breadcrumbItems}>
         <div className='flex gap-5 flex-col h-full'>
           <TableToolbar
             filterContent={<TransportationFilter control={transportation.control} />}

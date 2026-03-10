@@ -124,9 +124,6 @@ export const MOCK_FLEET_DATA: FleetItemI[] = [
   }
 ]
 
-export const getLogisticsLabel = (logisticsId: string) =>
-  getLogisticDisplayName(MOCK_LOGISTIC_DATA.find((item) => item.id === logisticsId) ?? MOCK_LOGISTIC_DATA[0])
-
 export const formatDate = (value?: string) => {
   if (!value) return '-'
   const date = new Date(value)

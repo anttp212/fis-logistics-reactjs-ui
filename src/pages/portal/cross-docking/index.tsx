@@ -7,7 +7,7 @@ const PortalCrossDockingPage: React.FC = () => {
 
   return (
     <PortalLayout activeKey='cross-docking'>
-      <PageWrapper title='Cross-docking' breadcrumbItems={breadcrumbItems} className='p-5'>
+      <PageWrapper title='Cross-docking' breadcrumbItems={breadcrumbItems} className='py-5'>
         <div className='h-40 rounded-lg border border-dashed border-gray-200 bg-gray-50' />
       </PageWrapper>
     </PortalLayout>

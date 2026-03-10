@@ -8,7 +8,7 @@ const PortalInboundPage: React.FC = () => {
 
   return (
     <PortalLayout activeKey='inbound'>
-      <PageWrapper title='Đăng ký dịch vụ Inbound (Nhập kho)' breadcrumbItems={breadcrumbItems} className='p-5'>
+      <PageWrapper title='Đăng ký dịch vụ Inbound (Nhập kho)' breadcrumbItems={breadcrumbItems} className='py-5'>
         <InboundRegistrationForm />
       </PageWrapper>
     </PortalLayout>

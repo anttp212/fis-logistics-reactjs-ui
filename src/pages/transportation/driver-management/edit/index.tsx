@@ -9,7 +9,7 @@ import type { UpdateDriverRequestI } from '../driverManagement.api'
 
 const toUpdateBody = (values: DriverFormValuesI): UpdateDriverRequestI => ({
   logisticsId: values.logisticsId,
-  identityNumber: values.identityNumber,
+  idCardNumber: values.idCardNumber,
   fullName: values.fullName,
   phone: values.phone,
   email: values.email || undefined,

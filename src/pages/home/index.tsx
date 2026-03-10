@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Chart } from 'react-google-charts'
-import dayjs from 'dayjs'
 import { FISButton, FISInputDate } from 'fis-component'
 import { useGetSecurityStatsQuery } from '@pages/report/gate-in-out/gateInOut.api'
 import { useGetCoordinatorReportQuery, useGetDashboardOverviewQuery } from './dashboard.api'
+import dayjs from '@utils/dayjs'
 
 type SecurityStatsParamsT = { fromDate?: string; toDate?: string }
 type HomeFilterValuesT = { fromDate: Date | null; toDate: Date | null }

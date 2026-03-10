@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
-import dayjs from 'dayjs'
+import dayjs from '@utils/dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { Input, message, Modal, Table } from 'antd'
@@ -124,7 +124,29 @@ const VehicleDispatchCreatePage = () => {
   const toIsoDateTime = (dateStr: string) =>
     dateStr ? (dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00.000Z`) : ''
   const selectedPickupTime = watch('expectedPickupTime')
-  const selectedPickupTimeMin = selectedPickupTime ? dayjs(parseDateValue(selectedPickupTime)) : undefined;
+  const selectedPickupTimeMin = selectedPickupTime ? dayjs(selectedPickupTime) : undefined
+
+  const disabledTime = (date: dayjs.Dayjs | null) => {
+    if (!date || !selectedPickupTimeMin) return {}
+
+    const pickup = selectedPickupTimeMin
+
+    // nếu không phải cùng ngày thì không cần disable
+    if (!date.isSame(pickup, 'day')) return {}
+
+    return {
+      disabledHours: () => Array.from({ length: pickup.hour() }, (_, i) => i),
+
+      disabledMinutes: (selectedHour: number) => {
+        if (selectedHour === pickup.hour()) {
+          return Array.from({ length: pickup.minute() }, (_, i) => i)
+        }
+        return []
+      },
+
+      disabledSeconds: () => []
+    }
+  }
 
   const onSubmit = async (data: FormValuesI) => {
     try {
@@ -268,7 +290,7 @@ const VehicleDispatchCreatePage = () => {
                 required: 'Vui lòng nhập số điện thoại người nhận',
                 pattern: {
                   value: /^$|^(\+84|0)[0-9]{9,10}$/,
-                  message: 'Số điện thoại người nhận không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
+                  message: 'Số điện thoại không đúng định dạng (VD: 0912345678 hoặc +84912345678)'
                 }
               }}
               render={({ field }) => (
@@ -296,11 +318,11 @@ const VehicleDispatchCreatePage = () => {
                     setValue('expectedDeliveryTime', '')
                   }}
                   picker='date'
+                  showTime
                   format='DD/MM/YYYY HH:mm'
                   negative={!!errors.expectedPickupTime}
                   message={errors.expectedPickupTime?.message}
                   required
-                  showTime
                 />
               )}
             />
@@ -316,14 +338,16 @@ const VehicleDispatchCreatePage = () => {
                   onChange={(date) => field.onChange(date ? date.toISOString() : '')}
                   minDate={selectedPickupTimeMin}
                   picker='date'
+                  showTime
                   format='DD/MM/YYYY HH:mm'
                   negative={!!errors.expectedDeliveryTime}
                   message={errors.expectedDeliveryTime?.message}
                   required
-                  showTime
+                  disabledTime={disabledTime}
                 />
               )}
             />
+
             <Controller
               name='content'
               control={control}

@@ -18,13 +18,6 @@ const LogisticInformationFilter = ({ control }: LogisticInformationFilterPropsI)
     <Row gutter={[12, 12]}>
       <Col span={24}>
         <Controller
-          name='phone'
-          control={control}
-          render={({ field }) => <FISInputText {...field} textLabel='Số điện thoại' placeholder='Nhập số điện thoại' />}
-        />
-      </Col>
-      <Col span={24}>
-        <Controller
           name='customerType'
           control={control}
           render={({ field }) => (

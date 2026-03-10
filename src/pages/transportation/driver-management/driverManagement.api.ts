@@ -5,7 +5,7 @@ import type { DriverItemI } from './data'
 
 export interface CreateDriverRequestI {
   logisticsId: string
-  identityNumber: string
+  idCardNumber: string
   fullName: string
   phone: string
   email?: string
@@ -17,7 +17,7 @@ export interface CreateDriverRequestI {
 
 export interface UpdateDriverRequestI {
   logisticsId: string
-  identityNumber: string
+  idCardNumber: string
   fullName: string
   phone: string
   email?: string

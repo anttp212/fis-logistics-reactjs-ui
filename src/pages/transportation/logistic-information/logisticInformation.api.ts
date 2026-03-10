@@ -7,10 +7,10 @@ export interface CreateLogisticRequestI {
   customerType: string
   customerCode?: string
   taxCode?: string
-  organizationName?: string
+  companyName?: string
   shortName?: string
   fullName?: string
-  identityNumber?: string
+  idCardNumber?: string
   address?: string
   paymentType: string
   email?: string
@@ -23,7 +23,7 @@ export type UpdateLogisticRequestT = CreateLogisticRequestI
 export interface GetLogisticListParamsI {
   page?: number
   size?: number
-  search?: string
+  keyword?: string
   phone?: string
   customerType?: string
   taxCode?: string
@@ -61,7 +61,7 @@ export const logisticInformationApi = createApi({
         const searchParams = new URLSearchParams()
         if (p.page != null) searchParams.set('page', String(p.page))
         if (p.size != null) searchParams.set('size', String(p.size))
-        if (p.search?.trim()) searchParams.set('search', p.search.trim())
+        if (p.keyword?.trim()) searchParams.set('keyword', p.keyword.trim())
         if (p.phone?.trim()) searchParams.set('phone', p.phone.trim())
         if (p.customerType?.trim()) searchParams.set('customerType', p.customerType.trim())
         if (p.taxCode?.trim()) searchParams.set('taxCode', p.taxCode.trim())

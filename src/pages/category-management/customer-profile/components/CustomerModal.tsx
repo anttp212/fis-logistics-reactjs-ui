@@ -210,7 +210,7 @@ const CustomerModal: FC<CustomerModalPropsI> = ({ open, onClose, onSubmit, initi
                 }}
                 render={({ field }) => (
                   <div>
-                    <FISInputText {...field} textLabel='Mã khách hàng' placeholder='Nhập mã khách hàng' />
+                    <FISInputText {...field} required textLabel='Mã khách hàng' placeholder='Nhập mã khách hàng' />
                     {errors.customerCode && <p className='mt-1 text-sm text-red-600'>{errors.customerCode.message}</p>}
                   </div>
                 )}

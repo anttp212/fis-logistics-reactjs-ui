@@ -324,7 +324,7 @@ const UserManagementUserGroup = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Nhóm người dùng' breadcrumbItems={userGroup.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Nhóm người dùng' breadcrumbItems={userGroup.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar

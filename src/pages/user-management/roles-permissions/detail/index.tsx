@@ -235,7 +235,7 @@ const RoleDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='py-5'
       title='Chi tiết vai trò & phân quyền'
       breadcrumbItems={breadcrumbItems}
       hasBackButton

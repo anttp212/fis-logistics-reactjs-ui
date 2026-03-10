@@ -14,7 +14,7 @@ export const TransportationSubPage = ({ title }: TransportationSubPagePropsI) =>
     { label: title }
   ]
   return (
-    <PageWrapper className='p-5' title={title} breadcrumbItems={breadcrumbItems}>
+    <PageWrapper className='py-5' title={title} breadcrumbItems={breadcrumbItems}>
       <div className='flex-1' />
     </PageWrapper>
   )

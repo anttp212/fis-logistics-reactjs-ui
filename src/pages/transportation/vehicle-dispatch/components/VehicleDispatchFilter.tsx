@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import dayjs from 'dayjs'
 import { Col, Row } from 'antd'
 import { Controller, Control, useWatch, type UseFormSetValue } from 'react-hook-form'
 import { FISInputDate, FISSelect } from 'fis-component'
 import { useGetVehicleTypesQuery, useGetDriversQuery } from '../vehicleDispatchMaster.api'
 import { STATUS_OPTIONS } from '../constants/status'
+import dayjs from '@utils/dayjs'
 
 const toSelectOptions = (items: { id: string; name: string }[] | undefined, allLabel = 'Tất cả') => [
   { items: [{ label: allLabel, value: '' }, ...(items ?? []).map((item) => ({ label: item.name, value: item.id }))] }

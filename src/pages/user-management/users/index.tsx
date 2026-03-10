@@ -441,7 +441,7 @@ const UserManagementUsers = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Tài khoản người dùng' breadcrumbItems={users.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Tài khoản người dùng' breadcrumbItems={users.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
@@ -458,36 +458,34 @@ const UserManagementUsers = () => {
         />
 
         {/* FISTable */}
-        <div className='flex-1 bg-white rounded-lg overflow-hidden p-4'>
-          <FISTable
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            scroll={{ x: 'max-content' }}
-            expandable={{
-              expandedRowKeys,
-              expandedRowRender: (record: UserI) => (
-                <div className='p-4'>
-                  <p className='text-sm text-gray-600'>
-                    <strong>Email:</strong> {record.email}
-                  </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Nhóm:</strong> {record.userGroup}
-                  </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Phòng ban:</strong> {record.department ?? '—'}
-                  </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Vai trò:</strong> {getRoleLabel(record.role)}
-                  </p>
-                </div>
-              ),
-              onExpand: (_expanded, record) => toggleExpand(record.key),
-              expandIcon: () => null,
-              expandIconColumnIndex: -1
-            }}
-          />
-        </div>
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowSelection={rowSelection}
+          scroll={{ x: 'max-content' }}
+          expandable={{
+            expandedRowKeys,
+            expandedRowRender: (record: UserI) => (
+              <div className='p-4'>
+                <p className='text-sm text-gray-600'>
+                  <strong>Email:</strong> {record.email}
+                </p>
+                <p className='text-sm text-gray-600 mt-2'>
+                  <strong>Nhóm:</strong> {record.userGroup}
+                </p>
+                <p className='text-sm text-gray-600 mt-2'>
+                  <strong>Phòng ban:</strong> {record.department ?? '—'}
+                </p>
+                <p className='text-sm text-gray-600 mt-2'>
+                  <strong>Vai trò:</strong> {getRoleLabel(record.role)}
+                </p>
+              </div>
+            ),
+            onExpand: (_expanded, record) => toggleExpand(record.key),
+            expandIcon: () => null,
+            expandIconColumnIndex: -1
+          }}
+        />
       </div>
 
       {/* User Modal */}

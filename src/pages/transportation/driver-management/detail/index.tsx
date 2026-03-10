@@ -7,7 +7,7 @@ import {
   buildTransportationDriverManagementAssignVehiclePath,
   buildTransportationDriverManagementEditPath
 } from '@constants'
-import { GENDER_LABELS, MOCK_DRIVER_DATA, STATUS_LABELS, formatDate, getLogisticsLabel, getVehicleLabel } from '../data'
+import { GENDER_LABELS, MOCK_DRIVER_DATA, STATUS_LABELS, formatDate, getVehicleLabel } from '../data'
 
 const DetailItem = ({ label, value }: { label: string; value?: string }) => (
   <div className='space-y-1'>
@@ -40,7 +40,7 @@ const DriverManagementDetailPage = () => {
         <div className='flex justify-between items-start gap-4 mb-6'>
           <div>
             <h3 className='text-lg font-semibold text-slate-800'>{item?.fullName || 'Không tìm thấy tài xế'}</h3>
-            <p className='text-sm text-slate-500 mt-1'>{item ? getLogisticsLabel(item.logisticsId) : ''}</p>
+            <p className='text-sm text-slate-500 mt-1'>{item ? '' : ''}</p>
           </div>
           {item && (
             <div className='flex gap-2'>
@@ -62,8 +62,8 @@ const DriverManagementDetailPage = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
           <DetailItem label='Tên cá nhân' value={item?.fullName} />
-          <DetailItem label='Logistics' value={item ? getLogisticsLabel(item.logisticsId) : '-'} />
-          <DetailItem label='CCCD/CMND' value={item?.identityNumber} />
+          <DetailItem label='Logistics' value={item ? '-' : '-'} />
+          <DetailItem label='CCCD/CMND' value={item?.idCardNumber} />
           <DetailItem label='Số điện thoại' value={item?.phone} />
           <DetailItem label='Email' value={item?.email} />
           <DetailItem label='Giới tính' value={item?.gender ? GENDER_LABELS[item.gender] : '-'} />
