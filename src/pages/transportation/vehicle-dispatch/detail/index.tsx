@@ -204,9 +204,9 @@ const VehicleDispatchDetail = () => {
 
         {order && !isLoading && (
           <>
-            {/* 1. Thông tin chung */}
+            {/* Thông tin chung */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>1. Thông tin chung</h3>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Thông tin chung</h3>
               <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
                 <InfoItem label='Mã điều xe' value={order.dispatchCode ?? '-'} />
                 <InfoItem
@@ -251,9 +251,9 @@ const VehicleDispatchDetail = () => {
               </div>
             </div>
 
-            {/* 2. Thông tin chi tiết container */}
+            {/* Thông tin chi tiết container */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>2. Thông tin chi tiết container</h3>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Thông tin chi tiết container</h3>
               <FISTable
                 dataSource={order.containers ?? []}
                 columns={containerColumns}
@@ -263,9 +263,9 @@ const VehicleDispatchDetail = () => {
               />
             </div>
 
-            {/* 3. Ghi chú */}
+            {/* Ghi chú */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>3. Ghi chú</h3>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Ghi chú</h3>
               <p className='text-sm text-gray-700 whitespace-pre-wrap'>{order.note ?? order.notes ?? '-'}</p>
             </div>
           </>

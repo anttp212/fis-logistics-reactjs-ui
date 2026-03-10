@@ -11,13 +11,13 @@ import { AddIcon } from '@images'
 import { FISButton, FISButtonGroup, FISPagination, FISTable, FISTableCell, FISTableHeaderCell } from 'fis-component'
 import {
   CUSTOMER_TYPE_LABELS,
-  MOCK_LOGISTIC_DATA,
   PAYMENT_LABELS,
   formatDisplayDate,
   getLogisticDisplayName,
   type LogisticInformationI
 } from './data'
 import LogisticInformationFilter from './components/LogisticInformationFilter'
+import { useGetLogisticListQuery } from './logisticInformation.api'
 
 interface LogisticFilterValuesI {
   phone: string
@@ -43,33 +43,32 @@ const LogisticInformationPage = () => {
   const customerType = tableToolbar.filters?.customerType || ''
   const taxCode = tableToolbar.filters?.taxCode || ''
 
+  const listParams = useMemo(
+    () => ({
+      page,
+      size: pageSize,
+      search: search.trim() || undefined,
+      phone: phone.trim() || undefined,
+      customerType: customerType.trim() || undefined,
+      taxCode: taxCode.trim() || undefined
+    }),
+    [page, pageSize, search, phone, customerType, taxCode]
+  )
+  const { data: listResponse, isLoading } = useGetLogisticListQuery(listParams)
+
   useEffect(() => {
     setPage(1)
   }, [customerType, phone, search, taxCode])
 
-  const filteredData = useMemo(() => {
-    const nameKeyword = search.trim().toLowerCase()
-    const phoneKeyword = phone.trim().toLowerCase()
-    const taxKeyword = taxCode.trim().toLowerCase()
-
-    return MOCK_LOGISTIC_DATA.filter((item) => {
-      const matchedName = !nameKeyword || getLogisticDisplayName(item).toLowerCase().includes(nameKeyword)
-      const matchedPhone = !phoneKeyword || (item.phone || '').toLowerCase().includes(phoneKeyword)
-      const matchedType = !customerType || item.customerType === customerType
-      const matchedTaxCode = !taxKeyword || (item.taxCode || '').toLowerCase().includes(taxKeyword)
-      return matchedName && matchedPhone && matchedType && matchedTaxCode
-    })
-  }, [customerType, phone, search, taxCode])
-
-  const total = filteredData.length
-
+  const total = listResponse?.pagination?.totalElements ?? 0
   const dataSource = useMemo(() => {
     const start = (page - 1) * pageSize
-    return filteredData.slice(start, start + pageSize).map((item, index) => ({
+    const items = listResponse?.data ?? []
+    return items.slice(0, pageSize).map((item, index) => ({
       ...item,
       _index: start + index + 1
     }))
-  }, [filteredData, page, pageSize])
+  }, [listResponse, page, pageSize])
 
   const columns = [
     {
@@ -203,13 +202,17 @@ const LogisticInformationPage = () => {
           }
         />
 
-        <FISTable
-          dataSource={dataSource}
-          columns={columns}
-          rowKey='id'
-          scroll={{ y: 'calc(100vh - 320px)' }}
-          pagination={false}
-        />
+        {isLoading ? (
+          <div className='flex-1 flex items-center justify-center text-gray-500'>Đang tải dữ liệu...</div>
+        ) : (
+          <FISTable
+            dataSource={dataSource}
+            columns={columns}
+            rowKey='id'
+            scroll={{ y: 'calc(100vh - 320px)' }}
+            loading={isLoading}
+          />
+        )}
 
         <div>
           <FISPagination

@@ -26,7 +26,6 @@ interface GateInOutRecordI {
   plateNo: string
   timeIn: string
   timeOut: string
-  status: string
 }
 
 const VEHICLE_TYPE_LABELS: Record<string, string> = {
@@ -50,8 +49,9 @@ const LOAI_HINH_OPTIONS = [
   {
     items: [
       { label: 'Tất cả', value: '' },
-      { label: 'Vào cổng', value: 'CHECKIN' },
-      { label: 'Ra cổng', value: 'CHECKOUT' }
+      { label: 'Chờ', value: 'PENDING' },
+      { label: 'Ra cổng', value: 'CHECKED_OUT' },
+      { label: 'Vào cổng', value: 'CHECKED_IN' }
     ]
   }
 ]
@@ -74,19 +74,18 @@ const mapRegistrationToRecord = (r: SecurityRegistrationI, stt: number): GateInO
     key: r.id,
     stt,
     driverName: r.driverName,
-    type: isCheckedOut ? 'Ra' : 'Vào',
+    type: r.status === 'PENDING' ? 'Chờ' : isCheckedOut ? 'Ra cổng' : 'Vào cổng',
     vehicleType: VEHICLE_TYPE_LABELS[r.vehicleType] ?? r.vehicleType,
     plateNo: r.plateNo,
     timeIn: formatDateTime(r.estimatedArrival ?? r.createdAt),
-    timeOut: isCheckedOut ? formatDateTime(r.updatedAt) : '—',
-    status: isCheckedOut ? 'Đã ra' : 'Đang trong khu vực'
+    timeOut: isCheckedOut ? formatDateTime(r.updatedAt) : '—'
   }
 }
 
 type GateInOutApiParamsT = {
   dateFrom?: string
   dateTo?: string
-  status?: 'CHECKIN' | 'CHECKOUT'
+  status?: 'PENDING' | 'CHECKED_OUT' | 'CHECKED_IN'
   vehicleType?: string
   page?: number
   size?: number
@@ -165,7 +164,7 @@ const GateInOutReport = () => {
     const params: GateInOutApiParamsT = {
       dateFrom: values.fromDate ? toBoundaryIsoString(values.fromDate, 'start') : undefined,
       dateTo: values.toDate ? toBoundaryIsoString(values.toDate, 'end') : undefined,
-      status: (values.status as 'CHECKIN' | 'CHECKOUT') || undefined,
+      status: (values.status as 'PENDING' | 'CHECKED_OUT' | 'CHECKED_IN') || undefined,
       vehicleType: values.vehicleType || undefined
     }
     setAppliedParams(params)
@@ -229,17 +228,10 @@ const GateInOutReport = () => {
     {
       dataIndex: 'timeOut',
       key: 'timeOut',
+      className: 'none-border-right',
       width: 100,
       title: () => <FISTableHeaderCell label='GIỜ RA' hasRightDivider />,
       render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.timeOut} textAlign='left' />
-    },
-    {
-      dataIndex: 'status',
-      key: 'status',
-      width: 150,
-      className: 'none-border-right',
-      title: () => <FISTableHeaderCell label='TRẠNG THÁI' />,
-      render: (_: unknown, row: GateInOutRecordI) => <FISTableCell content={row.status} textAlign='left' />
     }
   ]
 

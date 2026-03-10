@@ -175,7 +175,7 @@ const InboundRegistrationForm: React.FC = () => {
         {/* Section 2: Thông tin hàng hóa */}
         <div className='rounded-lg border border-gray-200 bg-white p-6'>
           <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-            2. Thông tin hàng hóa
+            Thông tin hàng hóa
           </FISText>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <Controller
@@ -295,7 +295,7 @@ const InboundRegistrationForm: React.FC = () => {
         {/* Section 3: Thời gian kế hoạch */}
         <div className='rounded-lg border border-gray-200 bg-white p-6'>
           <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-            3. Thời gian kế hoạch
+            Thời gian kế hoạch
           </FISText>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <Controller

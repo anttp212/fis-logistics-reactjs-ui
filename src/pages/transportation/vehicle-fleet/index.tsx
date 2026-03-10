@@ -14,7 +14,6 @@ import {
   FISTableHeaderCell
 } from 'fis-component'
 import {
-  MOCK_FLEET_DATA,
   STATUS_BADGE,
   STATUS_LABELS,
   VEHICLE_TYPE_LABELS,
@@ -23,6 +22,7 @@ import {
   type FleetItemI
 } from './data'
 import VehicleFleetFilter from './components/VehicleFleetFilter'
+import { useGetVehicleFleetListQuery } from './vehicleFleet.api'
 
 interface FleetFilterValuesI {
   status: string
@@ -43,37 +43,31 @@ const VehicleFleetPage = () => {
   const status = tableToolbar.filters?.status || ''
   const logisticsId = tableToolbar.filters?.logisticsId || ''
 
+  const listParams = useMemo(
+    () => ({
+      page,
+      size: pageSize,
+      search: search.trim() || undefined,
+      status: status.trim() || undefined,
+      logisticsId: logisticsId.trim() || undefined
+    }),
+    [page, pageSize, search, status, logisticsId]
+  )
+  const { data: listResponse, isLoading } = useGetVehicleFleetListQuery(listParams)
+
   useEffect(() => {
     setPage(1)
   }, [search, status, logisticsId])
 
-  const filteredData = useMemo(() => {
-    const keyword = search.trim().toLowerCase()
-    return MOCK_FLEET_DATA.filter((item) => {
-      const logisticsLabel = getLogisticsLabel(item.logisticsId).toLowerCase()
-      const vehicleTypeLabel = VEHICLE_TYPE_LABELS[item.vehicleType].toLowerCase()
-      const matchedKeyword =
-        !keyword ||
-        item.plateNumber.toLowerCase().includes(keyword) ||
-        (item.secondaryPlateNumber || '').toLowerCase().includes(keyword) ||
-        logisticsLabel.includes(keyword) ||
-        vehicleTypeLabel.includes(keyword)
-
-      const matchedStatus = !status || item.status === status
-      const matchedLogistics = !logisticsId || item.logisticsId === logisticsId
-
-      return matchedKeyword && matchedStatus && matchedLogistics
-    })
-  }, [logisticsId, search, status])
-
-  const total = filteredData.length
+  const total = listResponse?.pagination?.totalElements ?? 0
   const dataSource = useMemo(() => {
     const start = (page - 1) * pageSize
-    return filteredData.slice(start, start + pageSize).map((item, index) => ({
+    const items = listResponse?.data ?? []
+    return items.slice(0, pageSize).map((item, index) => ({
       ...item,
       _index: start + index + 1
     }))
-  }, [filteredData, page, pageSize])
+  }, [listResponse, page, pageSize])
 
   const columns = [
     {
@@ -164,6 +158,20 @@ const VehicleFleetPage = () => {
                         strokeLinecap='round'
                         strokeLinejoin='round'
                         strokeWidth={2}
+                        d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                      />
+                    </svg>
+                  ),
+                  onClick: () => navigate(buildTransportationVehicleFleetEditPath(row.id))
+                },
+                {
+                  label: '',
+                  startIcon: (
+                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
                         d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
                       />
                       <path
@@ -175,20 +183,6 @@ const VehicleFleetPage = () => {
                     </svg>
                   ),
                   onClick: () => navigate(buildTransportationVehicleFleetDetailPath(row.id))
-                },
-                {
-                  label: '',
-                  startIcon: (
-                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={2}
-                        d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
-                      />
-                    </svg>
-                  ),
-                  onClick: () => navigate(buildTransportationVehicleFleetEditPath(row.id))
                 }
               ]}
             />
@@ -229,13 +223,11 @@ const VehicleFleetPage = () => {
           }
         />
 
-        <FISTable
-          dataSource={dataSource}
-          columns={columns}
-          rowKey='id'
-          scroll={{ y: 'calc(100vh - 320px)' }}
-          pagination={false}
-        />
+        {isLoading ? (
+          <div className='flex-1 flex items-center justify-center text-gray-500'>Đang tải dữ liệu...</div>
+        ) : (
+          <FISTable dataSource={dataSource} columns={columns} rowKey='id' scroll={{ y: 'calc(100vh - 320px)' }} />
+        )}
 
         <div>
           <FISPagination

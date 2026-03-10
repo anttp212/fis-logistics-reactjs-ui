@@ -139,7 +139,7 @@ const VehicleFleetForm = ({
 
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          2. Ghi chú
+          Ghi chú
         </FISText>
         <Controller
           name='note'
@@ -152,7 +152,7 @@ const VehicleFleetForm = ({
 
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          3. Đính kèm file
+          Đính kèm file
         </FISText>
         <Upload
           action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'

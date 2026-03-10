@@ -7,7 +7,7 @@ export interface SecurityRegistrationI {
   registrationCode: string
   createdAt: string
   updatedAt: string
-  status: 'CHECKED_IN' | 'CHECKED_OUT'
+  status: 'PENDING' | 'CHECKED_OUT' | 'CHECKED_IN'
   driverName: string
   driverPhone: string
   plateNo: string
@@ -22,7 +22,7 @@ export interface SecurityRegistrationI {
 export interface GetSecurityRegistrationsParamsI {
   dateFrom?: string
   dateTo?: string
-  status?: 'CHECKIN' | 'CHECKOUT'
+  status?: 'PENDING' | 'CHECKED_OUT' | 'CHECKED_IN'
   search?: string
   page?: number
   size?: number

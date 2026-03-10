@@ -1,16 +1,29 @@
 import type { UploadFile } from 'antd'
 import { message } from 'antd'
-import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PageWrapper } from '@components'
 import { ROUTES } from '@constants'
 import VehicleFleetForm from '../VehicleFleetForm'
-import { MOCK_FLEET_DATA, toFleetFormValues, type FleetFormValuesI } from '../data'
+import { toFleetFormValues, type FleetFormValuesI } from '../data'
+import { useGetVehicleFleetDetailQuery, useUpdateVehicleFleetMutation } from '../vehicleFleet.api'
+import type { UpdateVehicleFleetRequestT } from '../vehicleFleet.api'
+
+const toUpdateBody = (values: FleetFormValuesI): UpdateVehicleFleetRequestT => ({
+  logisticsId: values.logisticsId,
+  vehicleType: values.vehicleType || 'TRACTOR',
+  plateNumber: values.plateNumber,
+  secondaryPlateNumber: values.secondaryPlateNumber || undefined,
+  payload: values.payload || undefined,
+  weight: values.weight || undefined,
+  status: values.status || 'ACTIVE',
+  note: values.note || undefined
+})
 
 const VehicleFleetEditPage = () => {
   const navigate = useNavigate()
   const { id } = useParams()
-  const item = useMemo(() => MOCK_FLEET_DATA.find((entry) => entry.id === id), [id])
+  const { data: item, isLoading: isLoadingDetail } = useGetVehicleFleetDetailQuery(id!, { skip: !id })
+  const [updateVehicle, { isLoading }] = useUpdateVehicleFleetMutation()
 
   const breadcrumbItems = [
     { label: 'Trang chủ', onClick: () => navigate(ROUTES.home) },
@@ -19,9 +32,33 @@ const VehicleFleetEditPage = () => {
     { label: 'Chỉnh sửa xe' }
   ]
 
-  const handleSubmit = async (_values: FleetFormValuesI, _files: UploadFile[]) => {
-    message.success('Cập nhật xe thành công')
-    navigate(ROUTES.transportationVehicleFleet)
+  const handleSubmit = async (values: FleetFormValuesI, _files: UploadFile[]) => {
+    if (!id) return
+    try {
+      await updateVehicle({ id, body: toUpdateBody(values) }).unwrap()
+      message.success('Cập nhật xe thành công')
+      navigate(ROUTES.transportationVehicleFleet)
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } }).data?.message : null
+      message.error(msg || 'Cập nhật xe thất bại')
+    }
+  }
+
+  if (!id) {
+    return (
+      <PageWrapper className='overflow-y-auto mt-6' title='Chỉnh sửa xe' breadcrumbItems={breadcrumbItems}>
+        <div className='text-gray-500'>Không tìm thấy xe.</div>
+      </PageWrapper>
+    )
+  }
+
+  if (isLoadingDetail || !item) {
+    return (
+      <PageWrapper className='overflow-y-auto mt-6' title='Chỉnh sửa xe' breadcrumbItems={breadcrumbItems}>
+        <div className='text-gray-500'>Đang tải...</div>
+      </PageWrapper>
+    )
   }
 
   return (
@@ -38,6 +75,7 @@ const VehicleFleetEditPage = () => {
         submitLabel='Lưu thay đổi'
         onSubmit={handleSubmit}
         onCancel={() => navigate(ROUTES.transportationVehicleFleet)}
+        isSubmitting={isLoading}
       />
     </PageWrapper>
   )

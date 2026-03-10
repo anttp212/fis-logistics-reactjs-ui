@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form'
-import { FISButton, FISCheckboxGroup, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
+import { FISButton, FISRadioGroup, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
 import { GENDER_OPTIONS, LOGISTICS_OPTIONS, STATUS_CHECKBOX_OPTIONS, type DriverFormValuesI } from './data'
 
 interface DriverFormPropsI {
@@ -122,12 +122,11 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
             rules={{ required: 'Vui lòng chọn trạng thái' }}
             render={({ field }) => (
               <div className='md:col-span-2'>
-                <FISCheckboxGroup
+                <FISRadioGroup
+                  {...field}
                   direction='row'
                   groupLabel='Trạng thái'
                   options={[...STATUS_CHECKBOX_OPTIONS]}
-                  value={field.value ? [field.value] : []}
-                  onChange={(nextValue) => field.onChange(nextValue[0] ?? '')}
                 />
                 {errors.status && <p className='mt-1 text-sm text-red-500'>{errors.status.message}</p>}
               </div>
@@ -138,7 +137,7 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
 
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          2. Ghi chú
+          Ghi chú
         </FISText>
         <Controller
           name='note'

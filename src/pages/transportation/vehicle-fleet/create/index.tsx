@@ -5,9 +5,23 @@ import { ROUTES } from '@constants'
 import VehicleFleetForm from '../VehicleFleetForm'
 import { toFleetFormValues, type FleetFormValuesI } from '../data'
 import type { UploadFile } from 'antd'
+import { useCreateVehicleFleetMutation } from '../vehicleFleet.api'
+import type { CreateVehicleFleetRequestI } from '../vehicleFleet.api'
+
+const toCreateBody = (values: FleetFormValuesI): CreateVehicleFleetRequestI => ({
+  logisticsId: values.logisticsId,
+  vehicleType: values.vehicleType || 'TRACTOR',
+  plateNumber: values.plateNumber,
+  secondaryPlateNumber: values.secondaryPlateNumber || undefined,
+  payload: values.payload || undefined,
+  weight: values.weight || undefined,
+  status: values.status || 'ACTIVE',
+  note: values.note || undefined
+})
 
 const VehicleFleetCreatePage = () => {
   const navigate = useNavigate()
+  const [createVehicle, { isLoading }] = useCreateVehicleFleetMutation()
 
   const breadcrumbItems = [
     { label: 'Trang chủ', onClick: () => navigate(ROUTES.home) },
@@ -16,9 +30,16 @@ const VehicleFleetCreatePage = () => {
     { label: 'Tạo xe' }
   ]
 
-  const handleSubmit = async (_values: FleetFormValuesI, _files: UploadFile[]) => {
-    message.success('Tạo xe thành công')
-    navigate(ROUTES.transportationVehicleFleet)
+  const handleSubmit = async (values: FleetFormValuesI, _files: UploadFile[]) => {
+    try {
+      await createVehicle(toCreateBody(values)).unwrap()
+      message.success('Tạo xe thành công')
+      navigate(ROUTES.transportationVehicleFleet)
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } }).data?.message : null
+      message.error(msg || 'Tạo xe thất bại')
+    }
   }
 
   return (
@@ -34,6 +55,7 @@ const VehicleFleetCreatePage = () => {
         submitLabel='Tạo xe'
         onSubmit={handleSubmit}
         onCancel={() => navigate(ROUTES.transportationVehicleFleet)}
+        isSubmitting={isLoading}
       />
     </PageWrapper>
   )

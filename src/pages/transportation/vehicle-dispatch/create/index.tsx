@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { PlusOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
@@ -111,8 +112,8 @@ const VehicleDispatchCreatePage = () => {
   ]
 
   /** Parse string sang Date: full ISO dùng new Date(), YYYY-MM-DD dùng local để tránh lệch timezone */
-  const parseDateValue = (val: string): Date | null => {
-    if (!val) return null
+  const parseDateValue = (val: string): Date | undefined => {
+    if (!val) return undefined
     if (val.includes('T')) return new Date(val)
     const parts = val.split('-').map(Number)
     if (parts.length !== 3) return new Date(val)
@@ -123,7 +124,7 @@ const VehicleDispatchCreatePage = () => {
   const toIsoDateTime = (dateStr: string) =>
     dateStr ? (dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00.000Z`) : ''
   const selectedPickupTime = watch('expectedPickupTime')
-  const selectedPickupTimeMin = selectedPickupTime ? dayjs(parseDateValue(selectedPickupTime) ?? undefined) : undefined
+  const selectedPickupTimeMin = selectedPickupTime ? dayjs(parseDateValue(selectedPickupTime)) : undefined;
 
   const onSubmit = async (data: FormValuesI) => {
     try {
@@ -177,10 +178,10 @@ const VehicleDispatchCreatePage = () => {
       hasBackButton
     >
       <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-        {/* 1. Thông tin chung */}
+        {/* Thông tin chung */}
         <div className='rounded-lg border border-gray-200 bg-white p-6'>
           <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-            1. Thông tin chung
+            Thông tin chung
           </FISText>
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
             <Controller
@@ -339,10 +340,10 @@ const VehicleDispatchCreatePage = () => {
           </div>
         </div>
 
-        {/* 2. Thông tin chi tiết container */}
+        {/* Thông tin chi tiết container */}
         <div className='rounded-lg border border-gray-200 bg-white p-6'>
           <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-            2. Thông tin chi tiết container
+            Thông tin chi tiết container
           </FISText>
           <div className='space-y-4'>
             {fields.map((field, index) => (
@@ -434,15 +435,16 @@ const VehicleDispatchCreatePage = () => {
               </div>
             ))}
             <FISButton type='button' variant='secondary' onClick={handleAddContainer}>
-              Thêm container
+              <PlusOutlined />
+              <span className='sr-only'>Thêm container</span>
             </FISButton>
           </div>
         </div>
 
-        {/* 3. Ghi chú */}
+        {/* Ghi chú */}
         <div className='rounded-lg border border-gray-200 bg-white p-6'>
           <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-            3. Ghi chú
+            Ghi chú
           </FISText>
           <Controller
             name='note'

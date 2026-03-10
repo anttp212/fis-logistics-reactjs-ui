@@ -4,9 +4,24 @@ import { PageWrapper } from '@components'
 import { ROUTES } from '@constants'
 import DriverForm from '../DriverForm'
 import { toDriverFormValues, type DriverFormValuesI } from '../data'
+import { useCreateDriverMutation } from '../driverManagement.api'
+import type { CreateDriverRequestI } from '../driverManagement.api'
+
+const toCreateBody = (values: DriverFormValuesI): CreateDriverRequestI => ({
+  logisticsId: values.logisticsId,
+  identityNumber: values.identityNumber,
+  fullName: values.fullName,
+  phone: values.phone,
+  email: values.email || undefined,
+  password: values.password,
+  gender: values.gender || undefined,
+  status: values.status || 'ACTIVE',
+  note: values.note || undefined
+})
 
 const DriverManagementCreatePage = () => {
   const navigate = useNavigate()
+  const [createDriver, { isLoading }] = useCreateDriverMutation()
 
   const breadcrumbItems = [
     { label: 'Trang chủ', onClick: () => navigate(ROUTES.home) },
@@ -15,9 +30,16 @@ const DriverManagementCreatePage = () => {
     { label: 'Tạo tài xế' }
   ]
 
-  const handleSubmit = async (_values: DriverFormValuesI) => {
-    message.success('Tạo tài xế thành công')
-    navigate(ROUTES.transportationDriverManagement)
+  const handleSubmit = async (values: DriverFormValuesI) => {
+    try {
+      await createDriver(toCreateBody(values)).unwrap()
+      message.success('Tạo tài xế thành công')
+      navigate(ROUTES.transportationDriverManagement)
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } }).data?.message : null
+      message.error(msg || 'Tạo tài xế thất bại')
+    }
   }
 
   return (
@@ -33,6 +55,7 @@ const DriverManagementCreatePage = () => {
         submitLabel='Tạo tài xế'
         onSubmit={handleSubmit}
         onCancel={() => navigate(ROUTES.transportationDriverManagement)}
+        isSubmitting={isLoading}
       />
     </PageWrapper>
   )

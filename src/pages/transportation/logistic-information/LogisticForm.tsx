@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form'
-import { FISButton, FISCheckboxGroup, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
+import { FISButton, FISRadioGroup, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
 import type { LogisticFormValuesI } from './data'
 import { CUSTOMER_TYPE_OPTIONS, PAYMENT_OPTIONS } from './data'
 
@@ -27,7 +27,7 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          1. THÔNG TIN CHUNG
+          Thông tin chung
         </FISText>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <Controller
@@ -128,13 +128,7 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
             rules={{ required: 'Vui lòng chọn hình thức thanh toán' }}
             render={({ field }) => (
               <div className='md:col-span-2'>
-                <FISCheckboxGroup
-                  direction='row'
-                  groupLabel='Thanh toán'
-                  options={[...PAYMENT_OPTIONS]}
-                  value={field.value ? [field.value] : []}
-                  onChange={(nextValue) => field.onChange(nextValue[0] ?? '')}
-                />
+                <FISRadioGroup {...field} direction='row' groupLabel='Thanh toán' options={[...PAYMENT_OPTIONS]} />
                 {errors.paymentType && <p className='mt-1 text-sm text-red-500'>{errors.paymentType.message}</p>}
               </div>
             )}
@@ -156,14 +150,12 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
 
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          2. GHI CHÚ
+          Ghi chú
         </FISText>
         <Controller
           name='note'
           control={control}
-          render={({ field }) => (
-            <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />
-          )}
+          render={({ field }) => <FISInputArea {...field} placeholder='Nhập ghi chú' maxLength={1000} />}
         />
       </div>
 

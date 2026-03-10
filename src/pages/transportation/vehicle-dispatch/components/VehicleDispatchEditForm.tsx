@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { PlusOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { Input, message, Modal, Table } from 'antd'
@@ -208,10 +209,10 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
-      {/* 1. Thông tin chung */}
+      {/* Thông tin chung */}
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          1. Thông tin chung
+          Thông tin chung
         </FISText>
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <Controller
@@ -370,10 +371,10 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
         </div>
       </div>
 
-      {/* 2. Thông tin chi tiết container */}
+      {/* Thông tin chi tiết container */}
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          2. Thông tin chi tiết container
+          Thông tin chi tiết container
         </FISText>
         <div className='space-y-4'>
           {fields.map((field, index) => (
@@ -466,15 +467,16 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
             </div>
           ))}
           <FISButton type='button' variant='secondary' onClick={handleAddContainer}>
-            Thêm container
+            <PlusOutlined />
+            <span className='sr-only'>Thêm container</span>
           </FISButton>
         </div>
       </div>
 
-      {/* 3. Ghi chú */}
+      {/* Ghi chú */}
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          3. Ghi chú
+          Ghi chú
         </FISText>
         <Controller
           name='note'

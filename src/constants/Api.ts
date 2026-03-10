@@ -46,6 +46,24 @@ export const API_ENDPOINTS = {
     registrationsExportExcel: '/api/v1/api/security/registrations/export-excel',
     stats: '/api/v1/api/security/stats'
   },
+  logisticInformation: {
+    list: '/api/v1/logistic-information',
+    detail: '/api/v1/logistic-information/:id',
+    create: '/api/v1/logistic-information',
+    update: '/api/v1/logistic-information/:id'
+  },
+  vehicleFleet: {
+    list: '/api/v1/vehicles',
+    detail: '/api/v1/vehicles/:id',
+    create: '/api/v1/vehicles',
+    update: '/api/v1/vehicles/:id'
+  },
+  driverManagement: {
+    list: '/api/v1/drivers',
+    detail: '/api/v1/drivers/:id',
+    create: '/api/v1/drivers',
+    update: '/api/v1/drivers/:id'
+  },
   vehicleDispatch: {
     list: '/api/v1/dispatch-orders',
     exportExcel: '/api/v1/dispatch-orders/export-excel',
@@ -82,5 +100,8 @@ export const API_TAGS = {
   userGroup: 'UserGroup',
   department: 'Department',
   vehicleDispatch: 'VehicleDispatch',
-  security: 'Security'
+  security: 'Security',
+  logisticInformation: 'LogisticInformation',
+  vehicleFleet: 'VehicleFleet',
+  driverManagement: 'DriverManagement'
 } as const

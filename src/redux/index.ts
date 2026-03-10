@@ -10,6 +10,9 @@ import { vehicleDispatchApi } from '../pages/transportation/vehicle-dispatch/veh
 import { vehicleDispatchMasterApi } from '../pages/transportation/vehicle-dispatch/vehicleDispatchMaster.api'
 import { dashboardApi } from '../pages/home/dashboard.api'
 import { gateInOutApi } from '../pages/report/gate-in-out/gateInOut.api'
+import { logisticInformationApi } from '../pages/transportation/logistic-information/logisticInformation.api'
+import { vehicleFleetApi } from '../pages/transportation/vehicle-fleet/vehicleFleet.api'
+import { driverManagementApi } from '../pages/transportation/driver-management/driverManagement.api'
 
 // Persist config
 const persistConfig = {
@@ -26,7 +29,10 @@ const rootReducer = combineReducers({
   [vehicleDispatchApi.reducerPath]: vehicleDispatchApi.reducer,
   [vehicleDispatchMasterApi.reducerPath]: vehicleDispatchMasterApi.reducer,
   [dashboardApi.reducerPath]: dashboardApi.reducer,
-  [gateInOutApi.reducerPath]: gateInOutApi.reducer
+  [gateInOutApi.reducerPath]: gateInOutApi.reducer,
+  [logisticInformationApi.reducerPath]: logisticInformationApi.reducer,
+  [vehicleFleetApi.reducerPath]: vehicleFleetApi.reducer,
+  [driverManagementApi.reducerPath]: driverManagementApi.reducer
 })
 
 // Wrap the root reducer with persistReducer
@@ -51,7 +57,10 @@ const store = configureStore({
       vehicleDispatchApi.middleware,
       vehicleDispatchMasterApi.middleware,
       dashboardApi.middleware,
-      gateInOutApi.middleware
+      gateInOutApi.middleware,
+      logisticInformationApi.middleware,
+      vehicleFleetApi.middleware,
+      driverManagementApi.middleware
     ) // Add RTK Query middleware
 })
 
