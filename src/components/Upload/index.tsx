@@ -74,6 +74,7 @@ const UploadMinio: React.FC<PropsI> = ({ value = [], onChange, initialFileList, 
       // (2) upload file lên minio
       await axios.put(minioUploadEndpoint, file, {
         headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
           'Content-Type': file.type || 'application/octet-stream'
         }
       })
