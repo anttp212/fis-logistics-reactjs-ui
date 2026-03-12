@@ -25,7 +25,7 @@ function getFileExtension(name: string): string {
   return last ? last.toLowerCase() : ''
 }
 
-interface Props {
+interface PropsI {
   value?: string[]
   onChange?: (paths: string[]) => void
   /** Danh sách file từ API (để hiển thị name, size); value sẽ là các path tương ứng */
@@ -49,7 +49,7 @@ function toAntdFileList(paths: string[], initialFileList?: AttachmentItemI[]): U
   })
 }
 
-const UploadMinio: React.FC<Props> = ({ value = [], onChange, initialFileList, acceptOnlyDocuments = false }) => {
+const UploadMinio: React.FC<PropsI> = ({ value = [], onChange, initialFileList, acceptOnlyDocuments = false }) => {
   const fileList = useMemo(() => toAntdFileList(value, initialFileList), [value, initialFileList])
 
   const validateFile = (file: File): boolean => {
@@ -113,9 +113,7 @@ const UploadMinio: React.FC<Props> = ({ value = [], onChange, initialFileList, a
       const path = file.uid
       onChange?.(value.filter((p) => p !== path))
     },
-    onDrop(e: React.DragEvent<HTMLDivElement>) {
-      console.log('Dropped files', e.dataTransfer.files)
-    }
+    onDrop(_e: React.DragEvent<HTMLDivElement>) {}
   }
 
   return (
