@@ -1,7 +1,9 @@
 import { Col, Row } from 'antd'
-import { Controller, type Control } from 'react-hook-form'
-import { FISSelect } from 'fis-component'
+import { Controller, useWatch, type Control } from 'react-hook-form'
+import { FISInputDate, FISSelect } from 'fis-component'
 import { STATUS_SELECT_OPTIONS } from '../data'
+import { parseDateValue, toBoundaryIsoString } from '@utils'
+import dayjs from '@utils/dayjs'
 
 const FILTER_LOGISTICS_OPTIONS = [
   {
@@ -14,6 +16,8 @@ interface DriverManagementFilterPropsI {
 }
 
 const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
+  const dateFrom = useWatch({ control, name: 'dateFrom' }) as string
+  const dateFromMin = dateFrom ? dayjs(parseDateValue(dateFrom) ?? undefined) : undefined
   return (
     <Row gutter={[12, 12]}>
       <Col span={24}>
@@ -40,6 +44,41 @@ const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
               textLabel='Logistics'
               placeholder='Chọn logistics'
               options={FILTER_LOGISTICS_OPTIONS}
+            />
+          )}
+        />
+      </Col>
+      <Col span={24}>
+        <Controller
+          name='dateFrom'
+          control={control}
+          render={({ field }) => (
+            <FISInputDate
+              textLabel='Từ ngày tạo'
+              placeholder='Chọn ngày'
+              value={parseDateValue(field.value)}
+              onChange={(date) => {
+                field.onChange(date ? toBoundaryIsoString(date, 'start') : '')
+              }}
+              picker='date'
+              format='DD/MM/YYYY'
+            />
+          )}
+        />
+      </Col>
+      <Col span={24}>
+        <Controller
+          name='dateTo'
+          control={control}
+          render={({ field }) => (
+            <FISInputDate
+              textLabel='Đến ngày tạo'
+              placeholder='Chọn ngày'
+              value={parseDateValue(field.value)}
+              onChange={(date) => field.onChange(date ? toBoundaryIsoString(date, 'end') : '')}
+              minDate={dateFromMin}
+              picker='date'
+              format='DD/MM/YYYY'
             />
           )}
         />

@@ -1,17 +1,19 @@
 import { createApi } from '@reduxjs/toolkit/query/react'
 import { baseQuery } from '@utils/baseQuery'
 import { API_ENDPOINTS, API_TAGS } from '@constants/Api'
-import type { FleetItemI } from './data'
+import type { FleetItemI, FleetVehicleTypeT } from './data'
 
 export interface CreateVehicleFleetRequestI {
-  logisticsId: string
-  vehicleType: string
-  plateNumber: string
-  secondaryPlateNumber?: string
-  payload?: string
+  logisticsCustomerId: string
+  vehicleType: FleetVehicleTypeT
+  licensePlate: string
+  secondaryLicensePlate?: string
+  payloadCapacity?: string
   weight?: string
   status: string
   note?: string
+  inspectionExpiryDate?: string
+  attachments: string[]
 }
 
 export type UpdateVehicleFleetRequestT = CreateVehicleFleetRequestI
@@ -22,6 +24,11 @@ export interface GetVehicleFleetListParamsI {
   search?: string
   status?: string
   logisticsId?: string
+  inspectionDateFrom?: string
+  inspectionDateTo?: string
+  createdDateFrom?: string
+  createdDateTo?: string
+  vehicleType?: string
 }
 
 export interface VehicleFleetPaginationI {
@@ -56,9 +63,14 @@ export const vehicleFleetApi = createApi({
         const searchParams = new URLSearchParams()
         if (p.page != null) searchParams.set('page', String(p.page))
         if (p.size != null) searchParams.set('size', String(p.size))
-        if (p.search?.trim()) searchParams.set('search', p.search.trim())
+        if (p.search?.trim()) searchParams.set('keyword', p.search.trim())
         if (p.status?.trim()) searchParams.set('status', p.status.trim())
         if (p.logisticsId?.trim()) searchParams.set('logisticsId', p.logisticsId.trim())
+        if (p.inspectionDateFrom?.trim()) searchParams.set('inspectionDateFrom', p.inspectionDateFrom.trim())
+        if (p.inspectionDateTo?.trim()) searchParams.set('inspectionDateTo', p.inspectionDateTo.trim())
+        if (p.createdDateFrom?.trim()) searchParams.set('createdDateFrom', p.createdDateFrom.trim())
+        if (p.createdDateTo?.trim()) searchParams.set('createdDateTo', p.createdDateTo.trim())
+        if (p.vehicleType?.trim()) searchParams.set('vehicleType', p.vehicleType.trim())
         const qs = searchParams.toString()
         return { url: `${API_ENDPOINTS.vehicleFleet.list}${qs ? `?${qs}` : ''}`, method: 'GET' }
       },

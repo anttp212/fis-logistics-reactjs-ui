@@ -7,7 +7,7 @@ import {
   buildTransportationDriverManagementAssignVehiclePath,
   buildTransportationDriverManagementEditPath
 } from '@constants'
-import { GENDER_LABELS, MOCK_DRIVER_DATA, STATUS_LABELS, formatDate, getVehicleLabel } from '../data'
+import { GENDER_LABELS, MOCK_DRIVER_DATA, STATUS_LABELS, formatDate } from '../data'
 
 const DetailItem = ({ label, value }: { label: string; value?: string }) => (
   <div className='space-y-1'>
@@ -69,7 +69,7 @@ const DriverManagementDetailPage = () => {
           <DetailItem label='Giới tính' value={item?.gender ? GENDER_LABELS[item.gender] : '-'} />
           <DetailItem label='Trạng thái' value={item ? STATUS_LABELS[item.status] : '-'} />
           <DetailItem label='Ngày tạo' value={formatDate(item?.createdAt)} />
-          <DetailItem label='Xe được chỉ định' value={getVehicleLabel(item?.assignedVehicleId)} />
+          {/* <DetailItem label='Xe được chỉ định' value={getVehicleLabel(item?.assignedVehicleId)} /> */}
           <DetailItem label='Ghi chú' value={item?.note} />
         </div>
       </div>

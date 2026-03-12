@@ -25,6 +25,8 @@ import type {
 import { STATUS_LABELS, STATUS_OPTIONS } from '@pages/transportation/vehicle-dispatch/constants/status'
 import dayjs from '@utils/dayjs'
 
+import { toBoundaryIsoString } from '@utils'
+
 interface TransportationRecordI {
   key: string
   stt: number
@@ -79,16 +81,6 @@ type TransportReportFilterValuesT = {
   dateTo: Date | null
   status: string[]
   search: string
-}
-
-const toBoundaryIsoString = (date: Date, boundary: 'start' | 'end') => {
-  const nextDate = new Date(date)
-  if (boundary === 'start') {
-    nextDate.setHours(0, 0, 0, 0)
-  } else {
-    nextDate.setHours(23, 59, 59, 999)
-  }
-  return nextDate.toISOString()
 }
 
 const TransportationReport = () => {

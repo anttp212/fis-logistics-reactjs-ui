@@ -5,29 +5,7 @@ import { FISInputDate, FISSelect } from 'fis-component'
 import { useGetVehicleTypesQuery, useGetDriversQuery } from '../vehicleDispatchMaster.api'
 import { STATUS_OPTIONS } from '../constants/status'
 import dayjs from '@utils/dayjs'
-
-const toSelectOptions = (items: { id: string; name: string }[] | undefined, allLabel = 'Tất cả') => [
-  { items: [{ label: allLabel, value: '' }, ...(items ?? []).map((item) => ({ label: item.name, value: item.id }))] }
-]
-
-/** Parse string sang Date: full ISO dùng new Date(), YYYY-MM-DD dùng local để tránh lệch timezone */
-const parseDateValue = (val: string): Date | null => {
-  if (!val) return null
-  if (val.includes('T')) return new Date(val)
-  const parts = val.split('-').map(Number)
-  if (parts.length !== 3) return new Date(val)
-  return new Date(parts[0], parts[1] - 1, parts[2])
-}
-
-const toBoundaryIsoString = (date: Date, boundary: 'start' | 'end') => {
-  const nextDate = new Date(date)
-  if (boundary === 'start') {
-    nextDate.setHours(0, 0, 0, 0)
-  } else {
-    nextDate.setHours(23, 59, 59, 999)
-  }
-  return nextDate.toISOString()
-}
+import { parseDateValue, toBoundaryIsoString, toSelectOptions } from '@utils'
 
 interface VehicleDispatchFilterPropsI {
   control: Control<any>
@@ -40,7 +18,14 @@ const VehicleDispatchFilter = ({ control, setValue }: VehicleDispatchFilterProps
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
   const driverOptions = useMemo(
     () =>
-      toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
+      toSelectOptions(
+        drivers.map((s) => ({
+          id: s.id,
+          name: s.fullName || '',
+          phone: s.phone || '',
+          vehiclePlateNo: s.vehiclePlateNo || ''
+        }))
+      ),
     [drivers]
   )
   const dateFrom = useWatch({ control, name: 'dateFrom' }) as string
@@ -124,7 +109,21 @@ const VehicleDispatchFilter = ({ control, setValue }: VehicleDispatchFilterProps
           name='driverId'
           control={control}
           render={({ field }) => (
-            <FISSelect {...field} textLabel='Tài xế' placeholder='Chọn tài xế' options={driverOptions} />
+            <FISSelect
+              {...field}
+              textLabel='Tài xế'
+              placeholder='Chọn tài xế'
+              options={driverOptions}
+              renderOption={(option: { [key: string]: any }) => (
+                <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[12px]'>
+                  <span>Tên: {option.label}</span>
+                  <div className='flex justify-between gap-[4px] text-[12px]'>
+                    <span>SĐT: {option.phone}</span>
+                    <span>Biển số xe: {option.vehiclePlateNo}</span>
+                  </div>
+                </div>
+              )}
+            />
           )}
         />
       </Col>

@@ -26,7 +26,9 @@ export interface GetLogisticListParamsI {
   keyword?: string
   phone?: string
   customerType?: string
-  taxCode?: string
+  paymentType?: string
+  dateFrom?: string
+  dateTo?: string
 }
 
 export interface LogisticPaginationI {
@@ -64,7 +66,9 @@ export const logisticInformationApi = createApi({
         if (p.keyword?.trim()) searchParams.set('keyword', p.keyword.trim())
         if (p.phone?.trim()) searchParams.set('phone', p.phone.trim())
         if (p.customerType?.trim()) searchParams.set('customerType', p.customerType.trim())
-        if (p.taxCode?.trim()) searchParams.set('taxCode', p.taxCode.trim())
+        if (p.paymentType?.trim()) searchParams.set('paymentType', p.paymentType.trim())
+        if (p.dateFrom?.trim()) searchParams.set('dateFrom', p.dateFrom.trim())
+        if (p.dateTo?.trim()) searchParams.set('dateTo', p.dateTo.trim())
         const qs = searchParams.toString()
         return { url: `${API_ENDPOINTS.logisticInformation.list}${qs ? `?${qs}` : ''}`, method: 'GET' }
       },

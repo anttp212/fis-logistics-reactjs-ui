@@ -20,7 +20,7 @@
     "@reduxjs/toolkit": "2.11.2",
     "axios": "1.13.3",
     "dotenv": "16.4.5",
-    "fis-component": "0.1.14",
+    "fis-component": "0.1.15",
     "i18next": "23.11.5",
     "lodash": "4.17.23",
     "react": "18.3.1",

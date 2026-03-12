@@ -16,6 +16,7 @@ import { ROUTES } from '@constants'
 import { useGetSecurityRegistrationsQuery, useExportSecurityRegistrationsMutation } from './gateInOut.api'
 import type { SecurityRegistrationI } from './gateInOut.api'
 import dayjs from '@utils/dayjs'
+import { toBoundaryIsoString } from '@utils'
 
 interface GateInOutRecordI {
   key: string
@@ -96,16 +97,6 @@ type GateInOutFilterValuesT = {
   toDate: Date | null
   status: string
   vehicleType: string
-}
-
-const toBoundaryIsoString = (date: Date, boundary: 'start' | 'end') => {
-  const nextDate = new Date(date)
-  if (boundary === 'start') {
-    nextDate.setHours(0, 0, 0, 0)
-  } else {
-    nextDate.setHours(23, 59, 59, 999)
-  }
-  return nextDate.toISOString()
 }
 
 const GateInOutReport = () => {

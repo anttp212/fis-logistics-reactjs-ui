@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { FISButton, FISSelect } from 'fis-component'
 import { PageWrapper } from '@components'
 import { ROUTES } from '@constants'
-import { MOCK_DRIVER_DATA, VEHICLE_ASSIGN_OPTIONS, getVehicleLabel } from '../data'
+import { MOCK_DRIVER_DATA, VEHICLE_ASSIGN_OPTIONS } from '../data'
 
 interface AssignVehicleFormI {
   vehicleId: string
@@ -46,7 +46,7 @@ const DriverAssignVehiclePage = () => {
         <div>
           <p className='text-sm text-slate-500'>Tài xế</p>
           <p className='text-base font-medium text-slate-800'>{item?.fullName || '-'}</p>
-          <p className='text-sm text-slate-500 mt-2'>Xe hiện tại: {getVehicleLabel(item?.assignedVehicleId)}</p>
+          {/* <p className='text-sm text-slate-500 mt-2'>Xe hiện tại: {getVehicleLabel(item?.assignedVehicleId)}</p> */}
         </div>
 
         <Controller

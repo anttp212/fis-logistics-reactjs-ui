@@ -31,7 +31,7 @@ const LogisticInformationEditPage = () => {
     { label: 'Trang chu', onClick: () => navigate(ROUTES.home) },
     { label: 'Quản lý vận chuyển', onClick: () => navigate(ROUTES.transportation) },
     { label: 'Quản lý thông tin Logistic', onClick: () => navigate(ROUTES.transportationLogisticInformation) },
-    { label: 'Chỉnh sửa logistic' }
+    { label: 'Chỉnh sửa thông tin Logistic' }
   ]
 
   const handleSubmit = async (values: LogisticFormValuesI) => {
@@ -49,7 +49,11 @@ const LogisticInformationEditPage = () => {
 
   if (!id) {
     return (
-      <PageWrapper className='overflow-y-auto mt-6' title='Chỉnh sửa logistic' breadcrumbItems={breadcrumbItems}>
+      <PageWrapper
+        className='overflow-y-auto mt-6'
+        title='Chỉnh sửa thông tin Logistic'
+        breadcrumbItems={breadcrumbItems}
+      >
         <div className='text-gray-500'>Không tìm thấy mã logistic.</div>
       </PageWrapper>
     )
@@ -57,7 +61,11 @@ const LogisticInformationEditPage = () => {
 
   if (isLoadingDetail || !item) {
     return (
-      <PageWrapper className='overflow-y-auto mt-6' title='Chỉnh sửa logistic' breadcrumbItems={breadcrumbItems}>
+      <PageWrapper
+        className='overflow-y-auto mt-6'
+        title='Chỉnh sửa thông tin Logistic'
+        breadcrumbItems={breadcrumbItems}
+      >
         <div className='text-gray-500'>Đang tải...</div>
       </PageWrapper>
     )
@@ -66,7 +74,7 @@ const LogisticInformationEditPage = () => {
   return (
     <PageWrapper
       className='overflow-y-auto mt-6'
-      title='Chỉnh sửa logistic'
+      title='Chỉnh sửa thông tin Logistic'
       breadcrumbItems={breadcrumbItems}
       onBackClick={() => navigate(ROUTES.transportationLogisticInformation)}
       hasBackButton

@@ -4,19 +4,20 @@ import { PageWrapper } from '@components'
 import { ROUTES } from '@constants'
 import VehicleFleetForm from '../VehicleFleetForm'
 import { toFleetFormValues, type FleetFormValuesI } from '../data'
-import type { UploadFile } from 'antd'
 import { useCreateVehicleFleetMutation } from '../vehicleFleet.api'
 import type { CreateVehicleFleetRequestI } from '../vehicleFleet.api'
 
-const toCreateBody = (values: FleetFormValuesI): CreateVehicleFleetRequestI => ({
-  logisticsId: values.logisticsId,
+const toCreateBody = (values: FleetFormValuesI, files: string[]): CreateVehicleFleetRequestI => ({
+  logisticsCustomerId: values.logisticsCustomerId || '',
   vehicleType: values.vehicleType || 'TRACTOR',
-  plateNumber: values.plateNumber,
-  secondaryPlateNumber: values.secondaryPlateNumber || undefined,
-  payload: values.payload || undefined,
+  licensePlate: values.licensePlate || '',
+  secondaryLicensePlate: values.secondaryLicensePlate || undefined,
+  inspectionExpiryDate: values.inspectionExpiryDate || undefined,
+  payloadCapacity: values.payloadCapacity || undefined,
   weight: values.weight || undefined,
   status: values.status || 'ACTIVE',
-  note: values.note || undefined
+  note: values.note || undefined,
+  attachments: files
 })
 
 const VehicleFleetCreatePage = () => {
@@ -30,9 +31,9 @@ const VehicleFleetCreatePage = () => {
     { label: 'Tạo xe' }
   ]
 
-  const handleSubmit = async (values: FleetFormValuesI, _files: UploadFile[]) => {
+  const handleSubmit = async (values: FleetFormValuesI, _files: string[]) => {
     try {
-      await createVehicle(toCreateBody(values)).unwrap()
+      await createVehicle(toCreateBody(values,_files )).unwrap()
       message.success('Tạo xe thành công')
       navigate(ROUTES.transportationVehicleFleet)
     } catch (err: unknown) {

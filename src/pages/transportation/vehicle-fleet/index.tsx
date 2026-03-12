@@ -20,33 +20,79 @@ import { useGetVehicleFleetListQuery } from './vehicleFleet.api'
 interface FleetFilterValuesI {
   status: string
   logisticsId: string
+  inspectionDateFrom: string
+  inspectionDateTo: string
+  createdDateFrom: string
+  createdDateTo: string
+  vehicleType: string
 }
 
 const VehicleFleetPage = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const tableToolbar = useTableToolbar<{ status: string; logisticsId: string }, FleetFilterValuesI>({
+  const tableToolbar = useTableToolbar<
+    {
+      status: string
+      logisticsId: string
+      inspectionDateFrom: string
+      inspectionDateTo: string
+      createdDateFrom: string
+      createdDateTo: string
+      vehicleType: string
+    },
+    FleetFilterValuesI
+  >({
     defaultFilterValues: {
       status: '',
-      logisticsId: ''
+      logisticsId: '',
+      inspectionDateFrom: '',
+      inspectionDateTo: '',
+      createdDateFrom: '',
+      createdDateTo: '',
+      vehicleType: ''
     }
   })
   const search = tableToolbar.search
   const status = tableToolbar.filters?.status || ''
   const logisticsId = tableToolbar.filters?.logisticsId || ''
+  const inspectionDateFrom = tableToolbar.filters?.inspectionDateFrom || ''
+  const inspectionDateTo = tableToolbar.filters?.inspectionDateTo || ''
 
+  const createdDateFrom = tableToolbar.filters?.createdDateFrom || ''
+  const createdDateTo = tableToolbar.filters?.createdDateTo || ''
+  const vehicleType = tableToolbar.filters?.vehicleType || ''
   const listParams = useMemo(
     () => ({
       page,
       size: pageSize,
       search: search.trim() || undefined,
       status: status.trim() || undefined,
-      logisticsId: logisticsId.trim() || undefined
+      logisticsId: logisticsId.trim() || undefined,
+      inspectionDateFrom: inspectionDateFrom.trim() || undefined,
+      inspectionDateTo: inspectionDateTo.trim() || undefined,
+      createdDateFrom: createdDateFrom.trim() || undefined,
+      createdDateTo: createdDateTo.trim() || undefined,
+      vehicleType: vehicleType.trim() || undefined
     }),
-    [page, pageSize, search, status, logisticsId]
+    [
+      page,
+      pageSize,
+      search,
+      status,
+      logisticsId,
+      inspectionDateFrom,
+      inspectionDateTo,
+      createdDateFrom,
+      createdDateTo,
+      vehicleType
+    ]
   )
-  const { data: listResponse, isLoading } = useGetVehicleFleetListQuery(listParams)
+  const {
+    data: listResponse,
+    isLoading: isListLoading,
+    isFetching: isListFetching
+  } = useGetVehicleFleetListQuery(listParams)
 
   useEffect(() => {
     setPage(1)
@@ -75,7 +121,9 @@ const VehicleFleetPage = () => {
       key: 'logistics',
       width: 180,
       title: () => <FISTableHeaderCell label='LOGISTICS' hasRightDivider />,
-      render: (_: unknown, _row: FleetItemI) => <FISTableCell content={'-'} textAlign='left' />
+      render: (_: unknown, row: FleetItemI) => (
+        <FISTableCell content={row.companyName || row.fullName || '-'} textAlign='left' />
+      )
     },
     {
       key: 'status',
@@ -104,7 +152,7 @@ const VehicleFleetPage = () => {
       title: () => <FISTableHeaderCell label='BIỂN SỐ' hasRightDivider />,
       render: (_: unknown, row: FleetItemI) => (
         <FISTableCell
-          content={row.secondaryPlateNumber ? `${row.plateNumber} / ${row.secondaryPlateNumber}` : row.plateNumber}
+          content={row.secondaryLicensePlate ? `${row.licensePlate} / ${row.secondaryLicensePlate}` : row.licensePlate}
           textAlign='left'
         />
       )
@@ -113,7 +161,7 @@ const VehicleFleetPage = () => {
       key: 'payload',
       width: 110,
       title: () => <FISTableHeaderCell label='TẢI TRỌNG' hasRightDivider />,
-      render: (_: unknown, row: FleetItemI) => <FISTableCell content={row.payload || '-'} textAlign='left' />
+      render: (_: unknown, row: FleetItemI) => <FISTableCell content={row.payloadCapacity || '-'} textAlign='left' />
     },
     {
       key: 'weight',
@@ -122,11 +170,11 @@ const VehicleFleetPage = () => {
       render: (_: unknown, row: FleetItemI) => <FISTableCell content={row.weight || '-'} textAlign='left' />
     },
     {
-      key: 'inspectionExpiry',
+      key: 'inspectionExpiryDate',
       width: 140,
       title: () => <FISTableHeaderCell label='HẠN ĐĂNG KIỂM' hasRightDivider />,
       render: (_: unknown, row: FleetItemI) => (
-        <FISTableCell content={formatDate(row.inspectionExpiry)} textAlign='left' />
+        <FISTableCell content={formatDate(row.inspectionExpiryDate)} textAlign='left' />
       )
     },
     {
@@ -214,20 +262,21 @@ const VehicleFleetPage = () => {
           }
         />
 
-        {isLoading ? (
-          <div className='flex-1 flex items-center justify-center text-gray-500'>Đang tải dữ liệu...</div>
-        ) : (
-          <FISTable dataSource={dataSource} columns={columns} rowKey='id' scroll={{ y: 'calc(100vh - 320px)' }} />
-        )}
-
+        <FISTable
+          dataSource={dataSource}
+          loading={isListLoading || isListFetching}
+          columns={columns}
+          rowKey='id'
+          scroll={{ y: 'calc(100vh - 320px)' }}
+        />
         <div>
           <FISPagination
             current={page}
             pageSize={pageSize}
             total={total}
             onChange={(p) => setPage(p)}
-            onShowSizeChange={(_current, size) => {
-              setPageSize(size || 10)
+            onShowSizeChange={(_current, _size) => {
+              setPageSize(_current || 10)
               setPage(1)
             }}
             showSizeChanger

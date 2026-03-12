@@ -1,4 +1,3 @@
-import type { UploadFile } from 'antd'
 import { message } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { PageWrapper } from '@components'
@@ -8,15 +7,17 @@ import { toFleetFormValues, type FleetFormValuesI } from '../data'
 import { useGetVehicleFleetDetailQuery, useUpdateVehicleFleetMutation } from '../vehicleFleet.api'
 import type { UpdateVehicleFleetRequestT } from '../vehicleFleet.api'
 
-const toUpdateBody = (values: FleetFormValuesI): UpdateVehicleFleetRequestT => ({
-  logisticsId: values.logisticsId,
+const toUpdateBody = (values: FleetFormValuesI, files: string[]): UpdateVehicleFleetRequestT => ({
+  logisticsCustomerId: values.logisticsCustomerId || '',
   vehicleType: values.vehicleType || 'TRACTOR',
-  plateNumber: values.plateNumber,
-  secondaryPlateNumber: values.secondaryPlateNumber || undefined,
-  payload: values.payload || undefined,
+  licensePlate: values.licensePlate || '',
+  secondaryLicensePlate: values.secondaryLicensePlate || undefined,
+  inspectionExpiryDate: values.inspectionExpiryDate || undefined,
+  payloadCapacity: values.payloadCapacity || undefined,
   weight: values.weight || undefined,
   status: values.status || 'ACTIVE',
-  note: values.note || undefined
+  note: values.note || undefined,
+  attachments: files
 })
 
 const VehicleFleetEditPage = () => {
@@ -32,10 +33,10 @@ const VehicleFleetEditPage = () => {
     { label: 'Chỉnh sửa xe' }
   ]
 
-  const handleSubmit = async (values: FleetFormValuesI, _files: UploadFile[]) => {
+  const handleSubmit = async (values: FleetFormValuesI, _files: string[]) => {
     if (!id) return
     try {
-      await updateVehicle({ id, body: toUpdateBody(values) }).unwrap()
+      await updateVehicle({ id, body: toUpdateBody(values, _files) }).unwrap()
       message.success('Cập nhật xe thành công')
       navigate(ROUTES.transportationVehicleFleet)
     } catch (err: unknown) {

@@ -166,7 +166,7 @@ const LogisticForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmit
 
       <div className='sticky bottom-0 mt-12 pr-3 py-4 bg-[#EFF3FD] border-t border-gray-200 flex justify-end gap-2'>
         <FISButton type='button' variant='secondary' onClick={onCancel}>
-          Huy
+          Hủy
         </FISButton>
         <FISButton type='submit' variant='primary' disabled={isSubmitting}>
           {isSubmitting ? 'Dang xu ly...' : submitLabel}

@@ -78,6 +78,9 @@ export const API_ENDPOINTS = {
     locations: '/api/v1/locations',
     drivers: '/api/v1/drivers',
     containerSizes: '/api/v1/container-sizes'
+  },
+  files: {
+    presignedUploadUrl: '/api/v1/files/presigned-upload-url'
   }
 } as const
 

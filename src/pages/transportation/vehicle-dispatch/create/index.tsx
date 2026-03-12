@@ -15,15 +15,9 @@ import {
   useGetDriversQuery,
   useGetContainerSizesQuery
 } from '../vehicleDispatchMaster.api'
+import { parseDateValue, toSelectOptions } from '@utils'
 
 const { TextArea } = Input
-
-/** Chuyển mảng API sang format FISSelect options */
-const toSelectOptions = <T extends { id: string; name: string; fullName?: string }>(
-  items: T[] | undefined
-): { items: { label: string; value: string }[] }[] => [
-  { items: (items ?? []).map((item) => ({ label: item.name || item?.fullName || '', value: item.id })) }
-]
 
 interface ContainerItemI {
   containerNumber: string
@@ -68,7 +62,14 @@ const VehicleDispatchCreatePage = () => {
   const requestingUnitOptions = useMemo(() => toSelectOptions(requestingUnits), [requestingUnits])
   const driverOptions = useMemo(
     () =>
-      toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
+      toSelectOptions(
+        drivers.map((s) => ({
+          id: s.id,
+          name: s.fullName || '',
+          phone: s.phone || '',
+          vehiclePlateNo: s.vehiclePlateNo || ''
+        }))
+      ),
     [drivers]
   )
 
@@ -110,15 +111,6 @@ const VehicleDispatchCreatePage = () => {
     { label: 'Điều xe', onClick: () => navigate(ROUTES.transportationVehicleDispatch) },
     { label: 'Thêm mới yêu cầu điều xe' }
   ]
-
-  /** Parse string sang Date: full ISO dùng new Date(), YYYY-MM-DD dùng local để tránh lệch timezone */
-  const parseDateValue = (val: string): Date | undefined => {
-    if (!val) return undefined
-    if (val.includes('T')) return new Date(val)
-    const parts = val.split('-').map(Number)
-    if (parts.length !== 3) return new Date(val)
-    return new Date(parts[0], parts[1] - 1, parts[2])
-  }
 
   /** Chuyển sang ISO: nếu đã có 'T' (full ISO) thì giữ nguyên, else thêm T00:00:00.000Z */
   const toIsoDateTime = (dateStr: string) =>
@@ -443,6 +435,15 @@ const VehicleDispatchCreatePage = () => {
                           negative={!!errors.containers?.[index]?.driver}
                           message={errors.containers?.[index]?.driver?.message}
                           required
+                          renderOption={(option: { [key: string]: any }) => (
+                            <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[#505a5f]'>
+                              <span>Tên: {option.label}</span>
+                              <div className='flex justify-between gap-[4px]'>
+                                <span>SĐT: {option.phone}</span>
+                                <span>Biển số xe: {option.vehiclePlateNo}</span>
+                              </div>
+                            </div>
+                          )}
                         />
                       )}
                     />

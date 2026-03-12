@@ -22,27 +22,33 @@ import { useGetLogisticListQuery } from './logisticInformation.api'
 interface LogisticFilterValuesI {
   phone: string
   customerType: string
-  taxCode: string
+  paymentType: string
+  dateFrom: string
+  dateTo: string
 }
 
 const LogisticInformationPage = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const tableToolbar = useTableToolbar<{ phone: string; customerType: string; taxCode: string }, LogisticFilterValuesI>(
-    {
-      defaultFilterValues: {
-        phone: '',
-        customerType: '',
-        taxCode: ''
-      }
+  const tableToolbar = useTableToolbar<
+    { phone: string; customerType: string; paymentType: string; dateFrom: string; dateTo: string },
+    LogisticFilterValuesI
+  >({
+    defaultFilterValues: {
+      phone: '',
+      customerType: '',
+      paymentType: '',
+      dateFrom: '',
+      dateTo: ''
     }
-  )
+  })
   const search = tableToolbar.search
   const phone = tableToolbar.filters?.phone || ''
   const customerType = tableToolbar.filters?.customerType || ''
-  const taxCode = tableToolbar.filters?.taxCode || ''
-
+  const paymentType = tableToolbar.filters?.paymentType || ''
+  const dateFrom = tableToolbar.filters?.dateFrom || ''
+  const dateTo = tableToolbar.filters?.dateTo || ''
   const listParams = useMemo(
     () => ({
       page,
@@ -50,15 +56,17 @@ const LogisticInformationPage = () => {
       keyword: search.trim() || undefined,
       phone: phone.trim() || undefined,
       customerType: customerType.trim() || undefined,
-      taxCode: taxCode.trim() || undefined
+      paymentType: paymentType.trim() || undefined,
+      dateFrom: dateFrom.trim() || undefined,
+      dateTo: dateTo.trim() || undefined
     }),
-    [page, pageSize, search, phone, customerType, taxCode]
+    [page, pageSize, search, phone, customerType, paymentType, dateFrom, dateTo]
   )
-  const { data: listResponse, isLoading } = useGetLogisticListQuery(listParams)
+  const { data: listResponse, isLoading, isFetching: isListFetching } = useGetLogisticListQuery(listParams)
 
   useEffect(() => {
     setPage(1)
-  }, [customerType, phone, search, taxCode])
+  }, [customerType, phone, search, paymentType])
 
   const total = listResponse?.pagination?.totalElements ?? 0
   const dataSource = useMemo(() => {
@@ -137,6 +145,20 @@ const LogisticInformationPage = () => {
                         strokeLinecap='round'
                         strokeLinejoin='round'
                         strokeWidth={2}
+                        d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+                      />
+                    </svg>
+                  ),
+                  onClick: () => navigate(buildTransportationLogisticInformationEditPath(row.id))
+                },
+                {
+                  label: '',
+                  startIcon: (
+                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
                         d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
                       />
                       <path
@@ -148,20 +170,6 @@ const LogisticInformationPage = () => {
                     </svg>
                   ),
                   onClick: () => navigate(buildTransportationLogisticInformationDetailPath(row.id))
-                },
-                {
-                  label: '',
-                  startIcon: (
-                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={2}
-                        d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
-                      />
-                    </svg>
-                  ),
-                  onClick: () => navigate(buildTransportationLogisticInformationEditPath(row.id))
                 }
               ]}
             />
@@ -190,7 +198,7 @@ const LogisticInformationPage = () => {
           filterTitle='Bộ lọc logistics'
           search={tableToolbar.search}
           filters={tableToolbar.filters}
-          searchPlaceholder='Tìm theo tên'
+          searchPlaceholder='Tìm theo tên, mã số thuế'
           actionButtons={
             <FISButton
               type='button'
@@ -202,17 +210,13 @@ const LogisticInformationPage = () => {
           }
         />
 
-        {isLoading ? (
-          <div className='flex-1 flex items-center justify-center text-gray-500'>Đang tải dữ liệu...</div>
-        ) : (
-          <FISTable
-            dataSource={dataSource}
-            columns={columns}
-            rowKey='id'
-            scroll={{ y: 'calc(100vh - 320px)' }}
-            loading={isLoading}
-          />
-        )}
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowKey='id'
+          scroll={{ y: 'calc(100vh - 350px)' }}
+          loading={isLoading || isListFetching}
+        />
 
         <div>
           <FISPagination

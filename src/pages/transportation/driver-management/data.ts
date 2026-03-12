@@ -1,6 +1,3 @@
-import { MOCK_LOGISTIC_DATA } from '../logistic-information/data'
-import { MOCK_FLEET_DATA } from '../vehicle-fleet/data'
-
 export type DriverStatusT = 'ACTIVE' | 'INACTIVE'
 export type DriverGenderT = 'MALE' | 'FEMALE'
 
@@ -31,14 +28,7 @@ export interface DriverFormValuesI {
   note: string
 }
 
-export const LOGISTICS_OPTIONS = [
-  {
-    items: MOCK_LOGISTIC_DATA.map((item) => ({
-      label: 'getLogisticDisplayName(item)',
-      value: item.id
-    }))
-  }
-]
+export const LOGISTICS_OPTIONS = []
 
 export const GENDER_OPTIONS = [
   {
@@ -79,22 +69,9 @@ export const GENDER_LABELS: Record<DriverGenderT, string> = {
   FEMALE: 'Nữ'
 }
 
-export const VEHICLE_ASSIGN_OPTIONS = [
-  {
-    items: MOCK_FLEET_DATA.map((item) => ({
-      label: item.secondaryPlateNumber ? `${item.plateNumber} / ${item.secondaryPlateNumber}` : item.plateNumber,
-      value: item.id
-    }))
-  }
-]
+export const VEHICLE_ASSIGN_OPTIONS = []
 
 export const MOCK_DRIVER_DATA: DriverItemI[] = []
-
-export const getVehicleLabel = (vehicleId?: string) => {
-  const item = MOCK_FLEET_DATA.find((fleet) => fleet.id === vehicleId)
-  if (!item) return '-'
-  return item.secondaryPlateNumber ? `${item.plateNumber} / ${item.secondaryPlateNumber}` : item.plateNumber
-}
 
 export const formatDate = (value?: string) => {
   if (!value) return '-'

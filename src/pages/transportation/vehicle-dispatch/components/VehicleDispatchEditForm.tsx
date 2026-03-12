@@ -12,14 +12,8 @@ import {
   useGetContainerSizesQuery
 } from '../vehicleDispatchMaster.api'
 import dayjs from '@utils/dayjs'
+import { parseDateValue, toSelectOptions } from '@utils'
 const { TextArea } = Input
-
-/** Chuyển mảng API sang format FISSelect options */
-const toSelectOptions = <T extends { id: string; name: string; fullName?: string }>(
-  items: T[] | undefined
-): { items: { label: string; value: string }[] }[] => [
-  { items: (items ?? []).map((item) => ({ label: item.name || item?.fullName || '', value: item.id })) }
-]
 
 interface ContainerItemI {
   containerNumber: string
@@ -110,15 +104,6 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
 
   /** Lấy full ISO string từ API (giữ nguyên time để tránh lỗi timezone) */
   const fromIsoDateTime = (iso?: string) => iso ?? ''
-
-  /** Parse string sang Date: full ISO dùng new Date(), YYYY-MM-DD dùng local để tránh lệch timezone */
-  const parseDateValue = (val: string): Date | null => {
-    if (!val) return null
-    if (val.includes('T')) return new Date(val)
-    const parts = val.split('-').map(Number)
-    if (parts.length !== 3) return new Date(val)
-    return new Date(parts[0], parts[1] - 1, parts[2])
-  }
 
   useEffect(() => {
     if (order) {
@@ -473,6 +458,15 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                         message={errors.containers?.[index]?.driver?.message}
                         options={driverOptions}
                         disabled={true}
+                        renderOption={(option: { [key: string]: any }) => (
+                          <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[12px]'>
+                            <span>Tên: {option.label}</span>
+                            <div className='flex justify-between gap-[4px] text-[12px]'>
+                              <span>SĐT: {option.phone}</span>
+                              <span>Biển số xe: {option.vehiclePlateNo}</span>
+                            </div>
+                          </div>
+                        )}
                       />
                     )}
                   />

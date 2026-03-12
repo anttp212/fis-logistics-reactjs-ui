@@ -33,6 +33,8 @@ export interface GetDriverListParamsI {
   search?: string
   status?: string
   logisticsId?: string
+  dateFrom?: string
+  dateTo?: string
 }
 
 export interface DriverPaginationI {
@@ -67,6 +69,8 @@ export const driverManagementApi = createApi({
         if (p.search?.trim()) searchParams.set('search', p.search.trim())
         if (p.status?.trim()) searchParams.set('status', p.status.trim())
         if (p.logisticsId?.trim()) searchParams.set('logisticsId', p.logisticsId.trim())
+        if (p.dateFrom?.trim()) searchParams.set('dateFrom', p.dateFrom.trim())
+        if (p.dateTo?.trim()) searchParams.set('dateTo', p.dateTo.trim())
         const qs = searchParams.toString()
         return { url: `${API_ENDPOINTS.driverManagement.list}${qs ? `?${qs}` : ''}`, method: 'GET' }
       },

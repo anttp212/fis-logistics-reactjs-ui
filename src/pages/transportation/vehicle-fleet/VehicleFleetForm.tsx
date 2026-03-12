@@ -1,18 +1,20 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { UploadOutlined } from '@ant-design/icons'
-import { Button, Upload } from 'antd'
-import type { UploadFile } from 'antd'
-import { FISButton, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
-import { LOGISTICS_OPTIONS, STATUS_OPTIONS, VEHICLE_TYPE_OPTIONS, type FleetFormValuesI } from './data'
+import { FISButton, FISInputArea, FISInputDate, FISInputText, FISSelect, FISText } from 'fis-component'
+import { STATUS_OPTIONS, VEHICLE_TYPE_OPTIONS, type FleetFormValuesI } from './data'
+import { parseDateValue, toSelectOptions } from '@utils'
+import { useGetLogisticListQuery } from '../logistic-information/logisticInformation.api'
+import { UploadMinio } from '@components'
+import type { AttachmentItemI } from '@components/Upload'
 
 interface VehicleFleetFormPropsI {
   defaultValues: FleetFormValuesI
   submitLabel: string
-  onSubmit: (values: FleetFormValuesI, files: UploadFile[]) => void | Promise<void>
+  onSubmit: (values: FleetFormValuesI, files: string[]) => void | Promise<void>
   onCancel: () => void
   isSubmitting?: boolean
-  defaultFileList?: UploadFile[]
+  /** Danh sách đính kèm từ API (hiển thị trong upload); khi submit vẫn nhận string[] paths */
+  defaultFileList?: AttachmentItemI[]
 }
 
 const VehicleFleetForm = ({
@@ -23,7 +25,8 @@ const VehicleFleetForm = ({
   isSubmitting = false,
   defaultFileList = []
 }: VehicleFleetFormPropsI) => {
-  const [fileList, setFileList] = useState<UploadFile[]>(defaultFileList)
+  const [attachments, setAttachments] = useState<string[]>(() => defaultFileList.map((f) => f.path))
+  
   const {
     control,
     watch,
@@ -35,16 +38,28 @@ const VehicleFleetForm = ({
 
   const vehicleType = watch('vehicleType')
 
+  const { data: listResponse, isLoading: isLoadingLogistics } = useGetLogisticListQuery({
+    page: 1,
+    size: 1000
+  })
+
+  const logisticsOptions = useMemo(
+    () =>
+      toSelectOptions(
+        listResponse?.data?.map((item) => ({ id: item.id, name: item.companyName || item.fullName || '' })) ?? []
+      ),
+    [listResponse]
+  )
   return (
-    <form onSubmit={handleSubmit((values) => onSubmit(values, fileList))} className='space-y-6'>
+    <form onSubmit={handleSubmit((values) => onSubmit(values, attachments))} className='space-y-6'>
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          1. Thông tin xe
+          Thông tin xe
         </FISText>
 
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <Controller
-            name='logisticsId'
+            name='logisticsCustomerId'
             control={control}
             rules={{ required: 'Vui lòng chọn logistics' }}
             render={({ field }) => (
@@ -53,9 +68,10 @@ const VehicleFleetForm = ({
                 required
                 textLabel='Logistics'
                 placeholder='Chọn logistics'
-                options={LOGISTICS_OPTIONS}
-                negative={!!errors.logisticsId}
-                message={errors.logisticsId?.message}
+                loading={isLoadingLogistics}
+                options={logisticsOptions}
+                negative={!!errors.logisticsCustomerId}
+                message={errors.logisticsCustomerId?.message}
               />
             )}
           />
@@ -78,7 +94,7 @@ const VehicleFleetForm = ({
           />
 
           <Controller
-            name='plateNumber'
+            name='licensePlate'
             control={control}
             rules={{ required: 'Vui lòng nhập biển số' }}
             render={({ field }) => (
@@ -87,15 +103,15 @@ const VehicleFleetForm = ({
                 required
                 textLabel='Biển số'
                 placeholder='Nhập biển số'
-                negative={!!errors.plateNumber}
-                message={errors.plateNumber?.message}
+                negative={!!errors.licensePlate}
+                message={errors.licensePlate?.message}
               />
             )}
           />
 
           {vehicleType === 'TRAILER' && (
             <Controller
-              name='secondaryPlateNumber'
+              name='secondaryLicensePlate'
               control={control}
               rules={{ required: 'Vui lòng nhập biển số phụ' }}
               render={({ field }) => (
@@ -104,26 +120,54 @@ const VehicleFleetForm = ({
                   required
                   textLabel='Biển số phụ'
                   placeholder='Nhập biển số phụ'
-                  negative={!!errors.secondaryPlateNumber}
-                  message={errors.secondaryPlateNumber?.message}
+                  negative={!!errors.secondaryLicensePlate}
+                  message={errors.secondaryLicensePlate?.message}
                 />
               )}
             />
           )}
 
           <Controller
-            name='payload'
+            name='payloadCapacity'
             control={control}
+            rules={{ required: 'Vui lòng nhập tải trọng' }}
             render={({ field }) => (
-              <FISInputText {...field} type='number' textLabel='Tải trọng' placeholder='Nhập tải trọng' />
+              <FISInputText {...field}
+              type='number' textLabel='Tải trọng (kg)' required={true} placeholder='Nhập tải trọng' 
+              negative={!!errors.payloadCapacity}
+              message={errors.payloadCapacity?.message}
+              />
             )}
           />
 
           <Controller
             name='weight'
             control={control}
+            rules={{ required: 'Vui lòng nhập trọng lượng' }}
+              render={({ field }) => (
+              <FISInputText {...field} type='number' textLabel='Trọng lượng (kg)' required={true} placeholder='Nhập trọng lượng' 
+              negative={!!errors.weight}
+              message={errors.weight?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name='inspectionExpiryDate'
+            control={control}
+            rules={{ required: 'Vui lòng chọn hạn đăng kiểm' }}
             render={({ field }) => (
-              <FISInputText {...field} type='number' textLabel='Trọng lượng' placeholder='Nhập trọng lượng' />
+              <FISInputDate
+                required={true}
+                textLabel='Hạn đăng kiểm'
+                placeholder='Chọn ngày đăng kiểm'
+                value={parseDateValue(field.value ?? '')}
+                onChange={(date) => field.onChange(date ? date.toISOString() : '')}
+                picker='date'
+                format='DD/MM/YYYY'
+                negative={!!errors.inspectionExpiryDate}
+                message={errors.inspectionExpiryDate?.message}
+              />
             )}
           />
 
@@ -144,26 +188,20 @@ const VehicleFleetForm = ({
         <Controller
           name='note'
           control={control}
-          render={({ field }) => (
-            <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />
-          )}
+          render={({ field }) => <FISInputArea {...field} placeholder='Nhập ghi chú' maxLength={1000} />}
         />
       </div>
 
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          Đính kèm file
+          Đính kèm file 
         </FISText>
-        <Upload
-          action='https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload'
-          listType='picture'
-          fileList={fileList}
-          onChange={({ fileList: nextFileList }) => setFileList(nextFileList)}
-        >
-          <Button type='primary' icon={<UploadOutlined />}>
-            Upload
-          </Button>
-        </Upload>
+        <UploadMinio
+          value={attachments}
+          acceptOnlyDocuments={true}
+          onChange={(paths) => setAttachments(paths)}
+          initialFileList={defaultFileList}
+        />
       </div>
 
       <div className='sticky bottom-0 mt-12 pr-3 py-4 bg-[#EFF3FD] border-t border-gray-200 flex justify-end gap-2'>
