@@ -33,7 +33,7 @@ const VehicleFleetCreatePage = () => {
 
   const handleSubmit = async (values: FleetFormValuesI, _files: string[]) => {
     try {
-      await createVehicle(toCreateBody(values,_files )).unwrap()
+      await createVehicle(toCreateBody(values, _files)).unwrap()
       message.success('Tạo xe thành công')
       navigate(ROUTES.transportationVehicleFleet)
     } catch (err: unknown) {

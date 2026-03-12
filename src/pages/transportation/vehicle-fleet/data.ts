@@ -1,4 +1,3 @@
-
 export type FleetVehicleTypeT = 'TRACTOR' | 'TRAILER' | 'TRUCK'
 export type FleetStatusT = 'ACTIVE' | 'SUSPENDED' | 'EXPIRED'
 
@@ -14,9 +13,9 @@ export interface FleetItemI {
   inspectionExpiryDate?: string
   note?: string
   attachments?: {
-    contentType: string,
-    name: string,
-    path: string, 
+    contentType: string
+    name: string
+    path: string
     size: number
   }[]
   companyName?: string
@@ -104,5 +103,5 @@ export const toFleetFormValues = (item?: FleetItemI): FleetFormValuesI => ({
   status: item?.status ?? 'ACTIVE',
   note: item?.note ?? '',
   inspectionExpiryDate: item?.inspectionExpiryDate ?? '',
-  attachments:  []
+  attachments: []
 })

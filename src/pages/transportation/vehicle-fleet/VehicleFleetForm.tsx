@@ -26,7 +26,7 @@ const VehicleFleetForm = ({
   defaultFileList = []
 }: VehicleFleetFormPropsI) => {
   const [attachments, setAttachments] = useState<string[]>(() => defaultFileList.map((f) => f.path))
-  
+
   const {
     control,
     watch,
@@ -132,10 +132,14 @@ const VehicleFleetForm = ({
             control={control}
             rules={{ required: 'Vui lòng nhập tải trọng' }}
             render={({ field }) => (
-              <FISInputText {...field}
-              type='number' textLabel='Tải trọng (kg)' required={true} placeholder='Nhập tải trọng' 
-              negative={!!errors.payloadCapacity}
-              message={errors.payloadCapacity?.message}
+              <FISInputText
+                {...field}
+                type='number'
+                textLabel='Tải trọng (kg)'
+                required={true}
+                placeholder='Nhập tải trọng'
+                negative={!!errors.payloadCapacity}
+                message={errors.payloadCapacity?.message}
               />
             )}
           />
@@ -144,10 +148,15 @@ const VehicleFleetForm = ({
             name='weight'
             control={control}
             rules={{ required: 'Vui lòng nhập trọng lượng' }}
-              render={({ field }) => (
-              <FISInputText {...field} type='number' textLabel='Trọng lượng (kg)' required={true} placeholder='Nhập trọng lượng' 
-              negative={!!errors.weight}
-              message={errors.weight?.message}
+            render={({ field }) => (
+              <FISInputText
+                {...field}
+                type='number'
+                textLabel='Trọng lượng (kg)'
+                required={true}
+                placeholder='Nhập trọng lượng'
+                negative={!!errors.weight}
+                message={errors.weight?.message}
               />
             )}
           />
@@ -194,7 +203,7 @@ const VehicleFleetForm = ({
 
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
-          Đính kèm file 
+          Đính kèm file
         </FISText>
         <UploadMinio
           value={attachments}
