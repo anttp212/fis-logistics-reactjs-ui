@@ -17,7 +17,7 @@ import VehicleDispatchFilter from './components/VehicleDispatchFilter'
 import { useVehicleDispatch } from './useVehicleDispatch'
 import { useGetVehicleDispatchListQuery } from './vehicleDispatch.api'
 import type { DispatchOrderApiI, DispatchOrderContainerI } from './vehicleDispatch.api'
-import { useGetVehicleTypesQuery, useGetRequestingUnitsQuery } from './vehicleDispatchMaster.api'
+import { useGetVehicleTypesQuery } from './vehicleDispatchMaster.api'
 import { Tooltip } from 'antd'
 import { STATUS_BADGE, STATUS_LABELS } from './constants/status'
 /** Row đã flatten: 1 dòng = 1 container */
@@ -103,11 +103,9 @@ const VehicleDispatchPage = () => {
     vehicleDispatch.search
   ])
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
-  const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
   // const { data: drivers = [] } = useGetDriversQuery()
 
   const vehicleTypeLabels = useMemo(() => toIdNameMap(vehicleTypes), [vehicleTypes])
-  const requestingUnitLabels = useMemo(() => toIdNameMap(requestingUnits), [requestingUnits])
   // const driverLabels = useMemo(() => toIdNameMap(drivers), [drivers])
 
   const dataSource = useMemo(
@@ -228,22 +226,9 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            <Tooltip
-              placement='topLeft'
-              title={
-                requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ??
-                row.requestUnit ??
-                row.requestingUnitId ??
-                row.depotName ??
-                '-'
-              }
-            >
+            <Tooltip placement='topLeft' title={row.requestingUnitName ?? '-'}>
               {' '}
-              {requestingUnitLabels[row.requestUnit ?? row.requestingUnitId ?? ''] ??
-                row.requestUnit ??
-                row.requestingUnitId ??
-                row.depotName ??
-                '-'}
+              {row.requestingUnitName ?? '-'}
             </Tooltip>
           }
           textAlign='left'

@@ -5,11 +5,7 @@ import { FISTable, FISTableCell, FISTableHeaderCell, FISButton, FISInputArea, FI
 import { ROUTES, buildVehicleDispatchEditPath } from '@constants'
 import { useGetVehicleDispatchDetailQuery, useCancelVehicleDispatchMutation } from '../vehicleDispatch.api'
 import type { DispatchOrderContainerI } from '../vehicleDispatch.api'
-import {
-  useGetVehicleTypesQuery,
-  useGetRequestingUnitsQuery,
-  useGetContainerSizesQuery
-} from '../vehicleDispatchMaster.api'
+import { useGetVehicleTypesQuery, useGetContainerSizesQuery } from '../vehicleDispatchMaster.api'
 import { useMemo, useState, type ReactNode } from 'react'
 import { STATUS_BADGE } from '../constants/status'
 
@@ -35,14 +31,12 @@ const VehicleDispatchDetail = () => {
 
   const { data: order, isLoading, error } = useGetVehicleDispatchDetailQuery(id!, { skip: !id })
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
-  const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
   const { data: containerSizes = [] } = useGetContainerSizesQuery()
   const [cancelOrder, { isLoading: isCancelling }] = useCancelVehicleDispatchMutation()
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
   const [cancellationReason, setCancellationReason] = useState('')
 
   const vehicleTypeLabels = useMemo(() => toIdNameMap(vehicleTypes), [vehicleTypes])
-  const requestingUnitLabels = useMemo(() => toIdNameMap(requestingUnits), [requestingUnits])
   const sizeLabels = useMemo(
     () => Object.fromEntries((containerSizes ?? []).map((s) => [s.id, s.name || s.code])),
     [containerSizes]
@@ -217,14 +211,7 @@ const VehicleDispatchDetail = () => {
                     order.vehicleTypeId
                   }
                 />
-                <InfoItem
-                  label='Đơn vị yêu cầu'
-                  value={
-                    requestingUnitLabels[order.requestUnit ?? order.requestingUnitId ?? ''] ??
-                    order.requestUnit ??
-                    order.requestingUnitId
-                  }
-                />
+                <InfoItem label='Đơn vị yêu cầu' value={order.requestingUnitName ?? '-'} />
                 <InfoItem label='Điểm đi' value={order.departureLocationName ?? '-'} />
                 <InfoItem label='Điểm đến' value={order.destinationLocationName ?? '-'} />
                 <InfoItem

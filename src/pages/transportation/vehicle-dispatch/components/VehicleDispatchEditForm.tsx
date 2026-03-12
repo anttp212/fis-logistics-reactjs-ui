@@ -7,9 +7,10 @@ import { DeleteIcon } from '@images'
 import { useGetVehicleDispatchDetailQuery, useUpdateVehicleDispatchMutation } from '../vehicleDispatch.api'
 import {
   useGetVehicleTypesQuery,
-  useGetRequestingUnitsQuery,
   useGetDriversQuery,
-  useGetContainerSizesQuery
+  useGetContainerSizesQuery,
+  LogisticInformationI,
+  useGetLogisticListQuery
 } from '../vehicleDispatchMaster.api'
 import dayjs from '@utils/dayjs'
 import { parseDateValue, toSelectOptions } from '@utils'
@@ -58,12 +59,25 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
   })
 
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
-  const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
+  const { data: responseLogistics, isLoading: isLoadingLogistics } = useGetLogisticListQuery({
+    page: 1,
+    size: 1000
+  })
   const { data: drivers = [] } = useGetDriversQuery()
   const { data: containerSizes = [] } = useGetContainerSizesQuery()
 
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
-  const requestingUnitOptions = useMemo(() => toSelectOptions(requestingUnits), [requestingUnits])
+  const logisticsOptions = useMemo(
+    () =>
+      toSelectOptions(
+        responseLogistics?.data?.map((item: LogisticInformationI) => ({
+          id: item.id,
+          name: item.companyName || item.fullName || ''
+        })) ?? []
+      ),
+    [responseLogistics]
+  )
+
   const driverOptions = useMemo(
     () =>
       toSelectOptions(drivers.map((s) => ({ id: s.id, name: s.fullName + '-' + s.phone + '-' + s.vehiclePlateNo }))),
@@ -246,9 +260,10 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 {...field}
                 textLabel='Đơn vị yêu cầu'
                 placeholder='Chọn đơn vị'
-                options={requestingUnitOptions}
+                options={logisticsOptions}
                 negative={!!errors.requestUnit}
                 message={errors.requestUnit?.message}
+                loading={isLoadingLogistics}
               />
             )}
           />

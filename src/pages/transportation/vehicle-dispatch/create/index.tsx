@@ -11,9 +11,10 @@ import { DeleteIcon } from '@images'
 import { useCreateVehicleDispatchMutation } from '../vehicleDispatch.api'
 import {
   useGetVehicleTypesQuery,
-  useGetRequestingUnitsQuery,
   useGetDriversQuery,
-  useGetContainerSizesQuery
+  useGetContainerSizesQuery,
+  LogisticInformationI,
+  useGetLogisticListQuery
 } from '../vehicleDispatchMaster.api'
 import { parseDateValue, toSelectOptions } from '@utils'
 
@@ -54,12 +55,27 @@ const VehicleDispatchCreatePage = () => {
   const [errorItems, setErrorItems] = useState<string[]>([])
 
   const { data: vehicleTypes = [] } = useGetVehicleTypesQuery()
-  const { data: requestingUnits = [] } = useGetRequestingUnitsQuery()
+  const { data: responseLogistics, isLoading: isLoadingLogistics } = useGetLogisticListQuery({
+    page: 1,
+    size: 1000
+  })
+
   const { data: drivers = [] } = useGetDriversQuery()
   const { data: containerSizes = [] } = useGetContainerSizesQuery()
 
   const vehicleTypeOptions = useMemo(() => toSelectOptions(vehicleTypes), [vehicleTypes])
-  const requestingUnitOptions = useMemo(() => toSelectOptions(requestingUnits), [requestingUnits])
+
+  const logisticsOptions = useMemo(
+    () =>
+      toSelectOptions(
+        responseLogistics?.data?.map((item: LogisticInformationI) => ({
+          id: item.id,
+          name: item.companyName || item.fullName || ''
+        })) ?? []
+      ),
+    [responseLogistics]
+  )
+
   const driverOptions = useMemo(
     () =>
       toSelectOptions(
@@ -224,9 +240,10 @@ const VehicleDispatchCreatePage = () => {
                   required
                   textLabel='Đơn vị yêu cầu'
                   placeholder='Chọn đơn vị'
-                  options={requestingUnitOptions}
+                  options={logisticsOptions}
                   negative={!!errors.requestUnit}
                   message={errors.requestUnit?.message}
+                  loading={isLoadingLogistics}
                 />
               )}
             />
