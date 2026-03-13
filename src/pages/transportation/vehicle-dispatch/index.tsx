@@ -226,9 +226,9 @@ const VehicleDispatchPage = () => {
       render: (_: unknown, row: FlattenedRowI) => (
         <FISTableCell
           content={
-            <Tooltip placement='topLeft' title={row.requestingUnitName ?? '-'}>
+            <Tooltip placement='topLeft' title={row.logisticsCustomerName ?? '-'}>
               {' '}
-              {row.requestingUnitName ?? '-'}
+              {row.logisticsCustomerName ?? '-'}
             </Tooltip>
           }
           textAlign='left'

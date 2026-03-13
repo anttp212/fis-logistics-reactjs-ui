@@ -7,16 +7,15 @@ import { toDriverFormValues, type DriverFormValuesI } from '../data'
 import { useCreateDriverMutation } from '../driverManagement.api'
 import type { CreateDriverRequestI } from '../driverManagement.api'
 
-const toCreateBody = (values: DriverFormValuesI): CreateDriverRequestI => ({
-  logisticsId: values.logisticsId,
+const toCreateBody = (values: DriverFormValuesI, files: string[]): CreateDriverRequestI => ({
+  logisticsCustomerId: values.logisticsCustomerId,
+  primaryVehicleId: values.primaryVehicleId || undefined,
+  trailerVehicleId: values.trailerVehicleId || undefined,
+  userId: values.userId,
   idCardNumber: values.idCardNumber,
-  fullName: values.fullName,
-  phone: values.phone,
-  email: values.email || undefined,
-  password: values.password,
   gender: values.gender || undefined,
-  status: values.status || 'ACTIVE',
-  note: values.note || undefined
+  note: values.note || undefined,
+  drivingLicenseAttachments: files
 })
 
 const DriverManagementCreatePage = () => {
@@ -30,9 +29,9 @@ const DriverManagementCreatePage = () => {
     { label: 'Tạo tài xế' }
   ]
 
-  const handleSubmit = async (values: DriverFormValuesI) => {
+  const handleSubmit = async (values: DriverFormValuesI, files: string[]) => {
     try {
-      await createDriver(toCreateBody(values)).unwrap()
+      await createDriver(toCreateBody(values, files)).unwrap()
       message.success('Tạo tài xế thành công')
       navigate(ROUTES.transportationDriverManagement)
     } catch (err: unknown) {

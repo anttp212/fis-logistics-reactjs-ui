@@ -211,7 +211,7 @@ const VehicleDispatchDetail = () => {
                     order.vehicleTypeId
                   }
                 />
-                <InfoItem label='Đơn vị yêu cầu' value={order.requestingUnitName ?? '-'} />
+                <InfoItem label='Đơn vị yêu cầu' value={order.logisticsCustomerName ?? '-'} />
                 <InfoItem label='Điểm đi' value={order.departureLocationName ?? '-'} />
                 <InfoItem label='Điểm đến' value={order.destinationLocationName ?? '-'} />
                 <InfoItem

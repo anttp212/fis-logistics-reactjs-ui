@@ -5,19 +5,22 @@ import { ROUTES } from '@constants'
 import DriverForm from '../DriverForm'
 import { toDriverFormValues, type DriverFormValuesI } from '../data'
 import { useGetDriverDetailQuery, useUpdateDriverMutation } from '../driverManagement.api'
-import type { UpdateDriverRequestI } from '../driverManagement.api'
+import type { UpdateDriverRequestT } from '../driverManagement.api'
+import type { AttachmentItemI } from '@components'
 
-const toUpdateBody = (values: DriverFormValuesI): UpdateDriverRequestI => ({
-  logisticsId: values.logisticsId,
+const toUpdateBody = (values: DriverFormValuesI, files: string[]): UpdateDriverRequestT => ({
+  logisticsCustomerId: values.logisticsCustomerId,
+  primaryVehicleId: values.primaryVehicleId || undefined,
+  trailerVehicleId: values.trailerVehicleId || undefined,
+  userId: values.userId,
   idCardNumber: values.idCardNumber,
-  fullName: values.fullName,
-  phone: values.phone,
-  email: values.email || undefined,
-  password: values.password || undefined,
   gender: values.gender || undefined,
-  status: values.status || 'ACTIVE',
-  note: values.note || undefined
+  note: values.note || undefined,
+  drivingLicenseAttachments: files
 })
+
+const toAttachmentList = (attachments?: Array<string | AttachmentItemI>): AttachmentItemI[] =>
+  (attachments ?? []).map((item) => (typeof item === 'string' ? { path: item } : item))
 
 const DriverManagementEditPage = () => {
   const navigate = useNavigate()
@@ -32,10 +35,10 @@ const DriverManagementEditPage = () => {
     { label: 'Chỉnh sửa tài xế' }
   ]
 
-  const handleSubmit = async (values: DriverFormValuesI) => {
+  const handleSubmit = async (values: DriverFormValuesI, files: string[]) => {
     if (!id) return
     try {
-      await updateDriver({ id, body: toUpdateBody(values) }).unwrap()
+      await updateDriver({ id, body: toUpdateBody(values, files) }).unwrap()
       message.success('Cập nhật tài xế thành công')
       navigate(ROUTES.transportationDriverManagement)
     } catch (err: unknown) {
@@ -71,6 +74,8 @@ const DriverManagementEditPage = () => {
     >
       <DriverForm
         defaultValues={toDriverFormValues(item)}
+        defaultFileList={toAttachmentList(item.drivingLicenseAttachments)}
+        excludeDriverId={id}
         submitLabel='Lưu thay đổi'
         onSubmit={handleSubmit}
         onCancel={() => navigate(ROUTES.transportationDriverManagement)}

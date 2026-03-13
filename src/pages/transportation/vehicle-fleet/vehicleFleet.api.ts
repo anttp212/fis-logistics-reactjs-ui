@@ -31,6 +31,12 @@ export interface GetVehicleFleetListParamsI {
   vehicleType?: string
 }
 
+export interface GetAvailableVehiclesParamsI {
+  logisticsCustomerId?: string
+  vehicleType?: string
+  excludeDriverId?: string
+}
+
 export interface VehicleFleetPaginationI {
   page: number
   size: number
@@ -89,6 +95,25 @@ export const vehicleFleetApi = createApi({
       }),
       providesTags: [API_TAGS.vehicleFleet]
     }),
+    getAvailableVehicles: builder.query<FleetItemI[], GetAvailableVehiclesParamsI | void>({
+      query: (params) => {
+        const p = params || {}
+        const searchParams = new URLSearchParams()
+        if (p.logisticsCustomerId?.trim()) searchParams.set('logisticsCustomerId', p.logisticsCustomerId.trim())
+        if (p.vehicleType?.trim()) searchParams.set('vehicleType', p.vehicleType.trim())
+        if (p.excludeDriverId?.trim()) searchParams.set('excludeDriverId', p.excludeDriverId.trim())
+        const qs = searchParams.toString()
+        return {
+          url: `${API_ENDPOINTS.vehicleFleet.available}${qs ? `?${qs}` : ''}`,
+          method: 'GET'
+        }
+      },
+      transformResponse: (response: { data?: FleetItemI[] } | FleetItemI[]): FleetItemI[] => {
+        if (response && typeof response === 'object' && 'data' in response) return response.data ?? []
+        return Array.isArray(response) ? response : []
+      },
+      providesTags: [API_TAGS.vehicleFleet]
+    }),
     getVehicleFleetDetail: builder.query<FleetItemI, string>({
       query: (id) => ({ url: API_ENDPOINTS.vehicleFleet.detail.replace(':id', id), method: 'GET' }),
       transformResponse: (response: { data?: FleetItemI } | FleetItemI) =>
@@ -116,6 +141,7 @@ export const vehicleFleetApi = createApi({
 
 export const {
   useGetVehicleFleetListQuery,
+  useGetAvailableVehiclesQuery,
   useGetVehicleFleetDetailQuery,
   useCreateVehicleFleetMutation,
   useUpdateVehicleFleetMutation

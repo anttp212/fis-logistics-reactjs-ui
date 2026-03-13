@@ -160,7 +160,7 @@ const VehicleDispatchCreatePage = () => {
     try {
       await createVehicleDispatch({
         vehicleTypeId: data.vehicleType,
-        requestingUnitId: data.requestUnit,
+        logisticsCustomerId: data.requestUnit,
         departureLocationName: data.origin,
         destinationLocationName: data.destination,
         estimatedPickupTime: toIsoDateTime(data.expectedPickupTime),
@@ -388,7 +388,7 @@ const VehicleDispatchCreatePage = () => {
                   name={`containers.${index}.containerNumber`}
                   control={control}
                   rules={{
-                    // required: 'Số container là bắt buộc',
+                    required: 'Số container là bắt buộc',
                     pattern: {
                       value: /^[A-Z]{4}[0-9]{7}$/,
                       message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
@@ -401,7 +401,7 @@ const VehicleDispatchCreatePage = () => {
                       placeholder='Nhập số container'
                       negative={!!errors.containers?.[index]?.containerNumber}
                       message={errors.containers?.[index]?.containerNumber?.message}
-                      // required
+                      required
                     />
                   )}
                 />

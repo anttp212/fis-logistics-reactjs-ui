@@ -1,30 +1,54 @@
 export type DriverStatusT = 'ACTIVE' | 'INACTIVE'
 export type DriverGenderT = 'MALE' | 'FEMALE'
+export type DriverVehicleTypeT = 'TRACTOR' | 'TRAILER' | 'TRUCK'
+
+export interface DriverAttachmentI {
+  name?: string | null
+  contentType?: string
+  size?: number
+  path: string
+}
 
 export interface DriverItemI {
   id: string
-  logisticsId: string
+  logisticsCustomerId: string
+  logisticsId?: string
+  companyName: string
+  customerFullName: string
+  primaryVehicleId: string
+  primaryVehicleLicensePlate: string
+  primaryVehicleType: DriverVehicleTypeT
+  trailerVehicleId: string
+  trailerVehicleLicensePlate: string
+  trailerVehicleType: DriverVehicleTypeT
+  userId: string
+  userFullName: string
+  userEmail: string
+  userPhone: string
+  userStatus: boolean
+  username: string
   idCardNumber: string
-  fullName: string
-  phone: string
+  fullName?: string
+  phone?: string
   email?: string
-  password: string
   gender?: DriverGenderT
-  status: DriverStatusT
-  note?: string
+  status?: DriverStatusT
+  note: string
   createdAt: string
-  assignedVehicleId?: string
+  updatedAt?: string
+  drivingLicenseAttachments?: Array<string | DriverAttachmentI>
 }
 
 export interface DriverFormValuesI {
-  logisticsId: string
+  logisticsCustomerId: string
+  userId: string
+  primaryVehicleId: string
+  trailerVehicleId: string
   idCardNumber: string
   fullName: string
   phone: string
   email: string
-  password: string
   gender: DriverGenderT | ''
-  status: DriverStatusT | ''
   note: string
 }
 
@@ -84,13 +108,14 @@ export const formatDate = (value?: string) => {
 }
 
 export const toDriverFormValues = (item?: DriverItemI): DriverFormValuesI => ({
-  logisticsId: item?.logisticsId ?? '',
+  logisticsCustomerId: item?.logisticsCustomerId ?? item?.logisticsId ?? '',
+  userId: item?.userId ?? '',
+  primaryVehicleId: item?.primaryVehicleId ?? '',
+  trailerVehicleId: item?.trailerVehicleId ?? '',
   idCardNumber: item?.idCardNumber ?? '',
-  fullName: item?.fullName ?? '',
-  phone: item?.phone ?? '',
-  email: item?.email ?? '',
-  password: item?.password ?? '',
+  fullName: item?.userFullName ?? item?.fullName ?? '',
+  phone: item?.userPhone ?? item?.phone ?? '',
+  email: item?.userEmail ?? item?.email ?? '',
   gender: item?.gender ?? '',
-  status: item?.status ?? '',
   note: item?.note ?? ''
 })

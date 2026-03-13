@@ -123,7 +123,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
     if (order) {
       reset({
         vehicleType: order.vehicleType ?? order.vehicleTypeId ?? '',
-        requestUnit: order.requestUnit ?? order.requestingUnitId ?? '',
+        requestUnit: order.requestUnit ?? order.logisticsCustomerId ?? '',
         origin: order.departureLocationName ?? '',
         destination: order.destinationLocationName ?? '',
         recipientName: order.recipientName ?? '',
@@ -179,7 +179,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
         id: orderId,
         body: {
           vehicleTypeId: data.vehicleType,
-          requestingUnitId: data.requestUnit,
+          logisticsCustomerId: data.requestUnit,
           departureLocationName: data.origin,
           destinationLocationName: data.destination,
           estimatedPickupTime: toIsoDateTime(data.expectedPickupTime),
@@ -408,7 +408,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 name={`containers.${index}.containerNumber`}
                 control={control}
                 rules={{
-                  // required: 'Số container là bắt buộc',
+                  required: 'Số container là bắt buộc',
                   pattern: {
                     value: /^[A-Z]{4}[0-9]{7}$/,
                     message: 'Số container không hợp lệ (4 chữ in hoa + 7 số, ví dụ: ABCD1234567)'
@@ -416,7 +416,7 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 }}
                 render={({ field: f }) => (
                   <FISInputText
-                    // required
+                    required
                     {...f}
                     textLabel='Số container'
                     placeholder='Nhập số container'
@@ -431,7 +431,6 @@ const VehicleDispatchEditForm = ({ orderId, onSuccess, onCancel }: VehicleDispat
                 rules={{ required: 'Vui lòng chọn kích thước' }}
                 render={({ field: f }) => (
                   <FISSelect
-                    required
                     {...f}
                     textLabel='Kích thước'
                     placeholder='Chọn kích thước'

@@ -19,7 +19,9 @@ export const API_ENDPOINTS = {
   },
   user: {
     getProfile: '/user/profile',
-    updateProfile: '/user/profile'
+    updateProfile: '/user/profile',
+    list: '/api/v1/api/users/search',
+    detail: '/api/v1/api/users/:id'
   },
   userGroup: {
     list: '/user-groups',
@@ -54,15 +56,16 @@ export const API_ENDPOINTS = {
   },
   vehicleFleet: {
     list: '/api/v1/vehicles',
+    available: '/api/v1/vehicles/available',
     detail: '/api/v1/vehicles/:id',
     create: '/api/v1/vehicles',
     update: '/api/v1/vehicles/:id'
   },
   driverManagement: {
-    list: '/api/v1/drivers',
-    detail: '/api/v1/drivers/:id',
-    create: '/api/v1/drivers',
-    update: '/api/v1/drivers/:id'
+    list: '/api/v1/driver-management',
+    detail: '/api/v1/driver-management/:id',
+    create: '/api/v1/driver-management',
+    update: '/api/v1/driver-management/:id'
   },
   vehicleDispatch: {
     list: '/api/v1/dispatch-orders',

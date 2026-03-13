@@ -36,8 +36,8 @@ export interface DispatchOrderApiI {
   vehicleTypeId?: string
   vehicleTypeName?: string
   requestUnit?: string
-  requestingUnitId?: string
-  requestingUnitName?: string
+  logisticsCustomerId?: string
+  logisticsCustomerName?: string
   origin?: string
   departureLocationId?: string
   destination?: string
@@ -108,7 +108,7 @@ export interface VehicleDispatchDetailI {
   vehicleType?: string
   vehicleTypeId?: string
   requestUnit?: string
-  requestingUnitId?: string
+  logisticsCustomerId?: string
   origin?: string
   departureLocationId?: string
   destination?: string
@@ -122,7 +122,7 @@ export interface VehicleDispatchDetailI {
   note?: string
   notes?: string
   createdAt?: string
-  requestingUnitName?: string
+  logisticsCustomerName?: string
   recipientName?: string
   recipientPhone?: string
   departureLocationName?: string
@@ -171,7 +171,7 @@ export interface GetDispatchOrderListParamsI {
 /** Request body cho API tạo mới điều xe */
 export interface CreateVehicleDispatchRequestI {
   vehicleTypeId: string
-  requestingUnitId: string
+  logisticsCustomerId: string
   departureLocationId?: string
   destinationLocationId?: string
   departureLocationName: string

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useTableToolbar } from '@hooks/useTableToolbar'
 import {
   ROUTES,
-  buildTransportationDriverManagementAssignVehiclePath,
   buildTransportationDriverManagementDetailPath,
   buildTransportationDriverManagementEditPath
 } from '@constants'
@@ -25,37 +24,48 @@ import { useGetDriverListQuery } from './driverManagement.api'
 interface DriverFilterValuesI {
   status: string
   logisticsId: string
+  createdDateFrom: string
+  createdDateTo: string
 }
 
 const DriverManagementPage = () => {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const tableToolbar = useTableToolbar<{ status: string; logisticsId: string }, DriverFilterValuesI>({
+  const tableToolbar = useTableToolbar<
+    { status: string; logisticsId: string; createdDateFrom: string; createdDateTo: string },
+    DriverFilterValuesI
+  >({
     defaultFilterValues: {
       status: '',
-      logisticsId: ''
+      logisticsId: '',
+      createdDateFrom: '',
+      createdDateTo: ''
     }
   })
   const search = tableToolbar.search
   const status = tableToolbar.filters?.status || ''
   const logisticsId = tableToolbar.filters?.logisticsId || ''
+  const createdDateFrom = tableToolbar.filters?.createdDateFrom || ''
+  const createdDateTo = tableToolbar.filters?.createdDateTo || ''
 
   const listParams = useMemo(
     () => ({
       page,
       size: pageSize,
-      search: search.trim() || undefined,
+      keyword: search.trim() || undefined,
       status: status.trim() || undefined,
-      logisticsId: logisticsId.trim() || undefined
+      logisticsId: logisticsId.trim() || undefined,
+      createdDateFrom: createdDateFrom.trim() || undefined,
+      createdDateTo: createdDateTo.trim() || undefined
     }),
-    [page, pageSize, search, status, logisticsId]
+    [page, pageSize, search, status, logisticsId, createdDateFrom, createdDateTo]
   )
-  const { data: listResponse, isLoading } = useGetDriverListQuery(listParams)
+  const { data: listResponse, isLoading: isListLoading, isFetching: isListFetching } = useGetDriverListQuery(listParams)
 
   useEffect(() => {
     setPage(1)
-  }, [search, status, logisticsId])
+  }, [search, status, logisticsId, createdDateFrom, createdDateTo])
 
   const total = listResponse?.pagination?.totalElements ?? 0
   const dataSource = useMemo(() => {
@@ -80,30 +90,37 @@ const DriverManagementPage = () => {
       key: 'fullName',
       width: 180,
       title: () => <FISTableHeaderCell label='TÊN CÁ NHÂN' hasRightDivider />,
-      render: (_: unknown, row: DriverItemI) => <FISTableCell content={row.fullName} textAlign='left' />
+      render: (_: unknown, row: DriverItemI) => (
+        <FISTableCell content={row.userFullName || row.fullName || '-'} textAlign='left' />
+      )
     },
     {
       key: 'logistics',
       width: 180,
       title: () => <FISTableHeaderCell label='LOGISTICS' hasRightDivider />,
-      render: (_: unknown, _row: DriverItemI) => <FISTableCell content={''} textAlign='left' />
+      render: (_: unknown, row: DriverItemI) => (
+        <FISTableCell content={row.companyName || row.customerFullName || '-'} textAlign='left' />
+      )
     },
     {
       key: 'phone',
       width: 140,
       title: () => <FISTableHeaderCell label='SỐ ĐIỆN THOẠI' hasRightDivider />,
-      render: (_: unknown, row: DriverItemI) => <FISTableCell content={row.phone} textAlign='left' />
+      render: (_: unknown, row: DriverItemI) => (
+        <FISTableCell content={row.userPhone || row.phone || '-'} textAlign='left' />
+      )
     },
     {
       key: 'status',
       width: 140,
       title: () => <FISTableHeaderCell label='TRẠNG THÁI' hasRightDivider />,
       render: (_: unknown, row: DriverItemI) => {
-        const badge = STATUS_BADGE[row.status]
+        const normalizedStatus = row.status ?? (row.userStatus ? 'ACTIVE' : 'INACTIVE')
+        const badge = STATUS_BADGE[normalizedStatus]
         return badge ? (
           <FISTableCell content={<FISBadge label={badge.label} size='sm' status={badge.status} />} textAlign='left' />
         ) : (
-          <FISTableCell content={STATUS_LABELS[row.status] ?? '-'} textAlign='left' />
+          <FISTableCell content={STATUS_LABELS[normalizedStatus] ?? '-'} textAlign='left' />
         )
       }
     },
@@ -139,20 +156,20 @@ const DriverManagementPage = () => {
                   ),
                   onClick: () => navigate(buildTransportationDriverManagementEditPath(row.id))
                 },
-                {
-                  label: '',
-                  startIcon: (
-                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={2}
-                        d='M8 7V3m8 4V3m-9 8h10m-7 4h4m-9 5h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z'
-                      />
-                    </svg>
-                  ),
-                  onClick: () => navigate(buildTransportationDriverManagementAssignVehiclePath(row.id))
-                },
+                // {
+                //   label: '',
+                //   startIcon: (
+                //     <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                //       <path
+                //         strokeLinecap='round'
+                //         strokeLinejoin='round'
+                //         strokeWidth={2}
+                //         d='M8 7V3m8 4V3m-9 8h10m-7 4h4m-9 5h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v11a2 2 0 002 2z'
+                //       />
+                //     </svg>
+                //   ),
+                //   onClick: () => navigate(buildTransportationDriverManagementAssignVehiclePath(row.id))
+                // },
                 {
                   label: '',
                   startIcon: (
@@ -212,17 +229,13 @@ const DriverManagementPage = () => {
           }
         />
 
-        {isLoading ? (
-          <div className='flex-1 flex items-center justify-center text-gray-500'>Đang tải dữ liệu...</div>
-        ) : (
-          <FISTable
-            dataSource={dataSource}
-            columns={columns}
-            rowKey='id'
-            scroll={{ y: 'calc(100vh - 320px)' }}
-            loading={isLoading}
-          />
-        )}
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowKey='id'
+          scroll={{ y: 'calc(100vh - 320px)' }}
+          loading={isListLoading || isListFetching}
+        />
 
         <div>
           <FISPagination
@@ -230,8 +243,8 @@ const DriverManagementPage = () => {
             pageSize={pageSize}
             total={total}
             onChange={(p) => setPage(p)}
-            onShowSizeChange={(_current, size) => {
-              setPageSize(size || 10)
+            onShowSizeChange={(_current, _size) => {
+              setPageSize(_current || 10)
               setPage(1)
             }}
             showSizeChanger

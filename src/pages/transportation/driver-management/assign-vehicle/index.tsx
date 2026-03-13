@@ -18,7 +18,6 @@ const DriverAssignVehiclePage = () => {
 
   const { control, handleSubmit } = useForm<AssignVehicleFormI>({
     defaultValues: {
-      vehicleId: item?.assignedVehicleId ?? ''
     }
   })
 

@@ -4,6 +4,9 @@ import { FISInputDate, FISSelect } from 'fis-component'
 import { STATUS_SELECT_OPTIONS } from '../data'
 import { parseDateValue, toBoundaryIsoString } from '@utils'
 import dayjs from '@utils/dayjs'
+import { useMemo } from 'react'
+import { useGetLogisticListQuery } from '../../logistic-information/logisticInformation.api'
+import { toSelectOptions } from '@utils'
 
 const FILTER_LOGISTICS_OPTIONS = [
   {
@@ -16,8 +19,19 @@ interface DriverManagementFilterPropsI {
 }
 
 const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
-  const dateFrom = useWatch({ control, name: 'dateFrom' }) as string
-  const dateFromMin = dateFrom ? dayjs(parseDateValue(dateFrom) ?? undefined) : undefined
+  const createdDateFrom = useWatch({ control, name: 'createdDateFrom' }) as string
+  const createdDateFromMin = createdDateFrom ? dayjs(parseDateValue(createdDateFrom) ?? undefined) : undefined
+  const { data: listResponse, isLoading: isLoadingLogistics } = useGetLogisticListQuery({
+    page: 1,
+    size: 1000
+  })
+  const logisticsOptions = useMemo(
+    () =>
+      toSelectOptions(
+        listResponse?.data?.map((item) => ({ id: item.id, name: item.companyName || item.fullName || '' })) ?? []
+      ),
+    [listResponse]
+  )
   return (
     <Row gutter={[12, 12]}>
       <Col span={24}>
@@ -43,14 +57,15 @@ const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
               {...field}
               textLabel='Logistics'
               placeholder='Chọn logistics'
-              options={FILTER_LOGISTICS_OPTIONS}
+              loading={isLoadingLogistics}
+              options={logisticsOptions.length ? logisticsOptions : FILTER_LOGISTICS_OPTIONS}
             />
           )}
         />
       </Col>
       <Col span={24}>
         <Controller
-          name='dateFrom'
+          name='createdDateFrom'
           control={control}
           render={({ field }) => (
             <FISInputDate
@@ -68,7 +83,7 @@ const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
       </Col>
       <Col span={24}>
         <Controller
-          name='dateTo'
+          name='createdDateTo'
           control={control}
           render={({ field }) => (
             <FISInputDate
@@ -76,7 +91,7 @@ const DriverManagementFilter = ({ control }: DriverManagementFilterPropsI) => {
               placeholder='Chọn ngày'
               value={parseDateValue(field.value)}
               onChange={(date) => field.onChange(date ? toBoundaryIsoString(date, 'end') : '')}
-              minDate={dateFromMin}
+              minDate={createdDateFromMin}
               picker='date'
               format='DD/MM/YYYY'
             />

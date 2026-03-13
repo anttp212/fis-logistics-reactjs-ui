@@ -1,26 +1,177 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { FISButton, FISRadioGroup, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
-import { GENDER_OPTIONS, LOGISTICS_OPTIONS, STATUS_CHECKBOX_OPTIONS, type DriverFormValuesI } from './data'
+import { FISButton, FISInputArea, FISInputText, FISSelect, FISText } from 'fis-component'
+import { UploadMinio, type AttachmentItemI } from '@components'
+import { useGetLogisticListQuery } from '../logistic-information/logisticInformation.api'
+import { useGetAvailableVehiclesQuery, useGetVehicleFleetDetailQuery } from '../vehicle-fleet/vehicleFleet.api'
+import { useGetUserDetailQuery, useGetUserListQuery, type UserListItemI } from './driverManagement.api'
+import { GENDER_OPTIONS, type DriverFormValuesI } from './data'
 
 interface DriverFormPropsI {
   defaultValues: DriverFormValuesI
   submitLabel: string
-  onSubmit: (values: DriverFormValuesI) => void | Promise<void>
+  onSubmit: (values: DriverFormValuesI, files: string[]) => void | Promise<void>
   onCancel: () => void
   isSubmitting?: boolean
+  defaultFileList?: AttachmentItemI[]
+  excludeDriverId?: string
 }
 
-const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitting = false }: DriverFormPropsI) => {
+const DriverForm = ({
+  defaultValues,
+  submitLabel,
+  onSubmit,
+  onCancel,
+  isSubmitting = false,
+  defaultFileList = [],
+  excludeDriverId
+}: DriverFormPropsI) => {
+  const [attachments, setAttachments] = useState<string[]>(() => defaultFileList.map((file) => file.path))
   const {
     control,
+    setValue,
+    watch,
     handleSubmit,
     formState: { errors }
   } = useForm<DriverFormValuesI>({
     defaultValues
   })
 
+  const selectedLogisticsCustomerId = watch('logisticsCustomerId')
+  const selectedUserId = watch('userId')
+  const selectedVehicleId = watch('primaryVehicleId')
+  const selectedTrailerVehicleId = watch('trailerVehicleId')
+  const previousLogisticsCustomerIdRef = useRef(selectedLogisticsCustomerId)
+  const { data: logisticsResponse, isLoading: isLoadingLogistics } = useGetLogisticListQuery({ page: 1, size: 1000 })
+  const { data: users = [], isLoading: isLoadingUsers } = useGetUserListQuery({
+    payload: { page: 0, size: 1000, search: '' }
+  })
+  const { data: selectedUserDetail } = useGetUserDetailQuery(selectedUserId, { skip: !selectedUserId })
+  const { data: currentPrimaryVehicleDetail } = useGetVehicleFleetDetailQuery(selectedVehicleId, {
+    skip: !selectedVehicleId
+  })
+  const { data: currentTrailerVehicleDetail } = useGetVehicleFleetDetailQuery(selectedTrailerVehicleId, {
+    skip: !selectedTrailerVehicleId
+  })
+
+  const logisticsOptions = useMemo(
+    () => [
+      {
+        items:
+          logisticsResponse?.data?.map((item) => ({
+            label: item.companyName || item.fullName || '-',
+            value: item.id
+          })) ?? []
+      }
+    ],
+    [logisticsResponse]
+  )
+
+  const userOptions = useMemo(
+    () => [
+      {
+        items: users.map((item) => ({
+          label: item.fullName ? `${item.fullName} (${item.username})` : item.username,
+          value: item.id
+        }))
+      }
+    ],
+    [users]
+  )
+  const { data: primaryVehicleResponse = [], isLoading: isLoadingPrimaryVehicles } = useGetAvailableVehiclesQuery(
+    {
+      logisticsCustomerId: selectedLogisticsCustomerId || undefined,
+      excludeDriverId: excludeDriverId || undefined
+    },
+    { skip: !selectedLogisticsCustomerId }
+  )
+
+  const mergedPrimaryVehicles = useMemo(() => {
+    if (!currentPrimaryVehicleDetail) return primaryVehicleResponse
+    if (primaryVehicleResponse.some((item) => item.id === currentPrimaryVehicleDetail.id)) return primaryVehicleResponse
+    return [currentPrimaryVehicleDetail, ...primaryVehicleResponse]
+  }, [currentPrimaryVehicleDetail, primaryVehicleResponse])
+
+  const selectedVehicle = useMemo(
+    () => mergedPrimaryVehicles.find((item) => item.id === selectedVehicleId),
+    [mergedPrimaryVehicles, selectedVehicleId]
+  )
+  const shouldShowTrailerVehicle = selectedVehicle?.vehicleType === 'TRACTOR'
+
+  const { data: trailerVehicleResponse = [], isLoading: isLoadingTrailerVehicles } = useGetAvailableVehiclesQuery(
+    {
+      logisticsCustomerId: selectedLogisticsCustomerId || undefined,
+      vehicleType: 'TRAILER',
+      excludeDriverId: excludeDriverId || undefined
+    },
+    { skip: !selectedLogisticsCustomerId || !shouldShowTrailerVehicle }
+  )
+
+  const mergedTrailerVehicles = useMemo(() => {
+    if (!currentTrailerVehicleDetail) return trailerVehicleResponse
+    if (trailerVehicleResponse.some((item) => item.id === currentTrailerVehicleDetail.id)) return trailerVehicleResponse
+    return [currentTrailerVehicleDetail, ...trailerVehicleResponse]
+  }, [currentTrailerVehicleDetail, trailerVehicleResponse])
+
+  const primaryVehicleOptions = useMemo(
+    () => [
+      {
+        items: mergedPrimaryVehicles.map((item) => ({
+          label: item.secondaryLicensePlate
+            ? `${item.licensePlate} / ${item.secondaryLicensePlate}`
+            : item.licensePlate,
+          value: item.id,
+          ...item
+        }))
+      }
+    ],
+    [mergedPrimaryVehicles]
+  )
+  const trailerVehicleOptions = useMemo(
+    () => [
+      {
+        items: mergedTrailerVehicles.map((item) => ({
+          label: item.secondaryLicensePlate
+            ? `${item.licensePlate} / ${item.secondaryLicensePlate}`
+            : item.licensePlate,
+          value: item.id,
+          ...item
+        }))
+      }
+    ],
+    [mergedTrailerVehicles]
+  )
+
+  useEffect(() => {
+    if (!shouldShowTrailerVehicle) {
+      setValue('trailerVehicleId', '')
+    }
+  }, [setValue, shouldShowTrailerVehicle])
+
+  useEffect(() => {
+    if (
+      previousLogisticsCustomerIdRef.current &&
+      previousLogisticsCustomerIdRef.current !== selectedLogisticsCustomerId
+    ) {
+      setValue('primaryVehicleId', '')
+      setValue('trailerVehicleId', '')
+    }
+    previousLogisticsCustomerIdRef.current = selectedLogisticsCustomerId
+  }, [selectedLogisticsCustomerId, setValue])
+
+  useEffect(() => {
+    const selectedFromList = users.find((item) => item.id === selectedUserId)
+    const source: UserListItemI | undefined = selectedUserDetail ?? selectedFromList
+
+    if (!source) return
+
+    setValue('fullName', source.fullName ?? '')
+    setValue('email', source.email ?? '')
+    setValue('phone', source.phone ?? '')
+  }, [selectedUserDetail, selectedUserId, setValue, users])
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+    <form onSubmit={handleSubmit((values) => onSubmit(values, attachments))} className='space-y-6'>
       <div className='rounded-lg border border-gray-200 bg-white p-6'>
         <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
           1. Thông tin tài xế
@@ -28,7 +179,7 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
 
         <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           <Controller
-            name='logisticsId'
+            name='logisticsCustomerId'
             control={control}
             rules={{ required: 'Vui lòng chọn logistics' }}
             render={({ field }) => (
@@ -37,9 +188,27 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
                 required
                 textLabel='Logistics'
                 placeholder='Chọn logistics'
-                options={LOGISTICS_OPTIONS}
-                negative={!!errors.logisticsId}
-                message={errors.logisticsId?.message}
+                loading={isLoadingLogistics}
+                options={logisticsOptions}
+                negative={!!errors.logisticsCustomerId}
+                message={errors.logisticsCustomerId?.message}
+              />
+            )}
+          />
+          <Controller
+            name='userId'
+            control={control}
+            rules={{ required: 'Vui lòng chọn tài xế' }}
+            render={({ field }) => (
+              <FISSelect
+                {...field}
+                required
+                textLabel='Danh sách người dùng'
+                placeholder='Chọn người dùng'
+                loading={isLoadingUsers}
+                options={userOptions}
+                negative={!!errors.userId}
+                message={errors.userId?.message}
               />
             )}
           />
@@ -61,75 +230,79 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
           <Controller
             name='fullName'
             control={control}
-            rules={{ required: 'Vui lòng nhập tên cá nhân' }}
             render={({ field }) => (
-              <FISInputText
-                {...field}
-                required
-                textLabel='Tên cá nhân'
-                placeholder='Nhập tên cá nhân'
-                negative={!!errors.fullName}
-                message={errors.fullName?.message}
-              />
+              <FISInputText {...field} textLabel='Tên cá nhân' placeholder='Tự động theo user' disabled />
             )}
           />
           <Controller
             name='phone'
             control={control}
-            rules={{ required: 'Vui lòng nhập số điện thoại' }}
             render={({ field }) => (
-              <FISInputText
-                {...field}
-                required
-                textLabel='Số điện thoại'
-                placeholder='Nhập số điện thoại'
-                negative={!!errors.phone}
-                message={errors.phone?.message}
-              />
+              <FISInputText {...field} textLabel='Số điện thoại' placeholder='Tự động theo user' disabled />
             )}
           />
           <Controller
             name='email'
             control={control}
-            render={({ field }) => <FISInputText {...field} textLabel='Email' placeholder='Nhập email' />}
+            render={({ field }) => (
+              <FISInputText {...field} textLabel='Email' placeholder='Tự động theo user' disabled />
+            )}
           />
           <Controller
-            name='password'
+            name='primaryVehicleId'
             control={control}
-            rules={{ required: 'Vui lòng nhập mật khẩu' }}
+            rules={{ required: 'Vui lòng chọn xe' }}
             render={({ field }) => (
-              <FISInputText
+              <FISSelect
                 {...field}
                 required
-                type='password'
-                textLabel='Mật khẩu'
-                placeholder='Nhập mật khẩu'
-                negative={!!errors.password}
-                message={errors.password?.message}
+                textLabel='Danh sách xe'
+                placeholder='Chọn xe'
+                loading={isLoadingPrimaryVehicles}
+                options={primaryVehicleOptions}
+                negative={!!errors.primaryVehicleId}
+                message={errors.primaryVehicleId?.message}
+                renderOption={(option: { [key: string]: any }) => (
+                  <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[12px]'>
+                    <span>Biển số xe: {option.label}</span>
+                    <div className='flex justify-between gap-[4px] text-[12px]'>
+                      <span>Tải trọng tối đa: {option.payloadCapacity}</span>
+                      <span>Loại xe: {option.vehicleType}</span>
+                    </div>
+                  </div>
+                )}
               />
             )}
           />
+          {shouldShowTrailerVehicle && (
+            <Controller
+              name='trailerVehicleId'
+              control={control}
+              render={({ field }) => (
+                <FISSelect
+                  {...field}
+                  textLabel='Xe rơ moóc'
+                  placeholder='Chọn xe rơ moóc'
+                  loading={isLoadingTrailerVehicles}
+                  options={trailerVehicleOptions}
+                  renderOption={(option: { [key: string]: any }) => (
+                    <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[12px]'>
+                      <span>Biển số xe: {option.label}</span>
+                      <div className='flex justify-between gap-[4px] text-[12px]'>
+                        <span>Tải trọng tối đa: {option.payloadCapacity}</span>
+                        <span>Loại xe: {option.vehicleType}</span>
+                      </div>
+                    </div>
+                  )}
+                />
+              )}
+            />
+          )}
           <Controller
             name='gender'
             control={control}
             render={({ field }) => (
               <FISSelect {...field} textLabel='Giới tính' placeholder='Chọn giới tính' options={GENDER_OPTIONS} />
-            )}
-          />
-          <Controller
-            name='status'
-            control={control}
-            rules={{ required: 'Vui lòng chọn trạng thái' }}
-            render={({ field }) => (
-              <div className='md:col-span-2'>
-                <FISRadioGroup
-                  {...field}
-                  direction='row'
-                  groupLabel='Trạng thái'
-                  options={[...STATUS_CHECKBOX_OPTIONS]}
-                />
-                {errors.status && <p className='mt-1 text-sm text-red-500'>{errors.status.message}</p>}
-              </div>
             )}
           />
         </div>
@@ -145,6 +318,18 @@ const DriverForm = ({ defaultValues, submitLabel, onSubmit, onCancel, isSubmitti
           render={({ field }) => (
             <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' maxLength={1000} />
           )}
+        />
+      </div>
+
+      <div className='rounded-lg border border-gray-200 bg-white p-6'>
+        <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-4 block'>
+          Tài liệu đính kèm
+        </FISText>
+        <UploadMinio
+          value={attachments}
+          onChange={setAttachments}
+          initialFileList={defaultFileList}
+          acceptOnlyDocuments
         />
       </div>
 
