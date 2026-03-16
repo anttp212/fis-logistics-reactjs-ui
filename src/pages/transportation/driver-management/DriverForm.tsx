@@ -44,7 +44,10 @@ const DriverForm = ({
   const previousLogisticsCustomerIdRef = useRef(selectedLogisticsCustomerId)
   const { data: logisticsResponse, isLoading: isLoadingLogistics } = useGetLogisticListQuery({ page: 1, size: 1000 })
   const { data: users = [], isLoading: isLoadingUsers } = useGetUserListQuery({
-    payload: { page: 0, size: 1000, search: '' }
+    page: 1,
+    size: 1000,
+    roleCode: 'DRIVER',
+    search: ''
   })
   const { data: selectedUserDetail } = useGetUserDetailQuery(selectedUserId, { skip: !selectedUserId })
   const { data: currentPrimaryVehicleDetail } = useGetVehicleFleetDetailQuery(selectedVehicleId, {

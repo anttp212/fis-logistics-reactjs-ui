@@ -17,8 +17,7 @@ const DriverAssignVehiclePage = () => {
   const item = useMemo(() => MOCK_DRIVER_DATA.find((entry) => entry.id === id), [id])
 
   const { control, handleSubmit } = useForm<AssignVehicleFormI>({
-    defaultValues: {
-    }
+    defaultValues: {}
   })
 
   const breadcrumbItems = [

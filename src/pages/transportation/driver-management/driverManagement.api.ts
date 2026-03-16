@@ -61,11 +61,10 @@ export interface UserListResponseI {
 }
 
 export interface GetUserListRequestI {
-  payload: {
-    page: number
-    size: number
-    search: string
-  }
+  page: number
+  size: number
+  search: string
+  roleCode: string
 }
 
 export interface UserDetailResponseI {
