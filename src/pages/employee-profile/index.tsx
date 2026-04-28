@@ -422,7 +422,7 @@ const Employees = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Hồ sơ nhân viên' breadcrumbItems={employees.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Hồ sơ nhân viên' breadcrumbItems={employees.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar

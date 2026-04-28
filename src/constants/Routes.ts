@@ -7,9 +7,12 @@ export const ROUTES = {
   home: '/home',
   // Public portal (no login required)
   portal: '/portal',
-  portalTransportRequest: '/portal/transport-request',
-  portalExportRequest: '/portal/export-request',
-  portalImportRequest: '/portal/import-request',
+  portalRequest: '/portal/request',
+  portalInbound: '/portal/inbound',
+  portalOutbound: '/portal/outbound',
+  portalStorage: '/portal/storage',
+  portalVas: '/portal/vas',
+  portalCrossDocking: '/portal/cross-docking',
   warehouse: '/warehouse',
   warehouseServiceRegistrationPortal: '/warehouse/service-registration-portal',
   warehouseAssessmentApproval: '/warehouse/assessment-approval',
@@ -50,8 +53,25 @@ export const ROUTES = {
   depotVehicleServiceLog: '/depot/vehicle-service-log',
   depotPerformanceStats: '/depot/performance-stats',
   depotOperationsDashboard: '/depot/operations-dashboard',
+  reportGateInOut: '/transportation/report-gate-in-out',
+  reportTransportation: '/transportation/report-transportation',
   transportation: '/transportation',
   transportationVehicleDispatch: '/transportation/vehicle-dispatch',
+  transportationVehicleDispatchCreate: '/transportation/vehicle-dispatch/create',
+  transportationLogisticInformation: '/transportation/logistic-information',
+  transportationLogisticInformationCreate: '/transportation/logistic-information/create',
+  transportationLogisticInformationDetail: '/transportation/logistic-information/:id',
+  transportationLogisticInformationEdit: '/transportation/logistic-information/:id/edit',
+  transportationDriverManagement: '/transportation/driver-management',
+  transportationDriverManagementCreate: '/transportation/driver-management/create',
+  transportationDriverManagementDetail: '/transportation/driver-management/:id',
+  transportationDriverManagementEdit: '/transportation/driver-management/:id/edit',
+  transportationDriverManagementAssignVehicle: '/transportation/driver-management/:id/assign-vehicle',
+  transportationVehicleFleet: '/transportation/vehicle-fleet',
+  transportationVehicleFleetCreate: '/transportation/vehicle-fleet/create',
+  transportationVehicleFleetDetail: '/transportation/vehicle-fleet/:id',
+  transportationVehicleFleetEdit: '/transportation/vehicle-fleet/:id/edit',
+  transportationVehicleDispatchDetail: '/transportation/vehicle-dispatch/:id',
   transportationVehicleApproval: '/transportation/vehicle-approval',
   transportationServiceRequestPortal: '/transportation/service-request-portal',
   transportationReceptionAssessment: '/transportation/reception-assessment',
@@ -102,6 +122,7 @@ export const ROUTES = {
 
   // Root and fallback
   root: '/',
+  landing: '/',
   wildcard: '*'
 
   // Future routes (examples)
@@ -142,6 +163,42 @@ export const buildCustomerDetailPath = (customerId: string): string => {
 
 export const buildPartnerDetailPath = (partnerId: string): string => {
   return `/category-management/partner-profile/${partnerId}`
+}
+
+export const buildVehicleDispatchDetailPath = (id: string): string => {
+  return `/transportation/vehicle-dispatch/${id}`
+}
+
+export const buildVehicleDispatchEditPath = (id: string): string => {
+  return `/transportation/vehicle-dispatch/${id}/edit`
+}
+
+export const buildTransportationLogisticInformationDetailPath = (id: string): string => {
+  return `/transportation/logistic-information/${id}`
+}
+
+export const buildTransportationLogisticInformationEditPath = (id: string): string => {
+  return `/transportation/logistic-information/${id}/edit`
+}
+
+export const buildTransportationVehicleFleetDetailPath = (id: string): string => {
+  return `/transportation/vehicle-fleet/${id}`
+}
+
+export const buildTransportationVehicleFleetEditPath = (id: string): string => {
+  return `/transportation/vehicle-fleet/${id}/edit`
+}
+
+export const buildTransportationDriverManagementDetailPath = (id: string): string => {
+  return `/transportation/driver-management/${id}`
+}
+
+export const buildTransportationDriverManagementEditPath = (id: string): string => {
+  return `/transportation/driver-management/${id}/edit`
+}
+
+export const buildTransportationDriverManagementAssignVehiclePath = (id: string): string => {
+  return `/transportation/driver-management/${id}/assign-vehicle`
 }
 
 // Type for route paths (for TypeScript safety)

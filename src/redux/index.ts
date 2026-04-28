@@ -6,6 +6,13 @@ import authSlice from '@slices/auth.slice'
 import { loginApi } from '../pages/auth/login/login.api'
 import { userGroupApi } from '../pages/user-management/user-group/userGroup.api'
 import { departmentsApi } from '../pages/organization-structure/departments/departments.api'
+import { vehicleDispatchApi } from '../pages/transportation/vehicle-dispatch/vehicleDispatch.api'
+import { vehicleDispatchMasterApi } from '../pages/transportation/vehicle-dispatch/vehicleDispatchMaster.api'
+import { dashboardApi } from '../pages/home/dashboard.api'
+import { gateInOutApi } from '../pages/report/gate-in-out/gateInOut.api'
+import { logisticInformationApi } from '../pages/transportation/logistic-information/logisticInformation.api'
+import { vehicleFleetApi } from '../pages/transportation/vehicle-fleet/vehicleFleet.api'
+import { driverManagementApi } from '../pages/transportation/driver-management/driverManagement.api'
 
 // Persist config
 const persistConfig = {
@@ -18,7 +25,14 @@ const rootReducer = combineReducers({
   auth: authSlice.reducer,
   [loginApi.reducerPath]: loginApi.reducer,
   [userGroupApi.reducerPath]: userGroupApi.reducer,
-  [departmentsApi.reducerPath]: departmentsApi.reducer
+  [departmentsApi.reducerPath]: departmentsApi.reducer,
+  [vehicleDispatchApi.reducerPath]: vehicleDispatchApi.reducer,
+  [vehicleDispatchMasterApi.reducerPath]: vehicleDispatchMasterApi.reducer,
+  [dashboardApi.reducerPath]: dashboardApi.reducer,
+  [gateInOutApi.reducerPath]: gateInOutApi.reducer,
+  [logisticInformationApi.reducerPath]: logisticInformationApi.reducer,
+  [vehicleFleetApi.reducerPath]: vehicleFleetApi.reducer,
+  [driverManagementApi.reducerPath]: driverManagementApi.reducer
 })
 
 // Wrap the root reducer with persistReducer
@@ -36,7 +50,18 @@ const store = configureStore({
       immutableCheck: {
         warnAfter: 128 // Warn if state operations take longer than 128ms
       }
-    }).concat(loginApi.middleware, userGroupApi.middleware, departmentsApi.middleware) // Add RTK Query middleware
+    }).concat(
+      loginApi.middleware,
+      userGroupApi.middleware,
+      departmentsApi.middleware,
+      vehicleDispatchApi.middleware,
+      vehicleDispatchMasterApi.middleware,
+      dashboardApi.middleware,
+      gateInOutApi.middleware,
+      logisticInformationApi.middleware,
+      vehicleFleetApi.middleware,
+      driverManagementApi.middleware
+    ) // Add RTK Query middleware
 })
 
 // Create a persistor

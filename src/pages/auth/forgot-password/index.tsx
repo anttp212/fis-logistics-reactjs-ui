@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useNavigate, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
 import LanguageSelector from '../../../components/Auth/LanguageSelector'
+import logo1 from '@images/logo1.png'
 
 interface ForgotPasswordFormDataI {
   email: string
@@ -95,23 +96,8 @@ const ForgotPassword: React.FC = () => {
 
           {/* Logo and Title */}
           <div className='text-center mb-8 mt-12'>
-            <div className='flex items-center justify-center gap-2 mb-6'>
-              {/* Logo with checkmark graphic */}
-              <div className='relative'>
-                <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
-                  <svg
-                    className='w-6 h-6 text-white'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth={3}
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
-                  </svg>
-                </div>
-                <div className='absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full'></div>
-              </div>
-              <h1 className='text-2xl font-bold text-gray-900'>Logisverse</h1>
+            <div className='flex justify-center mb-6'>
+              <img src={logo1} alt='Logiverse Digital Logistics Platform' className='h-[180px] w-auto object-contain' />
             </div>
             <h2 className='text-3xl font-bold text-gray-900 mb-2'>Quên mật khẩu</h2>
             <p className='text-sm text-gray-600'>Nhập email để nhận link đặt lại mật khẩu</p>

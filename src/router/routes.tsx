@@ -100,38 +100,61 @@ const authLoader = async () => {
 // ============================================
 
 export const routes: RouteObject[] = [
-  // 🔄 Root redirect first
+  // 🏠 Landing page (public home at /)
   {
     index: true,
-    element: <SmartRedirect />
+    lazy: async () => {
+      const LandingPage = await import('../pages/landing')
+      return { Component: LandingPage.default }
+    }
   },
 
   // 🌐 Public portal routes (no layout / no auth)
   {
-    path: ROUTES.portalTransportRequest,
+    path: ROUTES.portalInbound,
     lazy: async () => {
-      const C = await import('../pages/portal/transport-request')
+      const C = await import('../pages/portal/inbound')
       return { Component: C.default }
     }
   },
   {
-    path: ROUTES.portalExportRequest,
+    path: ROUTES.portalOutbound,
     lazy: async () => {
-      const C = await import('../pages/portal/export-request')
+      const C = await import('../pages/portal/outbound')
       return { Component: C.default }
     }
   },
   {
-    path: ROUTES.portalImportRequest,
+    path: ROUTES.portalStorage,
     lazy: async () => {
-      const C = await import('../pages/portal/import-request')
+      const C = await import('../pages/portal/storage')
       return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalVas,
+    lazy: async () => {
+      const C = await import('../pages/portal/vas')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalCrossDocking,
+    lazy: async () => {
+      const C = await import('../pages/portal/cross-docking')
+      return { Component: C.default }
+    }
+  },
+  {
+    path: ROUTES.portalRequest,
+    loader: async () => {
+      throw redirect(ROUTES.portalInbound)
     }
   },
   {
     path: ROUTES.portal,
     loader: async () => {
-      throw redirect(ROUTES.portalTransportRequest)
+      throw redirect(ROUTES.portalInbound)
     }
   },
 
@@ -647,6 +670,55 @@ export const routes: RouteObject[] = [
       },
       // Quản lý vận chuyển: path tương đối, sub-routes trước, redirect sau
       {
+        path: 'transportation/vehicle-dispatch/create',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-dispatch/create')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-dispatch/:id/edit',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-dispatch/edit')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-dispatch/:id',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-dispatch/detail')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/logistic-information/create',
+        lazy: async () => {
+          const C = await import('../pages/transportation/logistic-information/create')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/logistic-information/:id/edit',
+        lazy: async () => {
+          const C = await import('../pages/transportation/logistic-information/edit')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/logistic-information/:id',
+        lazy: async () => {
+          const C = await import('../pages/transportation/logistic-information/detail')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/logistic-information',
+        lazy: async () => {
+          const C = await import('../pages/transportation/logistic-information/index')
+          return { Component: C.default }
+        }
+      },
+      {
         path: 'transportation/vehicle-dispatch',
         lazy: async () => {
           const C = await import('../pages/transportation/vehicle-dispatch')
@@ -699,6 +771,83 @@ export const routes: RouteObject[] = [
         path: 'transportation/tally-billing',
         lazy: async () => {
           const C = await import('../pages/transportation/tally-billing')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/report-gate-in-out',
+        lazy: async () => {
+          const C = await import('../pages/report/gate-in-out')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/report-transportation',
+        lazy: async () => {
+          const C = await import('../pages/report/transportation')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-fleet/create',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-fleet/create/index')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-fleet/:id/edit',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-fleet/edit/index')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-fleet/:id',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-fleet/detail/index')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/driver-management/create',
+        lazy: async () => {
+          const C = await import('../pages/transportation/driver-management/create/index.tsx')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/driver-management/:id/edit',
+        lazy: async () => {
+          const C = await import('../pages/transportation/driver-management/edit/index.tsx')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/driver-management/:id/assign-vehicle',
+        lazy: async () => {
+          const C = await import('../pages/transportation/driver-management/assign-vehicle/index.tsx')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/driver-management/:id',
+        lazy: async () => {
+          const C = await import('../pages/transportation/driver-management/detail/index.tsx')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/driver-management',
+        lazy: async () => {
+          const C = await import('../pages/transportation/driver-management/index.tsx')
+          return { Component: C.default }
+        }
+      },
+      {
+        path: 'transportation/vehicle-fleet',
+        lazy: async () => {
+          const C = await import('../pages/transportation/vehicle-fleet/index')
           return { Component: C.default }
         }
       },

@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@constants'
 
-type PortalMenuKeyT = 'transport' | 'export' | 'import'
+type PortalMenuKeyT = 'inbound' | 'outbound' | 'storage' | 'vas' | 'cross-docking'
 
 interface PortalLayoutPropsI {
   activeKey: PortalMenuKeyT
@@ -13,9 +13,11 @@ const PortalLayout: React.FC<PortalLayoutPropsI> = ({ activeKey, children }) => 
   const navigate = useNavigate()
 
   const menuItems: { key: PortalMenuKeyT; label: string; route: string }[] = [
-    { key: 'transport', label: 'Yêu cầu vận chuyển', route: ROUTES.portalTransportRequest },
-    { key: 'export', label: 'Yêu cầu xuất hàng', route: ROUTES.portalExportRequest },
-    { key: 'import', label: 'Yêu cầu nhập hàng', route: ROUTES.portalImportRequest }
+    { key: 'inbound', label: 'Inbound (Nhập kho)', route: ROUTES.portalInbound },
+    { key: 'outbound', label: 'Outbound (Xuất kho)', route: ROUTES.portalOutbound },
+    { key: 'storage', label: 'Storage (Lưu kho)', route: ROUTES.portalStorage },
+    { key: 'vas', label: 'VAS (Gia công, đóng gói, dán tem)', route: ROUTES.portalVas },
+    { key: 'cross-docking', label: 'Cross-docking', route: ROUTES.portalCrossDocking }
   ]
 
   return (

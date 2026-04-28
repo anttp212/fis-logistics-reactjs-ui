@@ -21,7 +21,7 @@ const Warehouse = () => {
   const warehouse = useWarehouse()
   return (
     <WarehouseContext.Provider value={warehouse}>
-      <PageWrapper className='p-5' title='Quản lý kho' breadcrumbItems={warehouse.breadcrumbItems}>
+      <PageWrapper className='py-5' title='Quản lý kho' breadcrumbItems={warehouse.breadcrumbItems}>
         <div className='flex gap-5 flex-col h-full'>
           <TableToolbar
             filterContent={<WarehouseFilter control={warehouse.control} />}

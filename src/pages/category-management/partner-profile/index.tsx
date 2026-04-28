@@ -525,7 +525,7 @@ const Partners = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Hồ sơ đối tác' breadcrumbItems={partners.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Hồ sơ đối tác' breadcrumbItems={partners.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar

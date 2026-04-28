@@ -17,14 +17,32 @@ export const loginApi = createApi({
         body: credentials
       }),
       invalidatesTags: [API_TAGS.currentUser],
-      // Transform response nếu cần
-      transformResponse: (response: ApiResponseI<LoginResponseI>) => {
-        // Log successful login
-        return response
-      },
-      // Transform error response
-      transformErrorResponse: (response: any) => {
-        console.error('❌ Login failed:', response)
+      transformResponse: (response: ApiResponseI<LoginResponseI> | any) => {
+        // Backend format: { code, message, data: { accessToken, expiresIn, refreshToken, roleCode, tokenType } }
+        if (response?.data) {
+          const d = response.data
+          if (typeof d === 'object') {
+            const roleCode = d.roleCode ?? d.role
+            const roleMap: Record<string, string> = { ADMIN: 'Admin', DRIVER: 'Tài xế', GUARD: 'Bảo vệ' }
+            const roleName = roleCode ? (roleMap[String(roleCode).toUpperCase()] ?? roleCode) : undefined
+            const user = d.user ?? d.userInfo ?? (roleName ? { role: roleName } : undefined)
+            return {
+              status: response.code === 'SUCCESS' ? 'success' : 'error',
+              message: response.message ?? '',
+              data: {
+                accessToken: d.accessToken ?? d.access_token,
+                tokenType: d.tokenType ?? d.token_type ?? 'Bearer',
+                expiresIn: d.expiresIn ?? d.expires_in,
+                refreshToken: d.refreshToken ?? d.refresh_token,
+                user: user
+                  ? { ...user, role: user.role ?? roleName }
+                  : roleName
+                    ? { id: '', name: '', email: '', role: roleName }
+                    : undefined
+              }
+            }
+          }
+        }
         return response
       }
     }),

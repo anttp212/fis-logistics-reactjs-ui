@@ -12,7 +12,7 @@ A React application built with TypeScript, Vite, Redux Toolkit, and Tailwind CSS
 ### Installation
 
 1. Clone the repository
-2. Install dependencies:
+Install dependencies:
 
    ```bash
    npm install
@@ -20,7 +20,7 @@ A React application built with TypeScript, Vite, Redux Toolkit, and Tailwind CSS
    yarn install
    ```
 
-3. **Environment Setup**:
+**Environment Setup**:
 
    ```bash
    # Copy environment template

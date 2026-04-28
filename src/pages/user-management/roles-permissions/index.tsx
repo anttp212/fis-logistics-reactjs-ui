@@ -369,7 +369,7 @@ const UserManagementRolesPermissions = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Vai trò & phân quyền' breadcrumbItems={rolesPermissions.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Vai trò & phân quyền' breadcrumbItems={rolesPermissions.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
@@ -384,34 +384,32 @@ const UserManagementRolesPermissions = () => {
         />
 
         {/* FISTable */}
-        <div className='flex-1 bg-white rounded-lg overflow-hidden p-4'>
-          <FISTable
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            scroll={{ x: 'max-content' }}
-            expandable={{
-              expandedRowKeys,
-              expandedRowRender: (record: RolePermissionI) => (
-                <div className='p-4'>
-                  <p className='text-sm text-gray-600'>
-                    <strong>Mô tả:</strong> {record.description}
-                  </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Phân quyền:</strong> {(record.menuPermissions || []).length} menu đã cấu hình quyền
-                    (Xem/Tạo/Sửa/Xóa/Tìm kiếm)
-                  </p>
-                  <p className='text-sm text-gray-600 mt-2'>
-                    <strong>Trạng thái:</strong> {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-                  </p>
-                </div>
-              ),
-              onExpand: (_expanded, record) => toggleExpand(record.key),
-              expandIcon: () => null,
-              expandIconColumnIndex: -1
-            }}
-          />
-        </div>
+        <FISTable
+          dataSource={dataSource}
+          columns={columns}
+          rowSelection={rowSelection}
+          scroll={{ x: 'max-content' }}
+          expandable={{
+            expandedRowKeys,
+            expandedRowRender: (record: RolePermissionI) => (
+              <div className='p-4'>
+                <p className='text-sm text-gray-600'>
+                  <strong>Mô tả:</strong> {record.description}
+                </p>
+                <p className='text-sm text-gray-600 mt-2'>
+                  <strong>Phân quyền:</strong> {(record.menuPermissions || []).length} menu đã cấu hình quyền
+                  (Xem/Tạo/Sửa/Xóa/Tìm kiếm)
+                </p>
+                <p className='text-sm text-gray-600 mt-2'>
+                  <strong>Trạng thái:</strong> {record.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
+                </p>
+              </div>
+            ),
+            onExpand: (_expanded, record) => toggleExpand(record.key),
+            expandIcon: () => null,
+            expandIconColumnIndex: -1
+          }}
+        />
       </div>
 
       {/* Role Permission Modal */}

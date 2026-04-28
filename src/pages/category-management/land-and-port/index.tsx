@@ -2,7 +2,7 @@ import { PageWrapper } from '@components'
 
 const CategoryManagementLandAndPort = () => {
   return (
-    <PageWrapper className='p-5' title='Địa chính và cảng' breadcrumbItems={[]}>
+    <PageWrapper className='py-5' title='Địa chính và cảng' breadcrumbItems={[]}>
       <div className='flex gap-5 flex-col h-full'>
         <div className='flex-1 bg-white rounded-lg p-4'>
           <p className='text-gray-600'>Nội dung quản lý địa chính và cảng sẽ được hiển thị tại đây</p>

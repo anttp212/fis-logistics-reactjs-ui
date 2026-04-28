@@ -65,7 +65,6 @@ const UserGroupModal: FC<UserGroupModalPropsI> = ({ open, onClose, onSubmit, ini
       footer={null}
       title={isEditMode ? 'Chỉnh sửa nhóm người dùng' : 'Thêm mới nhóm người dùng'}
       width={600}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4'>

@@ -289,7 +289,7 @@ const EmployeeDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='py-5'
       title='Chi tiết hồ sơ nhân viên'
       breadcrumbItems={breadcrumbItems}
       hasBackButton

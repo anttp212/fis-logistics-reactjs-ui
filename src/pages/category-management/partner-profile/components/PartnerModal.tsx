@@ -194,7 +194,6 @@ const PartnerModal: FC<PartnerModalPropsI> = ({ open, onClose, onSubmit, initial
       footer={null}
       title={isEditMode ? 'Chỉnh sửa hồ sơ đối tác' : 'Khai báo hồ sơ đối tác mới'}
       width={900}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4 max-h-[70vh] overflow-y-auto pr-2'>

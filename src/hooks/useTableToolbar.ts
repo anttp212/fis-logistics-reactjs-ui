@@ -37,14 +37,29 @@ export interface UseTableToolbarConfigI<TFormValues = any> {
 
 /**
  * Create parseFiltersFromUrl for specific filter fields
+ * Hỗ trợ cả string và array (multi-select) dựa vào kiểu defaultFilterValues
  */
-const createParseFiltersFromUrl = <TFilters>(filterFields: (keyof TFilters)[]) => {
+const createParseFiltersFromUrl = <TFilters>(
+  filterFields: (keyof TFilters)[],
+  defaultFilterValues: Partial<TFilters>
+) => {
   return (searchParams: URLSearchParams): TFilters => {
     const filters = {} as TFilters
     filterFields.forEach((field) => {
-      const value = searchParams.get(field as string)
-      if (value) {
-        ;(filters as any)[field] = value
+      const rawValue = searchParams.get(field as string)
+      if (rawValue == null) return
+
+      const defaultValue = (defaultFilterValues as any)[field]
+
+      // Nếu default là array => parse thành array (split ',')
+      if (Array.isArray(defaultValue)) {
+        const arr = rawValue
+          .split(',')
+          .map((v) => v.trim())
+          .filter((v) => v)
+        ;(filters as any)[field] = arr
+      } else {
+        ;(filters as any)[field] = rawValue
       }
     })
     return filters
@@ -96,7 +111,10 @@ export const useTableToolbar = <TFormValues extends Record<string, any> = any, T
   // Auto-generate filterFields from defaultFilterValues keys
   const filterFields = useMemo(() => Object.keys(defaultFilterValues) as (keyof TFilters)[], [defaultFilterValues])
 
-  const parseFiltersFromUrl = useMemo(() => createParseFiltersFromUrl<TFilters>(filterFields), [filterFields])
+  const parseFiltersFromUrl = useMemo(
+    () => createParseFiltersFromUrl<TFilters>(filterFields, defaultFilterValues as any),
+    [filterFields, defaultFilterValues]
+  )
 
   // Initialize default form values
   const defaultValues = useMemo(
@@ -129,7 +147,7 @@ export const useTableToolbar = <TFormValues extends Record<string, any> = any, T
     const filters = parseFiltersFromUrl(searchParams) as any
     Object.entries(filters).forEach(([key, value]) => {
       // @ts-expect-error - setValue type inference issue with generic types
-      setValue(key, value || '')
+      setValue(key, value)
     })
   }, [searchParams, parseFiltersFromUrl, setValue])
 
@@ -150,6 +168,19 @@ export const useTableToolbar = <TFormValues extends Record<string, any> = any, T
     // Add filter values to URL params
     Object.entries(formValues).forEach(([key, value]) => {
       if (key === 'search') return // Skip non-filter fields
+
+      // Array (multi-select): join bằng ',' và bỏ giá trị rỗng
+      if (Array.isArray(value)) {
+        const arr = value.filter((v) => v && v !== '')
+        if (arr.length > 0) {
+          params.set(key, arr.join(','))
+        } else {
+          params.delete(key)
+        }
+        return
+      }
+
+      // Scalar
       if (value && value !== '') {
         params.set(key, String(value))
       } else {
@@ -197,6 +228,8 @@ export const useTableToolbar = <TFormValues extends Record<string, any> = any, T
     [searchParams, setSearchParams]
   )
 
+  const activeFilters = useMemo(() => parseFiltersFromUrl(searchParams), [parseFiltersFromUrl, searchParams])
+
   return {
     // Form methods
     register,
@@ -217,6 +250,9 @@ export const useTableToolbar = <TFormValues extends Record<string, any> = any, T
 
     // Search function
     handleSearchChange,
+
+    // Active filters đọc từ URL (chỉ đổi khi bấm Tìm kiếm / lưu filter)
+    filters: activeFilters,
 
     // Sort state and handler
     sortedInfo,

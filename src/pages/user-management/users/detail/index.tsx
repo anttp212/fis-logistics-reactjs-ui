@@ -187,7 +187,7 @@ const UserDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='py-5'
       title='Chi tiết tài khoản người dùng'
       breadcrumbItems={breadcrumbItems}
       hasBackButton

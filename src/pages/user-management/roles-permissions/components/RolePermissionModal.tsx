@@ -122,7 +122,6 @@ const RolePermissionModal: FC<RolePermissionModalPropsI> = ({
       footer={null}
       title={isEditMode ? 'Chỉnh sửa Vai trò & phân quyền' : 'Tạo mới Vai trò & phân quyền'}
       width={800}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4'>

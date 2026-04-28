@@ -4,7 +4,10 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { ROUTES } from '@constants'
 import { useAppDispatch } from '@hooks'
 import { setTokenData, setUser } from '@slices/auth.slice'
+import { useLoginMutation } from './login.api'
+import type { UserInfoI } from '@app-types/auth'
 import LanguageSelector from '../../../components/Auth/LanguageSelector'
+import logo1 from '@images/logo1.png'
 
 interface LoginFormDataI {
   username: string
@@ -15,8 +18,8 @@ interface LoginFormDataI {
 const Login: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
   const dispatch = useAppDispatch()
+  const [login, { isLoading }] = useLoginMutation()
 
   const [showPassword, setShowPassword] = useState(false)
 
@@ -34,49 +37,50 @@ const Login: React.FC = () => {
   })
 
   const onSubmit = async (data: LoginFormDataI) => {
-    setIsLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const result = await login({
+        username: data.username,
+        password: data.password
+      }).unwrap()
 
-      // Mock: 3 tài khoản admin, taixe, baove (mật khẩu 123456)
-      const mockAccounts: Array<{ user: string; pass: string; name: string; email: string; role: string }> = [
-        { user: 'admin', pass: '123456', name: 'Admin', email: 'admin@example.com', role: 'Admin' },
-        { user: 'taixe', pass: '123456', name: 'Tài xế', email: 'taixe@example.com', role: 'Tài xế' },
-        { user: 'baove', pass: '123456', name: 'Bảo vệ', email: 'baove@example.com', role: 'Bảo vệ' }
-      ]
-      const account = mockAccounts.find((a) => a.user === data.username && a.pass === data.password)
-
-      if (account) {
-        dispatch(
-          setTokenData({
-            accessToken: 'mock-access-token-123456',
-            tokenType: 'Bearer',
-            expiresIn: 3600,
-            refreshToken: 'mock-refresh-token-789'
-          })
-        )
-        dispatch(
-          setUser({
-            id: account.user,
-            name: account.name,
-            email: account.email,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(account.name)}&background=6366f1&color=fff`,
-            role: account.role
-          })
-        )
-        const redirectTo = searchParams.get('redirect') || ROUTES.home
-        navigate(redirectTo, { replace: true })
-      } else {
-        setError('root', {
-          message: 'Tên đăng nhập hoặc mật khẩu không đúng'
-        })
+      const resData = result?.data
+      if (!resData?.accessToken) {
+        setError('root', { message: result?.message || 'Đăng nhập thất bại. Vui lòng thử lại.' })
+        return
       }
-    } catch (_error) {
+
+      // Auth slice extraReducers đã xử lý setTokenData/setUser từ response
+      dispatch(
+        setTokenData({
+          accessToken: resData.accessToken,
+          tokenType: resData.tokenType ?? 'Bearer',
+          expiresIn: resData.expiresIn,
+          refreshToken: resData.refreshToken
+        })
+      )
+      const userInfo = resData.user as UserInfoI | undefined
+      dispatch(
+        setUser(
+          userInfo
+            ? {
+                id: userInfo.id || data.username,
+                name: userInfo.name || userInfo.fullName || data.username,
+                email: userInfo.email || '',
+                avatar: userInfo.avatar,
+                role: userInfo.role
+              }
+            : { id: data.username, name: data.username, email: '', role: undefined }
+        )
+      )
+
+      const redirectTo = searchParams.get('redirect') || ROUTES.home
+      navigate(redirectTo, { replace: true })
+    } catch (err: unknown) {
+      const errorMessage =
+        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } })?.data?.message : null
       setError('root', {
-        message: 'Có lỗi xảy ra, vui lòng thử lại'
+        message: errorMessage || 'Tên đăng nhập hoặc mật khẩu không đúng'
       })
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -95,23 +99,8 @@ const Login: React.FC = () => {
 
           {/* Logo and Title */}
           <div className='text-center mb-8 mt-12'>
-            <div className='flex items-center justify-center gap-2 mb-6'>
-              {/* Logo with checkmark graphic */}
-              <div className='relative'>
-                <div className='w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center'>
-                  <svg
-                    className='w-6 h-6 text-white'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth={3}
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M5 13l4 4L19 7' />
-                  </svg>
-                </div>
-                <div className='absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full'></div>
-              </div>
-              <h1 className='text-2xl font-bold text-gray-900'>Logisverse</h1>
+            <div className='flex justify-center mb-6'>
+              <img src={logo1} alt='Logiverse Digital Logistics Platform' className='h-[180px] w-auto object-contain' />
             </div>
             <h2 className='text-3xl font-bold text-gray-900 mb-2'>Đăng nhập</h2>
           </div>

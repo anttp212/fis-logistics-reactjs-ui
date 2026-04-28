@@ -358,7 +358,7 @@ const Departments = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Phòng ban' breadcrumbItems={departments.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Phòng ban' breadcrumbItems={departments.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         <TableToolbar
           filterContent={<DepartmentsFilter control={departments.control} branchesList={branchesList} />}

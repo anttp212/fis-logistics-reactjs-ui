@@ -221,7 +221,6 @@ const EmployeeModal: FC<EmployeeModalPropsI> = ({
       footer={null}
       title={isEditMode ? 'Chỉnh sửa hồ sơ nhân viên' : 'Tạo mới hồ sơ nhân viên'}
       width={800}
-      destroyOnClose
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
         <div className='space-y-4 max-h-[70vh] overflow-y-auto pr-2'>

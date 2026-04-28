@@ -236,7 +236,7 @@ const CustomerDetail = () => {
 
   return (
     <PageWrapper
-      className='p-5'
+      className='py-5'
       title='Chi tiết hồ sơ khách hàng'
       breadcrumbItems={breadcrumbItems}
       hasBackButton

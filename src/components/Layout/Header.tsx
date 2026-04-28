@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from '@hooks'
 import { ROUTES } from '@constants'
 import { clearAuth } from '@slices/auth.slice'
 import { HelpCircleIcon, BellIcon, SettingsIcon, ChevronDownIcon } from '@images'
+import logo2 from '@images/logo2.png'
 import NotificationDropdown from './NotificationDropdown'
 
 const NotificationBadge: React.FC<{ count: number }> = ({ count }) => {
@@ -58,11 +59,15 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className='bg-[#242173] text-white px-4 py-3 flex items-center justify-between'>
+    <header className='bg-[#242173] text-white px-4 py-2 flex items-center justify-between'>
       {/* Logo */}
-      <div className='flex items-center shrink-0'>
-        <span className='text-lg font-bold tracking-tight text-white'>LOGIVERSE</span>
-      </div>
+      <button
+        type='button'
+        onClick={() => navigate(ROUTES.home)}
+        className='flex items-center shrink-0 hover:opacity-90 transition-opacity cursor-pointer'
+      >
+        <img src={logo2} alt='Logiverse' className=' w-[156px] object-contain ' />
+      </button>
 
       {/* Right Side - Actions */}
       <div className='flex items-center gap-1'>

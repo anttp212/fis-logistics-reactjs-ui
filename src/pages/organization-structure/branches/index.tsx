@@ -385,7 +385,7 @@ const Branches = () => {
   ]
 
   return (
-    <PageWrapper className='p-5' title='Chi nhánh' breadcrumbItems={branches.breadcrumbItems}>
+    <PageWrapper className='py-5' title='Chi nhánh' breadcrumbItems={branches.breadcrumbItems}>
       <div className='flex gap-5 flex-col h-full'>
         {/* Table Toolbar with Filter */}
         <TableToolbar
