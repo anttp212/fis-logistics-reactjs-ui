@@ -76,6 +76,7 @@ const Home = () => {
     fromDate: formatDateForApi(defaultFromTo.from as Date, 'start'),
     toDate: formatDateForApi(defaultFromTo.to as Date, 'end')
   })
+  const [coordinatorFilterTriggered, setCoordinatorFilterTriggered] = useState(false)
 
   const { control, handleSubmit, setValue, watch } = useForm<HomeFilterValuesT>({
     defaultValues: {
@@ -88,7 +89,9 @@ const Home = () => {
   const selectedFromDateMin = selectedFromDate ? dayjs(selectedFromDate) : undefined
 
   const { data: securityStats } = useGetSecurityStatsQuery(appliedParams ?? undefined, {})
-  const { data: coordinatorReport } = useGetCoordinatorReportQuery(appliedParamsCoordinator ?? undefined)
+  const { data: coordinatorReport, isFetching: isCoordinatorFetching } = useGetCoordinatorReportQuery(
+    appliedParamsCoordinator ?? undefined
+  )
 
   const { data: overview } = useGetDashboardOverviewQuery()
 
@@ -100,6 +103,7 @@ const Home = () => {
   })
 
   const handleFilterCoordinator = handleSubmit((values) => {
+    setCoordinatorFilterTriggered(true)
     setAppliedParamsCoordinator({
       fromDate: values.fromDate ? formatDateForApi(values.fromDate, 'start') : undefined,
       toDate: values.toDate ? formatDateForApi(values.toDate, 'end') : undefined
@@ -157,6 +161,27 @@ const Home = () => {
       })
     })
 
+    return sum
+  }, [coordinatorReport?.stats])
+
+  const kpiTotals = useMemo(() => {
+    const totalRejected =
+      ordersBarData.container.rejected +
+      ordersBarData.internalVehicle.rejected +
+      ordersBarData.transportVehicle.rejected
+    return {
+      pending: coordinatorReport?.pendingOrders ?? 0,
+      inProgress: coordinatorReport?.inProgressOrders ?? 0,
+      completed: coordinatorReport?.completedOrders ?? 0,
+      cancelled: coordinatorReport?.cancelledOrders ?? 0,
+      rejected: totalRejected,
+      incident: coordinatorReport?.incidentOrders ?? 0
+    }
+  }, [coordinatorReport, ordersBarData])
+
+  const ordersBarChartData = useMemo(() => {
+    const sum = ordersBarData
+
     return [
       ['Loại xe', 'Chờ xác nhận', 'Đang thực hiện', 'Đang vận chuyển', 'Hoàn thành', 'Huỷ', 'Từ chối', 'Sự cố'],
       [
@@ -190,7 +215,7 @@ const Home = () => {
         sum.transportVehicle.incident
       ]
     ]
-  }, [coordinatorReport?.stats])
+  }, [ordersBarData])
 
   return (
     <div className='space-y-6 pb-6 h-full overflow-y-auto'>
@@ -280,26 +305,30 @@ const Home = () => {
                 />
               )}
             />
-            <FISButton variant='primary' onClick={handleFilterCoordinator}>
-              Lọc
+            <FISButton
+              variant='primary'
+              onClick={handleFilterCoordinator}
+              disabled={coordinatorFilterTriggered && isCoordinatorFetching}
+            >
+              {coordinatorFilterTriggered && isCoordinatorFetching ? 'Đang lọc...' : 'Lọc'}
             </FISButton>
           </div>
         </div>
         {/* ORDERS */}
         <div className='grid grid-cols-1 md:grid-cols-[70%_30%] '>
           <div className='p-6 justify-end items-end'>
-            <Chart chartType='ColumnChart' width='100%' height='320px' data={ordersBarData} options={barOptions} />
+            <Chart chartType='ColumnChart' width='100%' height='320px' data={ordersBarChartData} options={barOptions} />
           </div>
 
           {/* DRIVERS */}
           <div className='p-6'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-4'>
-              <KpiCard title='Chờ xác nhận' value={overview?.orders.pending ?? 0} />
-              <KpiCard title='Đang thực hiện' value={overview?.orders.inProgress ?? 0} />
-              <KpiCard title='Hoàn thành' value={overview?.orders.completed ?? 0} />
-              <KpiCard title='Huỷ' value={overview?.orders.cancelled ?? 0} />
-              <KpiCard title='Từ chối' value={overview?.orders.rejected ?? 0} />
-              <KpiCard title='Sự cố' value={overview?.orders.incident ?? 0} />
+              <KpiCard title='Chờ xác nhận' value={kpiTotals.pending} />
+              <KpiCard title='Đang thực hiện' value={kpiTotals.inProgress} />
+              <KpiCard title='Hoàn thành' value={kpiTotals.completed} />
+              <KpiCard title='Huỷ' value={kpiTotals.cancelled} />
+              <KpiCard title='Từ chối' value={kpiTotals.rejected} />
+              <KpiCard title='Sự cố' value={kpiTotals.incident} />
             </div>
           </div>
         </div>

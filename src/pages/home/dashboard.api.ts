@@ -56,6 +56,12 @@ export interface CoordinatorDailyStatI {
 
 export interface CoordinatorReportResponseI {
   stats: CoordinatorDailyStatI[]
+  totalOrders?: number
+  pendingOrders?: number
+  inProgressOrders?: number
+  completedOrders?: number
+  cancelledOrders?: number
+  incidentOrders?: number
 }
 
 export interface GetCoordinatorReportParamsI {
