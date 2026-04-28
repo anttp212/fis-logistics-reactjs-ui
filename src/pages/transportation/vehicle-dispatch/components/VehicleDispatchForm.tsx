@@ -2,15 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
 import { useForm, Controller, useFieldArray, useWatch } from 'react-hook-form'
 import { message, Modal, Table, Checkbox } from 'antd'
-import {
-  FISButton,
-  FISInputDate,
-  FISInputText,
-  FISIconButton,
-  FISSelect,
-  FISText,
-  FISInputArea
-} from 'fis-component'
+import { FISButton, FISInputDate, FISInputText, FISIconButton, FISSelect, FISText, FISInputArea } from 'fis-component'
 import { DeleteIcon } from '@images'
 import dayjs from '@utils/dayjs'
 import { parseDateValue, toSelectOptions } from '@utils'
@@ -199,11 +191,7 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
     remove: removeContainer
   } = useFieldArray({ control, name: 'containers' })
 
-  const {
-    fields: cargoFields,
-    append: appendCargo,
-    remove: removeCargo
-  } = useFieldArray({ control, name: 'cargos' })
+  const { fields: cargoFields, append: appendCargo, remove: removeCargo } = useFieldArray({ control, name: 'cargos' })
 
   const vehicleTypeId = useWatch({ control, name: 'vehicleType' })
   const isDanalog = useWatch({ control, name: 'isDanalogDeparture' })
@@ -351,7 +339,9 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
     } catch (err: unknown) {
       const errorMessage =
         err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } })?.data?.message : null
-      const fallback = isEdit ? 'Cập nhật thất bại. Vui lòng thử lại.' : 'Tạo yêu cầu điều xe thất bại. Vui lòng thử lại.'
+      const fallback = isEdit
+        ? 'Cập nhật thất bại. Vui lòng thử lại.'
+        : 'Tạo yêu cầu điều xe thất bại. Vui lòng thử lại.'
       const msg = errorMessage || fallback
       const items = msg
         .split(';')
@@ -427,11 +417,7 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
           name='isDanalogDeparture'
           control={control}
           render={({ field }) => (
-            <Checkbox
-              checked={!!field.value}
-              onChange={(e) => field.onChange(e.target.checked)}
-              className='mb-3'
-            >
+            <Checkbox checked={!!field.value} onChange={(e) => field.onChange(e.target.checked)} className='mb-3'>
               Điểm đi là Danalog
             </Checkbox>
           )}
@@ -460,7 +446,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                     placeholder='Chọn tỉnh/thành phố'
                     options={provinceOptions}
                     loading={isLoadingProvinces}
-
                     negative={!!errors.departureProvinceId}
                     message={errors.departureProvinceId?.message}
                   />
@@ -478,7 +463,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                     placeholder='Chọn phường/xã'
                     options={departureWardOptions}
                     disabled={!departureProvinceId}
-
                     negative={!!errors.departureWardId}
                     message={errors.departureWardId?.message}
                   />
@@ -533,7 +517,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                 placeholder='Chọn tỉnh/thành phố'
                 options={provinceOptions}
                 loading={isLoadingProvinces}
-
                 negative={!!errors.destinationProvinceId}
                 message={errors.destinationProvinceId?.message}
               />
@@ -551,7 +534,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                 placeholder='Chọn phường/xã'
                 options={destinationWardOptions}
                 disabled={!destinationProvinceId}
-
                 negative={!!errors.destinationWardId}
                 message={errors.destinationWardId?.message}
               />
@@ -704,7 +686,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                           textLabel='Tài xế'
                           placeholder='Chọn tài xế'
                           options={driverOptions}
-      
                           negative={!!errors.containers?.[index]?.driver}
                           message={errors.containers?.[index]?.driver?.message}
                           renderOption={(option: { [key: string]: any }) => (
@@ -813,7 +794,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                           textLabel='Tài xế'
                           placeholder='Chọn tài xế'
                           options={driverOptions}
-      
                           negative={!!errors.cargos?.[index]?.driver}
                           message={errors.cargos?.[index]?.driver?.message}
                           renderOption={(option: { [key: string]: any }) => (
@@ -902,13 +882,7 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
           name='note'
           control={control}
           render={({ field }) => (
-            <FISInputArea
-              {...field}
-              textLabel='Ghi chú'
-              placeholder='Nhập ghi chú'
-              rows={4}
-              maxLength={2000}
-            />
+            <FISInputArea {...field} textLabel='Ghi chú' placeholder='Nhập ghi chú' rows={4} maxLength={2000} />
           )}
         />
       </div>
