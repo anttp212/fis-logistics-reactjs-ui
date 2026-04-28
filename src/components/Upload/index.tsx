@@ -157,7 +157,7 @@ const UploadMinio: React.FC<PropsI> = ({
       const blob = await fetchFileBlob(path)
       const filename = file.name || path.split('/').pop() || 'file'
       downloadBlob(blob, filename)
-    } catch (err) {
+    } catch (_err) {
       message.error('Tải file thất bại')
     }
   }
@@ -170,7 +170,7 @@ const UploadMinio: React.FC<PropsI> = ({
       setPreviewImage(url)
       setPreviewTitle(file.name || path.split('/').pop() || '')
       setPreviewOpen(true)
-    } catch (err) {
+    } catch (_err) {
       message.error('Không thể xem trước file')
     }
   }
@@ -184,7 +184,7 @@ const UploadMinio: React.FC<PropsI> = ({
       onChange?.(value.filter((p) => p !== path))
       message.success('Xóa file thành công')
       return true
-    } catch (err) {
+    } catch (_err) {
       message.error('Xóa file thất bại')
       return false
     }
