@@ -260,7 +260,8 @@ const DriverForm = ({
                 {...field}
                 required
                 textLabel='Danh sách xe'
-                placeholder='Chọn xe'
+                placeholder={selectedLogisticsCustomerId ? 'Chọn xe' : 'Vui lòng chọn logistics trước'}
+                disabled={!selectedLogisticsCustomerId}
                 loading={isLoadingPrimaryVehicles}
                 options={primaryVehicleOptions}
                 negative={!!errors.primaryVehicleId}
