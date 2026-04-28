@@ -65,10 +65,10 @@ const handleRefreshToken = async (args: string | FetchArgs, api: BaseQueryApi, e
         // Update tokens in Redux store
         api.dispatch(
           authSlice.actions.setTokenData({
-            accessToken: newTokens.access_token,
-            refreshToken: newTokens.refresh_token || refreshToken || undefined,
-            tokenType: newTokens.token_type,
-            expiresIn: newTokens.expires_in
+            accessToken: newTokens.accessToken ?? newTokens.access_token ?? '',
+            refreshToken: newTokens.refreshToken ?? newTokens.refresh_token ?? refreshToken ?? undefined,
+            tokenType: newTokens.tokenType ?? newTokens.token_type,
+            expiresIn: newTokens.expiresIn ?? newTokens.expires_in
           })
         )
 

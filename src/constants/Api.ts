@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
     register: '/auth/register',
     forgotPassword: '/auth/forgot-password',
     resetPassword: '/auth/reset-password',
-    refreshToken: '/auth/refresh-token',
+    refreshToken: 'api/v1/auth/refresh-token',
     profile: '/auth/profile',
     changePassword: '/auth/change-password'
   },
