@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { FISButton } from 'fis-component'
-import { PageWrapper } from '@components'
+import { FISButton, FISText } from 'fis-component'
+import { PageWrapper, UploadMinio } from '@components'
 import { ROUTES, buildTransportationVehicleFleetEditPath } from '@constants'
 import { STATUS_LABELS, VEHICLE_TYPE_LABELS, formatDate } from '../data'
 import { useGetVehicleFleetDetailQuery } from '../vehicleFleet.api'
@@ -57,6 +57,19 @@ const VehicleFleetDetailPage = () => {
           <DetailItem label='Hạn đăng kiểm' value={formatDate(detail?.inspectionExpiryDate)} />
           <DetailItem label='Ghi chú' value={detail?.note} />
         </div>
+
+        {detail && (detail.attachments?.length ?? 0) > 0 && (
+          <div className='mt-6'>
+            <FISText color='sem/color/text/neutral/strong' variant='Emphasis/Emp-2' className='mb-3 block'>
+              Đính kèm file
+            </FISText>
+            <UploadMinio
+              readOnly
+              value={(detail.attachments ?? []).map((f) => f.path)}
+              initialFileList={detail.attachments}
+            />
+          </div>
+        )}
       </div>
     </PageWrapper>
   )

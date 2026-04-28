@@ -107,7 +107,7 @@ const UserModal: FC<UserModalPropsI> = ({
       title={isEditMode ? 'Chỉnh sửa tài khoản người dùng' : 'Tạo mới tài khoản người dùng'}
       width={600}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4'>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className='mt-4' noValidate>
         <div className='space-y-4'>
           {/* Tên người dùng */}
           <div>

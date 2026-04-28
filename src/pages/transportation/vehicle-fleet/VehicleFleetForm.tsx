@@ -1,11 +1,21 @@
-import { useMemo, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useMemo, useState } from 'react'
+import { Controller, useForm, type Path } from 'react-hook-form'
 import { FISButton, FISInputArea, FISInputDate, FISInputText, FISSelect, FISText } from 'fis-component'
 import { STATUS_OPTIONS, VEHICLE_TYPE_OPTIONS, type FleetFormValuesI } from './data'
 import { parseDateValue, toSelectOptions } from '@utils'
 import { useGetLogisticListQuery } from '../logistic-information/logisticInformation.api'
 import { UploadMinio } from '@components'
 import type { AttachmentItemI } from '@components/Upload'
+
+/**
+ * Biển số xe Việt Nam — đồng bộ với mobile (`logistics-mobile/src/utils/validation.ts`):
+ *   Ô tô/xe tải mới : 51F-123.45
+ *   Ô tô/xe tải cũ  : 51F-12345
+ *   Xe máy mới       : 29A1-111.22
+ *   Xe máy cũ        : 29A1-12345
+ */
+const VIETNAM_PLATE_REGEX = /^[0-9]{2}[A-Z]\d?-(\d{3}\.\d{2}|\d{5})$/i
+const PLATE_ERROR_MSG = 'Biển số xe không đúng định dạng (VD: 51F-123.45)'
 
 interface VehicleFleetFormPropsI {
   defaultValues: FleetFormValuesI
@@ -15,6 +25,8 @@ interface VehicleFleetFormPropsI {
   isSubmitting?: boolean
   /** Danh sách đính kèm từ API (hiển thị trong upload); khi submit vẫn nhận string[] paths */
   defaultFileList?: AttachmentItemI[]
+  /** Lỗi field-level từ server (response.data.errors): { fieldName: message } */
+  serverErrors?: Record<string, string>
 }
 
 const VehicleFleetForm = ({
@@ -23,7 +35,8 @@ const VehicleFleetForm = ({
   onSubmit,
   onCancel,
   isSubmitting = false,
-  defaultFileList = []
+  defaultFileList = [],
+  serverErrors
 }: VehicleFleetFormPropsI) => {
   const [attachments, setAttachments] = useState<string[]>(() => defaultFileList.map((f) => f.path))
 
@@ -31,10 +44,18 @@ const VehicleFleetForm = ({
     control,
     watch,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<FleetFormValuesI>({
     defaultValues
   })
+
+  useEffect(() => {
+    if (!serverErrors) return
+    Object.entries(serverErrors).forEach(([field, msg]) => {
+      setError(field as Path<FleetFormValuesI>, { type: 'server', message: msg })
+    })
+  }, [serverErrors, setError])
 
   const vehicleType = watch('vehicleType')
 
@@ -96,13 +117,16 @@ const VehicleFleetForm = ({
           <Controller
             name='licensePlate'
             control={control}
-            rules={{ required: 'Vui lòng nhập biển số' }}
+            rules={{
+              required: 'Vui lòng nhập biển số',
+              pattern: { value: VIETNAM_PLATE_REGEX, message: PLATE_ERROR_MSG }
+            }}
             render={({ field }) => (
               <FISInputText
                 {...field}
                 required
                 textLabel='Biển số'
-                placeholder='Nhập biển số'
+                placeholder='VD: 51F-123.45'
                 negative={!!errors.licensePlate}
                 message={errors.licensePlate?.message}
               />
@@ -113,13 +137,16 @@ const VehicleFleetForm = ({
             <Controller
               name='secondaryLicensePlate'
               control={control}
-              rules={{ required: 'Vui lòng nhập biển số phụ' }}
+              rules={{
+                required: 'Vui lòng nhập biển số phụ',
+                pattern: { value: VIETNAM_PLATE_REGEX, message: PLATE_ERROR_MSG }
+              }}
               render={({ field }) => (
                 <FISInputText
                   {...field}
                   required
                   textLabel='Biển số phụ'
-                  placeholder='Nhập biển số phụ'
+                  placeholder='VD: 51F-123.45'
                   negative={!!errors.secondaryLicensePlate}
                   message={errors.secondaryLicensePlate?.message}
                 />

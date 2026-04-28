@@ -85,7 +85,9 @@ export const API_ENDPOINTS = {
     containerSizes: '/api/v1/container-sizes'
   },
   files: {
-    presignedUploadUrl: '/api/v1/files/presigned-upload-url'
+    presignedUploadUrl: '/api/v1/files/presigned-upload-url',
+    download: '/api/v1/files/download',
+    delete: '/api/v1/files/delete'
   }
 } as const
 

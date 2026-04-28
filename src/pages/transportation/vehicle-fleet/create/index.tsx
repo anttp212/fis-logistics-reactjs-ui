@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { message } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { PageWrapper } from '@components'
@@ -23,6 +24,7 @@ const toCreateBody = (values: FleetFormValuesI, files: string[]): CreateVehicleF
 const VehicleFleetCreatePage = () => {
   const navigate = useNavigate()
   const [createVehicle, { isLoading }] = useCreateVehicleFleetMutation()
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({})
 
   const breadcrumbItems = [
     { label: 'Trang chủ', onClick: () => navigate(ROUTES.home) },
@@ -32,14 +34,20 @@ const VehicleFleetCreatePage = () => {
   ]
 
   const handleSubmit = async (values: FleetFormValuesI, _files: string[]) => {
+    setServerErrors({})
     try {
       await createVehicle(toCreateBody(values, _files)).unwrap()
       message.success('Tạo xe thành công')
       navigate(ROUTES.transportationVehicleFleet)
     } catch (err: unknown) {
-      const msg =
-        err && typeof err === 'object' && 'data' in err ? (err as { data?: { message?: string } }).data?.message : null
-      message.error(msg || 'Tạo xe thất bại')
+      const data =
+        err && typeof err === 'object' && 'data' in err
+          ? ((err as { data?: { message?: string; errors?: Record<string, string> } }).data ?? {})
+          : {}
+      if (data.errors && Object.keys(data.errors).length > 0) {
+        setServerErrors(data.errors)
+      }
+      message.error(data.message || 'Tạo xe thất bại')
     }
   }
 
@@ -57,6 +65,7 @@ const VehicleFleetCreatePage = () => {
         onSubmit={handleSubmit}
         onCancel={() => navigate(ROUTES.transportationVehicleFleet)}
         isSubmitting={isLoading}
+        serverErrors={serverErrors}
       />
     </PageWrapper>
   )
