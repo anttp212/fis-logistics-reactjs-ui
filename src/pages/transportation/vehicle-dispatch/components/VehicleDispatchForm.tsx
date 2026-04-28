@@ -161,9 +161,7 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
       toSelectOptions(
         drivers.map((s) => ({
           id: s.id,
-          name: s.fullName || '',
-          phone: s.phone || '',
-          vehiclePlateNo: s.vehiclePlateNo || ''
+          name: s.fullName || ''
         }))
       ),
     [drivers]
@@ -688,15 +686,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                           options={driverOptions}
                           negative={!!errors.containers?.[index]?.driver}
                           message={errors.containers?.[index]?.driver?.message}
-                          renderOption={(option: { [key: string]: any }) => (
-                            <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[#505a5f]'>
-                              <span>Tên: {option.label}</span>
-                              <div className='flex justify-between gap-[4px]'>
-                                <span>SĐT: {option.phone}</span>
-                                <span>Biển số xe: {option.vehiclePlateNo}</span>
-                              </div>
-                            </div>
-                          )}
                         />
                       )}
                     />
@@ -796,15 +785,6 @@ const VehicleDispatchForm = ({ mode, orderId, onSuccess, onCancel }: VehicleDisp
                           options={driverOptions}
                           negative={!!errors.cargos?.[index]?.driver}
                           message={errors.cargos?.[index]?.driver?.message}
-                          renderOption={(option: { [key: string]: any }) => (
-                            <div className='gap-2 text-sm cursor-pointer p-2 hover:bg-gray-100 rounded-[6px] text-[#505a5f]'>
-                              <span>Tên: {option.label}</span>
-                              <div className='flex justify-between gap-[4px]'>
-                                <span>SĐT: {option.phone}</span>
-                                <span>Biển số xe: {option.vehiclePlateNo}</span>
-                              </div>
-                            </div>
-                          )}
                         />
                       )}
                     />
