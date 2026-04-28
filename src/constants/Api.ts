@@ -79,6 +79,8 @@ export const API_ENDPOINTS = {
     vehicleTypes: '/api/v1/vehicle-types',
     requestingUnits: '/api/v1/requesting-units',
     locations: '/api/v1/locations',
+    provinces: '/api/v1/locations/provinces',
+    wards: '/api/v1/locations/wards',
     drivers: '/api/v1/drivers',
     containerSizes: '/api/v1/container-sizes'
   },

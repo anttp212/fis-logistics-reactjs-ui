@@ -4,10 +4,12 @@ import { PageWrapper } from '@components'
 import { FISTable, FISTableCell, FISTableHeaderCell, FISButton, FISInputArea, FISBadge } from 'fis-component'
 import { ROUTES, buildVehicleDispatchEditPath } from '@constants'
 import { useGetVehicleDispatchDetailQuery, useCancelVehicleDispatchMutation } from '../vehicleDispatch.api'
-import type { DispatchOrderContainerI } from '../vehicleDispatch.api'
+import type { DispatchOrderContainerI, DispatchOrderCargoI } from '../vehicleDispatch.api'
 import { useGetVehicleTypesQuery, useGetContainerSizesQuery } from '../vehicleDispatchMaster.api'
 import { useMemo, useState, type ReactNode } from 'react'
 import { STATUS_BADGE } from '../constants/status'
+
+const DANALOG_ADDRESS = '97 Yết Kiêu, Phường Sơn Trà, Thành phố Đà Nẵng'
 
 const toIdNameMap = (items: { id: string; name: string }[] | undefined): Record<string, string> =>
   Object.fromEntries((items ?? []).map((item) => [item.id, item.name]))
@@ -25,6 +27,12 @@ const formatDateTime = (isoStr?: string) => {
   return `${day}/${month}/${year} ${hours}:${minutes}`
 }
 
+const isContainerVehicleType = (code?: string, name?: string) => {
+  const c = (code || '').toUpperCase()
+  const n = (name || '').toLowerCase()
+  return c.includes('CONTAINER') || n.includes('container')
+}
+
 const VehicleDispatchDetail = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -40,6 +48,15 @@ const VehicleDispatchDetail = () => {
   const sizeLabels = useMemo(
     () => Object.fromEntries((containerSizes ?? []).map((s) => [s.id, s.name || s.code])),
     [containerSizes]
+  )
+
+  const selectedVehicleType = useMemo(
+    () => vehicleTypes.find((v) => v.id === (order?.vehicleType ?? order?.vehicleTypeId)),
+    [vehicleTypes, order]
+  )
+  const isContainer = useMemo(
+    () => isContainerVehicleType(selectedVehicleType?.code, selectedVehicleType?.name),
+    [selectedVehicleType]
   )
 
   const handleEdit = () => {
@@ -127,16 +144,76 @@ const VehicleDispatchDetail = () => {
     {
       dataIndex: 'driver',
       key: 'driver',
-      width: 140,
+      width: 200,
       title: () => <FISTableHeaderCell label='TÀI XẾ' hasRightDivider />,
       render: (_: unknown, row: DispatchOrderContainerI) => (
         <FISTableCell
-          content={String(row.driverName + ' - ' + row.driverPhone + ' - ' + row.driverPlateNo)}
+          content={[row.driverName, row.driverPhone, row.driverPlateNo].filter(Boolean).join(' - ') || '-'}
           textAlign='left'
         />
       )
     }
   ]
+
+  const cargoColumns = [
+    {
+      key: 'index',
+      width: 50,
+      title: () => <FISTableHeaderCell label='STT' hasRightDivider />,
+      render: (_: unknown, _row: DispatchOrderCargoI, index: number) => (
+        <FISTableCell content={String(index + 1)} textAlign='left' />
+      )
+    },
+    {
+      dataIndex: 'cargoType',
+      key: 'cargoType',
+      width: 200,
+      title: () => <FISTableHeaderCell label='LOẠI HÀNG HÓA' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderCargoI) => <FISTableCell content={row.cargoType ?? '-'} textAlign='left' />
+    },
+    {
+      dataIndex: 'dimension',
+      key: 'dimension',
+      width: 160,
+      title: () => <FISTableHeaderCell label='KÍCH THƯỚC' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderCargoI) => <FISTableCell content={row.dimension ?? '-'} textAlign='left' />
+    },
+    {
+      dataIndex: 'weight',
+      key: 'weight',
+      width: 140,
+      title: () => <FISTableHeaderCell label='TRỌNG LƯỢNG (KG)' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderCargoI) => (
+        <FISTableCell content={row.weight != null ? String(row.weight) : '-'} textAlign='left' />
+      )
+    },
+    {
+      dataIndex: 'driver',
+      key: 'driver',
+      width: 200,
+      title: () => <FISTableHeaderCell label='TÀI XẾ' hasRightDivider />,
+      render: (_: unknown, row: DispatchOrderCargoI) => (
+        <FISTableCell
+          content={[row.driverName, row.driverPhone, row.driverPlateNo].filter(Boolean).join(' - ') || '-'}
+          textAlign='left'
+        />
+      )
+    }
+  ]
+
+  const departureAddressDisplay = order
+    ? order.isDanalogDeparture
+      ? DANALOG_ADDRESS
+      : [order.departureAddress, order.departureWardName, order.departureProvinceName].filter(Boolean).join(', ') ||
+        order.departureLocationName ||
+        '-'
+    : '-'
+
+  const destinationAddressDisplay = order
+    ? [order.destinationAddress, order.destinationWardName, order.destinationProvinceName].filter(Boolean).join(', ') ||
+      order.destinationLocationName ||
+      '-'
+    : '-'
 
   return (
     <PageWrapper
@@ -207,24 +284,12 @@ const VehicleDispatchDetail = () => {
                   label='Loại xe'
                   value={
                     vehicleTypeLabels[order.vehicleType ?? order.vehicleTypeId ?? ''] ??
-                    order.vehicleType ??
-                    order.vehicleTypeId
+                    order.vehicleTypeName ??
+                    order.vehicleTypeText ??
+                    '-'
                   }
                 />
                 <InfoItem label='Đơn vị yêu cầu' value={order.logisticsCustomerName ?? '-'} />
-                <InfoItem label='Điểm đi' value={order.departureLocationName ?? '-'} />
-                <InfoItem label='Điểm đến' value={order.destinationLocationName ?? '-'} />
-                <InfoItem
-                  label='Thời gian dự kiến nhận hàng (ở điểm đi)'
-                  value={formatDateTime(order.expectedPickupTime ?? order.estimatedPickupTime)}
-                />
-                <InfoItem
-                  label='Thời gian dự kiến giao hàng (ở điểm đến)'
-                  value={formatDateTime(order.expectedDeliveryTime ?? order.estimatedDeliveryTime)}
-                />
-                <InfoItem label='Nội dung' value={order.content} />
-                <InfoItem label='Tên người nhận' value={order.recipientName ?? '-'} />
-                <InfoItem label='Số điện thoại' value={order.recipientPhone ?? '-'} />
                 <InfoItem
                   label='Trạng thái'
                   value={
@@ -236,18 +301,74 @@ const VehicleDispatchDetail = () => {
                   }
                 />
               </div>
+
+              {/* Điểm đi */}
+              <h4 className='mt-6 mb-3 text-base font-semibold text-gray-900'>Điểm đi</h4>
+              {order.isDanalogDeparture ? (
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+                  <InfoItem label='Loại điểm đi' value='Danalog' />
+                  <InfoItem label='Địa chỉ' value={DANALOG_ADDRESS} className='md:col-span-2' />
+                </div>
+              ) : (
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+                  <InfoItem label='Tỉnh/Thành phố' value={order.departureProvinceName ?? '-'} />
+                  <InfoItem label='Phường/Xã' value={order.departureWardName ?? '-'} />
+                  <InfoItem label='Địa chỉ' value={order.departureAddress ?? departureAddressDisplay} />
+                </div>
+              )}
+
+              {/* Điểm đến */}
+              <h4 className='mt-6 mb-3 text-base font-semibold text-gray-900'>Điểm đến</h4>
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+                <InfoItem label='Tỉnh/Thành phố' value={order.destinationProvinceName ?? '-'} />
+                <InfoItem label='Phường/Xã' value={order.destinationWardName ?? '-'} />
+                <InfoItem label='Địa chỉ' value={order.destinationAddress ?? destinationAddressDisplay} />
+              </div>
+
+              {/* Thời gian */}
+              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6'>
+                <InfoItem
+                  label='Thời gian dự kiến nhận hàng (ở điểm đi)'
+                  value={formatDateTime(order.expectedPickupTime ?? order.estimatedPickupTime)}
+                />
+                <InfoItem
+                  label='Thời gian dự kiến giao hàng (ở điểm đến)'
+                  value={formatDateTime(order.expectedDeliveryTime ?? order.estimatedDeliveryTime)}
+                />
+              </div>
             </div>
 
-            {/* Thông tin chi tiết container */}
+            {/* Thông tin hàng hóa */}
             <div className='bg-white rounded-lg border border-gray-200 p-6'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Thông tin chi tiết container</h3>
-              <FISTable
-                dataSource={order.containers ?? []}
-                columns={containerColumns}
-                scroll={{ x: 'max-content' }}
-                pagination={false}
-                rowKey={(_, i) => String(i)}
-              />
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>
+                {isContainer ? 'Thông tin chi tiết container' : 'Thông tin hàng hóa'}
+              </h3>
+              {isContainer ? (
+                <FISTable
+                  dataSource={order.containers ?? []}
+                  columns={containerColumns}
+                  scroll={{ x: 'max-content' }}
+                  pagination={false}
+                  rowKey={(_, i) => String(i)}
+                />
+              ) : (
+                <FISTable
+                  dataSource={order.cargos ?? []}
+                  columns={cargoColumns}
+                  scroll={{ x: 'max-content' }}
+                  pagination={false}
+                  rowKey={(_, i) => String(i)}
+                />
+              )}
+            </div>
+
+            {/* Người nhận */}
+            <div className='bg-white rounded-lg border border-gray-200 p-6'>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Thông tin người nhận</h3>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <InfoItem label='Tên người nhận' value={order.recipientName ?? '-'} />
+                <InfoItem label='Số điện thoại' value={order.recipientPhone ?? '-'} />
+              </div>
             </div>
 
             {/* Ghi chú */}

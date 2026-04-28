@@ -26,6 +26,18 @@ export interface DispatchOrderContainerI {
   destinationLocationName?: string
 }
 
+/** Cargo item - dùng cho yêu cầu điều xe loại Xe vận tải */
+export interface DispatchOrderCargoI {
+  id?: string
+  cargoType?: string
+  dimension?: string
+  weight?: number
+  driverId?: string
+  driverName?: string
+  driverPhone?: string
+  driverPlateNo?: string
+}
+
 /** Item từ API GET /api/v1/dispatch-orders - hỗ trợ cả format cũ và mới */
 export interface DispatchOrderApiI {
   id: string
@@ -105,24 +117,38 @@ export interface VehicleDispatchDetailI {
   id: string
   dispatchCode?: string
   status?: string
+  isDanalogDeparture?: boolean
   vehicleType?: string
   vehicleTypeId?: string
+  vehicleTypeName?: string
+  vehicleTypeText?: string
   requestUnit?: string
   logisticsCustomerId?: string
+  logisticsCustomerName?: string
   origin?: string
   departureLocationId?: string
   destination?: string
   destinationLocationId?: string
+  departureProvinceId?: string
+  departureProvinceName?: string
+  departureWardId?: string
+  departureWardName?: string
+  departureAddress?: string
+  destinationProvinceId?: string
+  destinationProvinceName?: string
+  destinationWardId?: string
+  destinationWardName?: string
+  destinationAddress?: string
   expectedPickupTime?: string
   estimatedPickupTime?: string
   expectedDeliveryTime?: string
   estimatedDeliveryTime?: string
   content?: string
   containers: DispatchOrderContainerI[]
+  cargos?: DispatchOrderCargoI[]
   note?: string
   notes?: string
   createdAt?: string
-  logisticsCustomerName?: string
   recipientName?: string
   recipientPhone?: string
   departureLocationName?: string
@@ -169,25 +195,42 @@ export interface GetDispatchOrderListParamsI {
 }
 
 /** Request body cho API tạo mới điều xe */
+export interface CreateVehicleDispatchContainerI {
+  containerNo: string
+  containerSizeId?: string
+  containerWeight?: number
+  driverId?: string
+}
+
+export interface CreateVehicleDispatchCargoI {
+  cargoType: string
+  dimension: string
+  weight: number
+  driverId: string
+}
+
 export interface CreateVehicleDispatchRequestI {
   vehicleTypeId: string
   logisticsCustomerId: string
+  isDanalogDeparture?: boolean
   departureLocationId?: string
   destinationLocationId?: string
-  departureLocationName: string
-  destinationLocationName: string
+  departureLocationName?: string
+  destinationLocationName?: string
+  departureProvinceId?: string
+  departureWardId?: string
+  departureAddress?: string
+  destinationProvinceId?: string
+  destinationWardId?: string
+  destinationAddress?: string
   estimatedPickupTime: string
   estimatedDeliveryTime: string
   recipientName?: string
   recipientPhone?: string
   content?: string
   notes?: string
-  containers: Array<{
-    containerNo: string
-    containerSizeId: string
-    containerWeight: number
-    driverId?: string
-  }>
+  containers?: CreateVehicleDispatchContainerI[]
+  cargos?: CreateVehicleDispatchCargoI[]
 }
 
 export const vehicleDispatchApi = createApi({
