@@ -76,6 +76,21 @@ export interface ContainerSizeI {
   sortOrder?: number
 }
 
+export interface ProvinceI {
+  id: string
+  code: string
+  name: string
+  sortOrder?: number
+}
+
+export interface WardI {
+  id: string
+  code: string
+  name: string
+  provinceId: string
+  sortOrder?: number
+}
+
 // ============================================
 // API
 // ============================================
@@ -135,6 +150,20 @@ export const vehicleDispatchMasterApi = createApi({
       query: () => ({ url: API_ENDPOINTS.vehicleDispatch.containerSizes, method: 'GET' }),
       transformResponse: (response: { data?: ContainerSizeI[] } | ContainerSizeI[]) =>
         Array.isArray(response) ? response : (response?.data ?? [])
+    }),
+    getProvinces: builder.query<ProvinceI[], void>({
+      query: () => ({ url: API_ENDPOINTS.vehicleDispatch.provinces, method: 'GET' }),
+      transformResponse: (response: { data?: ProvinceI[] } | ProvinceI[]) =>
+        Array.isArray(response) ? response : (response?.data ?? [])
+    }),
+    getWards: builder.query<WardI[], { provinceId: string }>({
+      query: ({ provinceId }) => ({
+        url: API_ENDPOINTS.vehicleDispatch.wards,
+        method: 'GET',
+        params: { provinceId }
+      }),
+      transformResponse: (response: { data?: WardI[] } | WardI[]) =>
+        Array.isArray(response) ? response : (response?.data ?? [])
     })
   })
 })
@@ -144,5 +173,7 @@ export const {
   useGetLogisticListQuery,
   useGetLocationsQuery,
   useGetDriversQuery,
-  useGetContainerSizesQuery
+  useGetContainerSizesQuery,
+  useGetProvincesQuery,
+  useGetWardsQuery
 } = vehicleDispatchMasterApi
