@@ -93,7 +93,7 @@ const Home = () => {
     appliedParamsCoordinator ?? undefined
   )
 
-  const { data: overview } = useGetDashboardOverviewQuery()
+  const { data: _overview } = useGetDashboardOverviewQuery()
 
   const handleFilter = handleSubmit((values) => {
     setAppliedParams({
